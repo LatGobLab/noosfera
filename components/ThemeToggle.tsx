@@ -1,58 +1,28 @@
-import { Pressable, View } from "react-native";
-import { MoonStar } from "~/lib/icons/MoonStar";
-import { Smartphone } from "~/lib/icons/System";
-import { Sun } from "~/lib/icons/Sun";
-import { useColorScheme } from "~/lib/useColorScheme";
-import { cn } from "~/lib/utils";
+import { View, Text, Pressable } from "react-native";
+import { useTheme } from "@/hooks/useTheme";
 
-export function ThemeToggle() {
-  const { colorScheme, setColorScheme } = useColorScheme();
+export default function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
 
   return (
-    <View className="flex-row space-x-2">
-      {/* Botón para modo claro */}
-      <Pressable onPress={() => setColorScheme("light")}>
-        {({ pressed }) => (
-          <Sun
-            className={cn(
-              "text-foreground",
-              colorScheme === "light" && "text-primary", // Resalta si está activo
-              pressed && "opacity-70"
-            )}
-            size={24}
-            strokeWidth={1.25}
-          />
-        )}
+    <View className="flex-row justify-center items-center space-x-4 p-4 gap-14">
+      <Pressable
+        onPress={() => setTheme("light")}
+        className="p-2 bg-gray-200 dark:bg-gray-700 rounded"
+      >
+        <Text className="text-black dark:text-white">Light</Text>
       </Pressable>
-
-      {/* Botón para modo oscuro */}
-      <Pressable onPress={() => setColorScheme("dark")}>
-        {({ pressed }) => (
-          <MoonStar
-            className={cn(
-              "text-foreground",
-              colorScheme === "dark" && "text-primary",
-              pressed && "opacity-70"
-            )}
-            size={23}
-            strokeWidth={1.25}
-          />
-        )}
+      <Pressable
+        onPress={() => setTheme("dark")}
+        className="p-2 bg-gray-200 dark:bg-gray-700 rounded"
+      >
+        <Text className="text-black dark:text-white">Dark</Text>
       </Pressable>
-
-      {/* Botón para modo sistema */}
-      <Pressable onPress={() => setColorScheme("system")}>
-        {({ pressed }) => (
-          <Smartphone
-            className={cn(
-              "text-foreground",
-              colorScheme === "system" && "text-primary",
-              pressed && "opacity-70"
-            )}
-            size={24}
-            strokeWidth={1.25}
-          />
-        )}
+      <Pressable
+        onPress={() => setTheme("system")}
+        className="p-2 bg-gray-200 dark:bg-gray-700 rounded"
+      >
+        <Text className="text-black dark:text-white">System</Text>
       </Pressable>
     </View>
   );
