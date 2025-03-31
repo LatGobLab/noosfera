@@ -1,8 +1,5 @@
 import { Stack } from "expo-router";
-import { useRouter } from "expo-router";
-import { useEffect } from "react";
-import supabase from "@/lib/supabase";
-import { useAuthStore } from "../stores/useAuthStore";
+
 import "../global.css";
 
 export default function Layout() {
