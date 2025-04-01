@@ -3,10 +3,9 @@ import { useRouter } from "expo-router";
 import { AuthContext } from "./AuthContext";
 
 interface ProtectedRouteProps {
-  children: ReactNode; // Contenido a proteger
+  children: ReactNode;
 }
 
-// Implementación del componente de rutas protegidas
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, loading } = useContext(AuthContext);
   const router = useRouter();
@@ -20,10 +19,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, [isAuthenticated, loading, router]);
 
   if (loading) {
-    return null; // Muestra un loader o pantalla en blanco mientras se verifica
+    return null;
   }
 
-  return <>{children}</>; // Renderiza el contenido protegido
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

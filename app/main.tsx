@@ -1,7 +1,7 @@
 import ProtectedRoute from "@/src/auth/ProtectedRoute";
 import { clearTokens } from "@/src/auth/SecureStore";
 import { useRouter } from "expo-router";
-import { View, Text, TextInput, Pressable, Alert } from "react-native";
+import { Text, Pressable } from "react-native";
 
 export default function Main() {
   const router = useRouter();

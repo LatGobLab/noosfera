@@ -1,4 +1,3 @@
-// app/index.tsx
 import supabase from "@/lib/supabase";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "expo-router";
@@ -16,7 +15,6 @@ export default function InitialScreen() {
 
   async function checkUser() {
     try {
-      // Verificar sesión inicial
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -28,7 +26,6 @@ export default function InitialScreen() {
         router.replace("/welcome");
       }
 
-      // Suscribirse a cambios de autenticación
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -47,7 +44,6 @@ export default function InitialScreen() {
     }
   }
 
-  // Mostrar un indicador de carga mientras se verifica la sesión
   return (
     <View className="flex-1 items-center justify-center bg-white">
       <StatusBar style="dark" />
