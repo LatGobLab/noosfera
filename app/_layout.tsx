@@ -11,7 +11,7 @@ export default function RootLayout() {
   const statusBarStyle = isDarkMode ? "light" : "dark";
 
   return (
-    <View className={`flex-1 ${isDarkMode ? "bg-neutral-900" : "bg-white"}`}>
+    <View className={`flex-1 `}>
       <Stack
         screenOptions={{
           contentStyle: {
@@ -28,18 +28,25 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
-
         <Stack.Screen
           name="login"
           options={{
             headerShown: true,
             headerBackTitle: "Volver",
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+              fontSize: 22,
+            },
             headerStyle: {
               backgroundColor: isDarkMode ? "#171717" : "#ffffff",
             },
-            headerTintColor: isDarkMode ? "#ffffff" : "#000000",
-            statusBarBackgroundColor: isDarkMode ? "#171717" : "#ffffff",
-            statusBarStyle: statusBarStyle,
+            headerShadowVisible: false,
+            headerTintColor: isDarkMode ? "#ffffff" : "#171717",
+            title: "Bienvenido de vuelta",
+            animation: "ios_from_right",
+            animationDuration: 200,
+            gestureEnabled: true,
+            animationTypeForReplace: "pop",
           }}
         />
         <Stack.Screen
@@ -55,7 +62,25 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
-        <Stack.Screen name="register" />
+        <Stack.Screen
+          name="register"
+          options={{
+            headerShown: true,
+            headerBackTitle: "Volver",
+            headerTransparent: true,
+            headerTintColor: isDarkMode ? "#ffffff" : "#171717",
+            title: "Registrate",
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+              fontSize: 22,
+            },
+            headerShadowVisible: false,
+            animation: "ios_from_right",
+            animationDuration: 200,
+            gestureEnabled: true,
+            animationTypeForReplace: "pop",
+          }}
+        />
       </Stack>
     </View>
   );

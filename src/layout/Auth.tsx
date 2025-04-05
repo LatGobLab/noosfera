@@ -3,13 +3,17 @@ import {
   Alert,
   View,
   TextInput,
-  Pressable,
   Text,
   AppState,
+  TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 import supabase from "@/src/lib/supabase";
 import { useColorScheme } from "nativewind";
 import * as SystemUI from "expo-system-ui";
+import { router } from "expo-router";
+import { Image } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -24,6 +28,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { colorScheme } = useColorScheme();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const backgroundColor = colorScheme === "dark" ? "#1E1E1E" : "#FFFFFF";
@@ -58,52 +63,125 @@ export default function Auth() {
   }
 
   return (
-    <View className="flex-1 p-24 bg-white dark:bg-[#1E1E1E]">
-      {/* --- Input de Email --- */}
-      <View className="mb-6">
-        <TextInput
-          className="w-full p-3 border border-gray-300 rounded-lg dark:border-gray-600 dark:text-white dark:bg-[#2E2E2E]"
-          placeholder="email@address.com"
-          placeholderTextColor="#9CA3AF"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          keyboardAppearance={colorScheme === "dark" ? "dark" : "light"}
-        />
+    <View className="flex-1">
+      <View className="flex-1 ">
+        <View className="flex h-28 pt-14 justify-center items-center rounded-b-full">
+          <Text className="text-black dark:text-white text-2xl text-center">
+            Inicia con tu cuenta
+          </Text>
+        </View>
+
+        <View className=" rounded-tl-[3.0rem] flex-1  w-screen">
+          <View className="space-y-4 mt-10">
+            <TextInput
+              className="bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-700 dark:border-neutral-700  w-11/12 mx-auto p-4 h-14 rounded-2xl"
+              placeholder="Correo Electrónico"
+              placeholderTextColor="#9ca3af"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+
+            {/* Campo de contraseña */}
+            <View className="relative mt-10">
+              <TextInput
+                className="bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-700 dark:border-neutral-700  w-11/12 mx-auto p-4 h-14 rounded-2xl"
+                placeholder="Contraseña"
+                placeholderTextColor="#9ca3af"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                className="absolute right-10 top-4"
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={24}
+                  color="#9ca3af"
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Botón de Iniciar Sesión */}
+            <TouchableOpacity
+              className="bg-black dark:bg-white  rounded-full h-14 flex items-center justify-center mt-10 w-5/6 mx-auto"
+              onPress={signInWithEmail}
+            >
+              <Text className="text-white dark:text-black font-semibold text-lg">
+                Iniciar Sesión
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Separador O */}
+          <View className="flex-row items-center my-8">
+            <View className="flex-1 h-0.5 bg-neutral-700" />
+            <Text className="mx-4 text-neutral-400">O</Text>
+            <View className="flex-1 h-0.5 bg-neutral-700" />
+          </View>
+
+          {/* Botones de inicio de sesión con redes sociales */}
+          <View className="flex-1 justify-between ">
+            <View className="space-y-3 gap-5">
+              {/* Google */}
+              <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto">
+                <Image
+                  source={{
+                    uri: "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+                  }}
+                  className="w-6 h-6 mr-2"
+                />
+                <Text className="text-black dark:text-white font-medium">
+                  Ingresa con Google
+                </Text>
+              </TouchableOpacity>
+
+              {/* Facebook */}
+              <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto">
+                <Image
+                  source={{
+                    uri: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
+                  }}
+                  className="w-6 h-6 mr-2"
+                />
+                <Text className="text-black dark:text-white font-medium">
+                  Ingresa con Facebook
+                </Text>
+              </TouchableOpacity>
+
+              {/* Apple */}
+              <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto  ">
+                <Image
+                  source={{
+                    uri: "https://cdn-icons-png.flaticon.com/512/0/747.png",
+                  }}
+                  className="w-6 h-6 mr-2"
+                />
+                <Text className="text-black dark:text-white font-medium">
+                  Ingresa con Apple
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Enlace para registrarse */}
+            <View className="flex-row justify-center mt-8 mb-20">
+              <Text className="text-black dark:text-white text-xl">
+                ¿Aún no tienes cuenta?
+              </Text>
+              <TouchableOpacity onPress={() => router.push("/register")}>
+                <Text className="text-black dark:text-white font-bold ml-1  text-xl">
+                  regístrate
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </View>
-      {/* --- Input de Contraseña --- */}
-      <View className="mb-6">
-        <TextInput
-          className="w-full p-3 border border-gray-300 rounded-lg dark:border-gray-600 dark:text-white dark:bg-[#2E2E2E]"
-          placeholder="Password"
-          placeholderTextColor="#9CA3AF"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoCapitalize="none"
-          keyboardAppearance={colorScheme === "dark" ? "dark" : "light"}
-        />
-      </View>
-      {/* --- Botones --- */}
-      <Pressable
-        className="w-full p-3 bg-[#1E1E1E] rounded-lg items-center justify-center dark:bg-white"
-        onPress={signInWithEmail}
-        disabled={loading}
-      >
-        <Text className="text-white font-bold dark:text-black">
-          {loading ? "Loading..." : "Sign in"}
-        </Text>
-      </Pressable>
-      <Pressable
-        className="w-full p-3 mt-4 border border-[#1E1E1E] rounded-lg items-center justify-center dark:border-white"
-        onPress={signUpWithEmail}
-        disabled={loading}
-      >
-        <Text className="text-[#1E1E1E] font-bold dark:text-white">
-          {loading ? "Loading..." : "Sign up"}
-        </Text>
-      </Pressable>
     </View>
   );
 }

@@ -20,9 +20,9 @@ export default function InitialScreen() {
       setSession(session);
 
       if (session) {
-        router.replace("/welcome");
+        router.replace("/(protected)");
       } else {
-        router.replace("/login");
+        router.replace("/welcome");
       }
 
       const {

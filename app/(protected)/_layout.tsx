@@ -15,12 +15,12 @@ export default function ProtectedLayout() {
 
   return (
     <Tabs>
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Index",
         }}
-      /> */}
+      />
       <Tabs.Screen
         name="home"
         options={{
