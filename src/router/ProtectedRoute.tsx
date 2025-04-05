@@ -1,6 +1,6 @@
 import React, { ReactNode, useContext, useEffect } from "react";
 import { useRouter } from "expo-router";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "@/src/context/AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -13,7 +13,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     if (!loading) {
       if (!isAuthenticated) {
-        router.replace("/index");
+        router.replace("/");
       }
     }
   }, [isAuthenticated, loading, router]);

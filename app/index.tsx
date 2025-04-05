@@ -1,15 +1,12 @@
-import supabase from "@/lib/supabase";
-import { useAuthStore } from "@/stores/useAuthStore";
+import supabase from "@/src/lib/supabase";
+import { useAuthStore } from "@/src/stores/useAuthStore";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
-import { useTheme } from "@/context/theme";
 
 export default function InitialScreen() {
   const setSession = useAuthStore((state) => state.setSession);
   const router = useRouter();
-  const { activeTheme } = useTheme();
 
   useEffect(() => {
     checkUser();
@@ -23,9 +20,9 @@ export default function InitialScreen() {
       setSession(session);
 
       if (session) {
-        router.replace("/(protected)");
-      } else {
         router.replace("/welcome");
+      } else {
+        router.replace("/login");
       }
 
       const {
@@ -48,11 +45,7 @@ export default function InitialScreen() {
 
   return (
     <View className="flex-1 items-center justify-center bg-white dark:bg-[#1E1E1E]">
-      <StatusBar style={activeTheme === "dark" ? "light" : "dark"} />
-      <ActivityIndicator
-        size="large"
-        color={activeTheme === "dark" ? "#ffffff" : "#0000ff"}
-      />
+      <ActivityIndicator size="large" />
     </View>
   );
 }

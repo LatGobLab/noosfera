@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
-import { getStoredToken } from "./SecureStore";
+import { getStoredToken } from "@/src/stores/SecureStore";
 
 // Define la interfaz del contexto
 interface AuthContextType {

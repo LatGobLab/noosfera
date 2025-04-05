@@ -1,6 +1,6 @@
 import { View, Text, Button } from "react-native";
-import supabase from "../../lib/supabase";
-import { useAuthStore } from "../../stores/useAuthStore";
+import supabase from "@/src/lib/supabase";
+import { useAuthStore } from "@/src/stores/useAuthStore";
 
 export default function HomeScreen() {
   const signOut = useAuthStore((state) => state.signOut);

@@ -16,7 +16,7 @@ export default function Welcome() {
       <StatusBar style="auto" />
       <View className="items-center justify-center">
         <Text className="text-5xl font-bold text-black dark:text-white">
-          Ciervo
+          Noosfera
         </Text>
         <Text className="text-lg mt-2 text-black dark:text-slate-300">
           Conecta, visualiza y comparte tu ciudad
@@ -24,7 +24,7 @@ export default function Welcome() {
       </View>
       <View className="mt-8 mb-6">
         <Image
-          source={require("@/assets/bienvenida.png")}
+          source={require("@/assets/images/react-logo.png")}
           style={{ width: 150, height: 150 }}
           resizeMode="contain"
         />

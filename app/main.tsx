@@ -1,5 +1,5 @@
-import ProtectedRoute from "@/src/auth/ProtectedRoute";
-import { clearTokens } from "@/src/auth/SecureStore";
+import ProtectedRoute from "@/src/router/ProtectedRoute";
+import { clearTokens } from "@/src/stores/SecureStore";
 import { useRouter } from "expo-router";
 import { Text, Pressable } from "react-native";
 

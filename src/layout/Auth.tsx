@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   View,
@@ -7,7 +7,9 @@ import {
   Text,
   AppState,
 } from "react-native";
-import supabase from "@/lib/supabase";
+import supabase from "@/src/lib/supabase";
+import { useColorScheme } from "nativewind";
+import * as SystemUI from "expo-system-ui";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -21,6 +23,12 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { colorScheme } = useColorScheme();
+
+  useEffect(() => {
+    const backgroundColor = colorScheme === "dark" ? "#1E1E1E" : "#FFFFFF";
+    SystemUI.setBackgroundColorAsync(backgroundColor);
+  }, [colorScheme]);
 
   async function signInWithEmail() {
     setLoading(true);
@@ -51,6 +59,7 @@ export default function Auth() {
 
   return (
     <View className="flex-1 p-24 bg-white dark:bg-[#1E1E1E]">
+      {/* --- Input de Email --- */}
       <View className="mb-6">
         <TextInput
           className="w-full p-3 border border-gray-300 rounded-lg dark:border-gray-600 dark:text-white dark:bg-[#2E2E2E]"
@@ -60,8 +69,10 @@ export default function Auth() {
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
+          keyboardAppearance={colorScheme === "dark" ? "dark" : "light"}
         />
       </View>
+      {/* --- Input de Contraseña --- */}
       <View className="mb-6">
         <TextInput
           className="w-full p-3 border border-gray-300 rounded-lg dark:border-gray-600 dark:text-white dark:bg-[#2E2E2E]"
@@ -71,8 +82,10 @@ export default function Auth() {
           onChangeText={setPassword}
           secureTextEntry
           autoCapitalize="none"
+          keyboardAppearance={colorScheme === "dark" ? "dark" : "light"}
         />
       </View>
+      {/* --- Botones --- */}
       <Pressable
         className="w-full p-3 bg-[#1E1E1E] rounded-lg items-center justify-center dark:bg-white"
         onPress={signInWithEmail}

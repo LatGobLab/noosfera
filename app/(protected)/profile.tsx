@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { useAuthStore } from "../../stores/useAuthStore";
+import { useAuthStore } from "@/src/stores/useAuthStore";
 
 export default function ProfileScreen() {
   const session = useAuthStore((state) => state.session);

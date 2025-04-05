@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/src/stores/useAuthStore";
 
 export default function ProtectedLayout() {
   const session = useAuthStore((state) => state.session);
