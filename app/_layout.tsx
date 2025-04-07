@@ -34,6 +34,7 @@ export default function RootLayout() {
             headerShown: true,
             headerBackTitle: "Volver",
             headerTitleAlign: "center",
+
             headerTitleStyle: {
               fontSize: 22,
             },
