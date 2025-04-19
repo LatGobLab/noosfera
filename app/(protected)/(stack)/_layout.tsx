@@ -9,10 +9,6 @@ export default function StackLayout() {
   const isDark = colorScheme === "dark";
   const router = useRouter();
 
-  const goBack = () => {
-    router.back();
-  };
-
   return (
     <Stack
       screenOptions={{
@@ -23,17 +19,7 @@ export default function StackLayout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        // Añade una animación para navegar entre pantallas
         animation: "slide_from_right",
-        headerLeft: () => (
-          <Pressable onPress={goBack} className="ml-2">
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={isDark ? "#ffffff" : "#000000"}
-            />
-          </Pressable>
-        ),
       }}
     >
       <Stack.Screen

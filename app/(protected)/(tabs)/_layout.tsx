@@ -1,10 +1,10 @@
 import { Tabs } from "expo-router";
 import { useColorScheme } from "nativewind";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, View } from "react-native";
 
 // Define valid icon names for type safety
-type IconName = "home" | "map" | "person" | "settings-outline";
+type IconName = "home-outline" | "map" | "person" | "settings-outline";
 
 export default function TabsLayout() {
   const { colorScheme } = useColorScheme();
@@ -57,7 +57,7 @@ export default function TabsLayout() {
           title: "Inicio",
           tabBarIcon: ({ color, size, focused }) => (
             <TabBarIcon
-              name="home"
+              name="home-outline"
               color={color}
               size={size}
               focused={focused}
@@ -124,7 +124,7 @@ function TabBarIcon({
       } rounded-full w-10 h-10 flex`}
     >
       <Ionicons
-        name={focused ? name : (`${name}-outline` as any)}
+        name={focused ? name : (`${name}` as any)}
         size={24} // Tamaño fijo para asegurar consistencia
         color={focused ? "#000000" : color} // Negro si está activo, sino el color pasado
       />

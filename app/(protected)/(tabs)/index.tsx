@@ -64,6 +64,120 @@ export default function Home() {
           ))}
         </View>
 
+        <View className="mb-6">
+          <Text className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Actividad reciente
+          </Text>
+          {[1, 2, 3].map((item) => (
+            <TouchableOpacity
+              key={item}
+              className="flex-row items-center py-3 border-b border-gray-200 dark:border-gray-800"
+              onPress={() => goToDetails(`activity-${item}`)}
+            >
+              <View className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 mr-3" />
+              <View className="flex-1">
+                <Text className="text-gray-900 dark:text-gray-100 font-medium">
+                  Actividad {item}
+                </Text>
+                <Text className="text-gray-600 dark:text-gray-400 text-sm">
+                  Hace {item} hora{item > 1 ? "s" : ""}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View className="mb-6">
+          <Text className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Actividad reciente
+          </Text>
+          {[1, 2, 3].map((item) => (
+            <TouchableOpacity
+              key={item}
+              className="flex-row items-center py-3 border-b border-gray-200 dark:border-gray-800"
+              onPress={() => goToDetails(`activity-${item}`)}
+            >
+              <View className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 mr-3" />
+              <View className="flex-1">
+                <Text className="text-gray-900 dark:text-gray-100 font-medium">
+                  Actividad {item}
+                </Text>
+                <Text className="text-gray-600 dark:text-gray-400 text-sm">
+                  Hace {item} hora{item > 1 ? "s" : ""}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View className="mb-6">
+          <Text className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Actividad reciente
+          </Text>
+          {[1, 2, 3].map((item) => (
+            <TouchableOpacity
+              key={item}
+              className="flex-row items-center py-3 border-b border-gray-200 dark:border-gray-800"
+              onPress={() => goToDetails(`activity-${item}`)}
+            >
+              <View className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 mr-3" />
+              <View className="flex-1">
+                <Text className="text-gray-900 dark:text-gray-100 font-medium">
+                  Actividad {item}
+                </Text>
+                <Text className="text-gray-600 dark:text-gray-400 text-sm">
+                  Hace {item} hora{item > 1 ? "s" : ""}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View className="mb-6">
+          <Text className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Actividad reciente
+          </Text>
+          {[1, 2, 3].map((item) => (
+            <TouchableOpacity
+              key={item}
+              className="flex-row items-center py-3 border-b border-gray-200 dark:border-gray-800"
+              onPress={() => goToDetails(`activity-${item}`)}
+            >
+              <View className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 mr-3" />
+              <View className="flex-1">
+                <Text className="text-gray-900 dark:text-gray-100 font-medium">
+                  Actividad {item}
+                </Text>
+                <Text className="text-gray-600 dark:text-gray-400 text-sm">
+                  Hace {item} hora{item > 1 ? "s" : ""}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View className="mb-6">
+          <Text className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Actividad reciente
+          </Text>
+          {[1, 2, 3].map((item) => (
+            <TouchableOpacity
+              key={item}
+              className="flex-row items-center py-3 border-b border-gray-200 dark:border-gray-800"
+              onPress={() => goToDetails(`activity-${item}`)}
+            >
+              <View className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 mr-3" />
+              <View className="flex-1">
+                <Text className="text-gray-900 dark:text-gray-100 font-medium">
+                  Actividad {item}
+                </Text>
+                <Text className="text-gray-600 dark:text-gray-400 text-sm">
+                  Hace {item} hora{item > 1 ? "s" : ""}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
         {/* Quick Actions */}
         <View>
           <Text className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
