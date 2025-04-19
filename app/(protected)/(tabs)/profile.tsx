@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import ThemeSelector from "@/src/themeSelector";
 import { router } from "expo-router";
+import supabase from "@/src/lib/supabase";
 
 export default function ProfileScreen() {
   const session = useAuthStore((state) => state.session);
@@ -13,7 +14,12 @@ export default function ProfileScreen() {
 
   const userEmail = session?.user?.email || "usuario@ejemplo.com";
   const userName = userEmail.split("@")[0] || "Usuario";
+  const signOut = useAuthStore((state) => state.signOut);
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    signOut();
+  };
   return (
     <View className="flex-1 bg-white dark:bg-gray-900">
       <StatusBar style={isDark ? "light" : "dark"} />
@@ -105,6 +111,17 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             ))}
           </View>
+        </View>
+        {/* Sign Out Button */}
+        <View className="mb-32">
+          <TouchableOpacity
+            onPress={handleSignOut}
+            className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl items-center "
+          >
+            <Text className="text-red-600 dark:text-red-400 font-medium">
+              Cerrar sesión
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>

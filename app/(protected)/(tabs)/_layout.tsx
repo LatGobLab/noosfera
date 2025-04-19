@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, View } from "react-native";
 
 // Define valid icon names for type safety
-type IconName = "home-outline" | "map" | "person" | "settings-outline";
+type IconName = "home" | "map" | "person" | "settings-outline";
 
 export default function TabsLayout() {
   const { colorScheme } = useColorScheme();
@@ -15,7 +15,7 @@ export default function TabsLayout() {
       screenOptions={{
         tabBarStyle: {
           position: "absolute",
-          width: "50%",
+          width: "70%",
           bottom: 20,
           left: 20,
           right: 20,
@@ -31,7 +31,7 @@ export default function TabsLayout() {
         },
         tabBarItemStyle: {
           flex: 1,
-          height: 56, // La misma altura que el tabBar
+          height: 56,
           alignItems: "center",
           justifyContent: "center",
         },
@@ -57,7 +57,7 @@ export default function TabsLayout() {
           title: "Inicio",
           tabBarIcon: ({ color, size, focused }) => (
             <TabBarIcon
-              name="home-outline"
+              name="home"
               color={color}
               size={size}
               focused={focused}
@@ -69,6 +69,20 @@ export default function TabsLayout() {
         name="map"
         options={{
           title: "Mapa",
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabBarIcon
+              name="map"
+              color={color}
+              size={size}
+              focused={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="leaflet"
+        options={{
+          title: "Leaflet",
           tabBarIcon: ({ color, size, focused }) => (
             <TabBarIcon
               name="map"
