@@ -20,7 +20,7 @@ export default function InitialScreen() {
       setSession(session);
 
       if (session) {
-        router.replace("/(protected)");
+        router.replace("/(protected)/(tabs)");
       } else {
         router.replace("/welcome");
       }
@@ -30,7 +30,7 @@ export default function InitialScreen() {
       } = supabase.auth.onAuthStateChange((_event, session) => {
         setSession(session);
         if (session) {
-          router.replace("/(protected)");
+          router.replace("/(protected)/(tabs)");
         } else {
           router.replace("/welcome");
         }

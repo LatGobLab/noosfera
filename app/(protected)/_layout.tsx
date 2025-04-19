@@ -1,6 +1,6 @@
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { useRouter } from "expo-router";
+import { useRouter, Redirect } from "expo-router";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 
 export default function ProtectedLayout() {
@@ -14,25 +14,10 @@ export default function ProtectedLayout() {
   }, [session]);
 
   return (
-    <Tabs>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Index",
-        }}
-      />
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: "Home",
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-        }}
-      />
-    </Tabs>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(stack)" options={{ presentation: "modal" }} />
+      <Stack.Screen name="index" redirect={true} />
+    </Stack>
   );
 }

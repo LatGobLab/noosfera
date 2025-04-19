@@ -1,9 +1,5 @@
-import { View, Text } from "react-native";
+import { Redirect } from "expo-router";
 
-export default function Home() {
-  return (
-    <View className="flex-1 items-center justify-center">
-      <Text className="text-xl">Pantalla Principal</Text>
-    </View>
-  );
+export default function ProtectedIndex() {
+  return <Redirect href="/(protected)/(tabs)" />;
 }
