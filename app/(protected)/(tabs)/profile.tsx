@@ -1,15 +1,15 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
-import { useColorScheme } from "nativewind";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import ThemeSelector from "@/src/themeSelector";
 import { router } from "expo-router";
 import supabase from "@/src/lib/supabase";
+import { useTheme } from "@/src/context/ThemeContext";
 
 export default function ProfileScreen() {
   const session = useAuthStore((state) => state.session);
-  const { colorScheme } = useColorScheme();
+  const { colorScheme } = useTheme();
   const isDark = colorScheme === "dark";
 
   const userEmail = session?.user?.email || "usuario@ejemplo.com";

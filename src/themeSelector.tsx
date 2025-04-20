@@ -1,45 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
-import { useColorScheme } from "nativewind";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const THEME_PREFERENCE_KEY = "@MyApp:themePreference";
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useTheme } from "./context/ThemeContext";
 
 export default function ThemeSelector() {
-  const { colorScheme, setColorScheme } = useColorScheme();
-
-  const [selectedPreference, setSelectedPreference] = useState("system");
-
-  useEffect(() => {
-    const loadPreference = async () => {
-      try {
-        const storedPreference = await AsyncStorage.getItem(
-          THEME_PREFERENCE_KEY
-        );
-        if (storedPreference !== null) {
-          setSelectedPreference(
-            storedPreference as "light" | "dark" | "system"
-          );
-        }
-      } catch (e) {
-        console.error("Failed to load theme preference.", e);
-      }
-    };
-    loadPreference();
-  }, []);
-
-  const handleSetPreference = async (
-    preference: "light" | "dark" | "system"
-  ) => {
-    setColorScheme(preference);
-    setSelectedPreference(preference);
-
-    try {
-      await AsyncStorage.setItem(THEME_PREFERENCE_KEY, preference);
-    } catch (e) {
-      console.error("Failed to save theme preference.", e);
-    }
-  };
+  const { colorScheme, selectedPreference, setTheme } = useTheme();
 
   return (
     <View className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg my-4">
@@ -49,7 +13,7 @@ export default function ThemeSelector() {
       <View className="flex-row justify-around">
         {/* Botón Claro */}
         <TouchableOpacity
-          onPress={() => handleSetPreference("light")}
+          onPress={() => setTheme("light")}
           className={`py-2 px-4 rounded ${
             selectedPreference === "light"
               ? "bg-blue-500"
@@ -69,7 +33,7 @@ export default function ThemeSelector() {
 
         {/* Botón Oscuro */}
         <TouchableOpacity
-          onPress={() => handleSetPreference("dark")}
+          onPress={() => setTheme("dark")}
           className={`py-2 px-4 rounded ${
             selectedPreference === "dark"
               ? "bg-blue-500"
@@ -89,7 +53,7 @@ export default function ThemeSelector() {
 
         {/* Botón Sistema */}
         <TouchableOpacity
-          onPress={() => handleSetPreference("system")}
+          onPress={() => setTheme("system")}
           className={`py-2 px-4 rounded ${
             selectedPreference === "system"
               ? "bg-blue-500"

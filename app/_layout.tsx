@@ -2,16 +2,25 @@ import { Stack } from "expo-router";
 import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import "../global.css";
+import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 
 export default function RootLayout() {
-  const { colorScheme } = useColorScheme();
+  return (
+    <ThemeProvider>
+      <RootLayoutNavigation />
+    </ThemeProvider>
+  );
+}
+
+function RootLayoutNavigation() {
+  const { colorScheme } = useTheme();
   const isDarkMode = colorScheme === "dark";
 
   const statusBarColor = isDarkMode ? "#171717" : "#ffffff";
   const statusBarStyle = isDarkMode ? "light" : "dark";
 
   return (
-    <View className={`flex-1 `}>
+    <View className={`flex-1`}>
       <Stack
         screenOptions={{
           contentStyle: {
