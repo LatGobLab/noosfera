@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import "../global.css";
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
