@@ -2,11 +2,14 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useColorScheme } from "nativewind";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { useLocationStore } from "@/src/stores/useLocationStore";
 
 export default function Home() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const router = useRouter();
+
+  const { latitude, longitude } = useLocationStore();
 
   const goToDetails = (id: string) => {
     router.push(`/(protected)/(stack)/details?id=${id}`);
@@ -18,7 +21,7 @@ export default function Home() {
       <ScrollView className="flex-1 p-4">
         <View className="mb-6">
           <Text className="text-3xl font-bold text-gray-900 dark:text-white">
-            Bienvenido
+            Bienvenido:
           </Text>
           <Text className="text-gray-600 dark:text-gray-400 mt-1">
             Explora tu dashboard y descubre nuevas posibilidades

@@ -1,15 +1,18 @@
 import supabase from "@/src/lib/supabase";
 import { useAuthStore } from "@/src/stores/useAuthStore";
+import { useLocationStore } from "@/src/stores/useLocationStore";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 
 export default function InitialScreen() {
   const setSession = useAuthStore((state) => state.setSession);
+  const refreshLocation = useLocationStore((state) => state.refreshLocation);
   const router = useRouter();
 
   useEffect(() => {
     checkUser();
+    refreshLocation();
   }, []);
 
   async function checkUser() {

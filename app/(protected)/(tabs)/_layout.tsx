@@ -15,7 +15,7 @@ export default function TabsLayout() {
       screenOptions={{
         tabBarStyle: {
           position: "absolute",
-          width: "70%",
+          width: "30%",
           bottom: 20,
           left: 20,
           right: 20,
@@ -76,43 +76,6 @@ export default function TabsLayout() {
               size={size}
               focused={focused}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="leaflet"
-        options={{
-          title: "Leaflet",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name="map"
-              color={color}
-              size={size}
-              focused={focused}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Perfil",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name="person"
-              color={color}
-              size={size}
-              focused={focused}
-            />
-          ),
-          headerRight: () => (
-            <Pressable className="mr-4" onPress={() => {}}>
-              <Ionicons
-                name="settings-outline"
-                size={24}
-                color={isDark ? "#ffffff" : "#000000"}
-              />
-            </Pressable>
           ),
         }}
       />

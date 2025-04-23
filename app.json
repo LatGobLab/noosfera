@@ -10,14 +10,19 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dant33.noosfera"
+      "bundleIdentifier": "com.latgoblab.noosfera",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Necesitamos acceso a tu ubicación para mejorar tu experiencia en la aplicación",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Necesitamos acceso a tu ubicación para mejorar tu experiencia en la aplicación"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.dant33.noosfera"
+      "package": "com.latgoblab.noosfera",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     },
     "web": {
       "bundler": "metro",
@@ -41,7 +46,13 @@
           "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir a Noosfera usar tu ubicación para mejorar tu experiencia."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
