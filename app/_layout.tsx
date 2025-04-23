@@ -2,12 +2,18 @@ import { Stack } from "expo-router";
 import { View } from "react-native";
 import "../global.css";
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
+import { QueryClientProvider } from "@tanstack/react-query";
+import queryClient from "@/src/services/queryClient";
+import { Platform, AppState } from "react-native";
+import * as Network from "expo-network";
 
 export default function RootLayout() {
   return (
-    <ThemeProvider>
-      <RootLayoutNavigation />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <RootLayoutNavigation />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
