@@ -25,7 +25,7 @@ export default function InitialScreen() {
       if (session) {
         router.replace("/(protected)/(tabs)");
       } else {
-        router.replace("/welcome");
+        router.replace("/(welcome)");
       }
 
       const {
@@ -35,14 +35,14 @@ export default function InitialScreen() {
         if (session) {
           router.replace("/(protected)/(tabs)");
         } else {
-          router.replace("/welcome");
+          router.replace("/(welcome)");
         }
       });
 
       return () => subscription.unsubscribe();
     } catch (error) {
       console.error("Error checking auth:", error);
-      router.replace("/welcome");
+      router.replace("/(welcome)");
     }
   }
 

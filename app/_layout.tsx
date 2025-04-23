@@ -4,8 +4,6 @@ import "../global.css";
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "@/src/services/queryClient";
-import { Platform, AppState } from "react-native";
-import * as Network from "expo-network";
 
 export default function RootLayout() {
   return (
@@ -43,57 +41,17 @@ function RootLayoutNavigation() {
           }}
         />
         <Stack.Screen
-          name="login"
-          options={{
-            headerShown: true,
-            headerBackTitle: "Volver",
-            headerTitleAlign: "center",
-
-            headerTitleStyle: {
-              fontSize: 22,
-            },
-            headerStyle: {
-              backgroundColor: isDarkMode ? "#171717" : "#ffffff",
-            },
-            headerShadowVisible: false,
-            headerTintColor: isDarkMode ? "#ffffff" : "#171717",
-            title: "Bienvenido de vuelta",
-            animation: "ios_from_right",
-            animationDuration: 200,
-            gestureEnabled: true,
-            animationTypeForReplace: "pop",
-          }}
-        />
-        <Stack.Screen
-          name="welcome"
-          options={{
-            headerShown: false,
-          }}
-        />
-
-        <Stack.Screen
           name="(protected)"
           options={{
             headerShown: false,
           }}
         />
+
         <Stack.Screen
-          name="register"
+          name="(welcome)"
           options={{
-            headerShown: true,
-            headerBackTitle: "Volver",
-            headerTransparent: true,
-            headerTintColor: isDarkMode ? "#ffffff" : "#171717",
-            title: "Registrate",
-            headerTitleAlign: "center",
-            headerTitleStyle: {
-              fontSize: 22,
-            },
-            headerShadowVisible: false,
-            animation: "ios_from_right",
-            animationDuration: 200,
-            gestureEnabled: true,
-            animationTypeForReplace: "pop",
+            headerShown: false,
+            presentation: "modal",
           }}
         />
       </Stack>
