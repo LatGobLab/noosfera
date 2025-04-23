@@ -80,7 +80,7 @@ export default function Auth() {
       passwordRef.current.blur();
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });

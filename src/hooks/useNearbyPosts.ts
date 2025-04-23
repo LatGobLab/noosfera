@@ -1,29 +1,24 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { supabase } from './supabaseClient'; // Tu instancia inicializada de Supabase
-import { useUserLocation } from './useUserLocation'; // Hook anterior
+import supabase from '@/src/lib/supabase'; 
+import { useLocationStore } from '@/src/stores/useLocationStore'; 
 
 const POSTS_PAGE_LIMIT = 10; // Cuántos posts cargar por página
 
-function useNearbyPosts() {
-  const { location, loading: locationLoading, errorMsg: locationError } = useUserLocation();
+export default function useNearbyPosts() {
+  const { latitude, longitude } = useLocationStore();
 
   const fetchPosts = async ({ pageParam = 0 }) => {
-    // No intentar buscar si no tenemos ubicación
-    if (!location) {
-        // Podrías lanzar un error o devolver un array vacío
-        // dependiendo de cómo quieras manejar este estado en la UI
-        // console.log("Esperando ubicación para buscar posts...");
+    if (!latitude || !longitude) {
         return { data: [], nextPage: undefined };
-        // throw new Error("Location not available yet.");
     }
 
     const offset = pageParam * POSTS_PAGE_LIMIT;
 
-    const { data, error } = await supabase.rpc('get_posts_nearby', {
-      user_lat: location.latitude,
-      user_lon: location.longitude,
+    const { data, error } = await supabase.rpc('get_reporte_nearby', {
+      user_lat: latitude,
+      user_lon: longitude,
       page_limit: POSTS_PAGE_LIMIT,
-      page_offset: offset,
+      page_offset: offset,  
     });
 
     if (error) {
@@ -32,24 +27,22 @@ function useNearbyPosts() {
     }
 
     return {
-      data: data || [], // Asegurar que siempre sea un array
+      data: data || [], 
       nextPage: data && data.length === POSTS_PAGE_LIMIT ? pageParam + 1 : undefined,
     };
   };
 
   const queryResult = useInfiniteQuery({
-    queryKey: ['nearbyPosts', location?.latitude, location?.longitude], // La key depende de la ubicación
+    initialPageParam: 0,
+    queryKey: ['nearbyPosts', latitude, longitude], 
     queryFn: fetchPosts,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    enabled: !!location && !locationLoading, // Solo activar la query cuando la ubicación esté lista
+    enabled: !!latitude && !!longitude, // Solo activar la query cuando la ubicación esté lista
     // staleTime: 5 * 60 * 1000, // Cachear por 5 minutos, por ejemplo
     // refetchOnWindowFocus: true, // Refrescar al volver a la app
   });
 
   return {
       ...queryResult,
-      // Exponer también el estado de la localización
-      locationLoading,
-      locationError
   };
 }

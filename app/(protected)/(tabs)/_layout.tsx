@@ -79,6 +79,29 @@ export default function TabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabBarIcon
+              name="person"
+              color={color}
+              size={size}
+              focused={focused}
+            />
+          ),
+          headerRight: () => (
+            <Pressable className="mr-4" onPress={() => {}}>
+              <Ionicons
+                name="settings-outline"
+                size={24}
+                color={isDark ? "#ffffff" : "#000000"}
+              />
+            </Pressable>
+          ),
+        }}
+      />
     </Tabs>
   );
 }
