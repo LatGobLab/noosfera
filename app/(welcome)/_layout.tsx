@@ -20,9 +20,10 @@ export default function StackLayout() {
       <Stack.Screen
         name="login"
         options={{
-          title: "Login",
+          title: "Bienvenido de nuevo",
           headerShown: true,
-          presentation: "card",
+          headerTransparent: true,
+          headerTitleAlign: "center",
         }}
       />
       <Stack.Screen
@@ -30,7 +31,8 @@ export default function StackLayout() {
         options={{
           title: "Register",
           headerShown: true,
-          presentation: "card",
+          headerTransparent: true,
+          headerTitleAlign: "center",
         }}
       />
       <Stack.Screen
