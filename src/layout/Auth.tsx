@@ -11,11 +11,10 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import supabase from "@/src/lib/supabase";
-import { useColorScheme } from "nativewind";
-import * as SystemUI from "expo-system-ui";
 import { router } from "expo-router";
 import { Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import GoogleSignInButton from "../components/Auth/GoogleSignInButton";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -29,15 +28,9 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { colorScheme } = useColorScheme();
   const [showPassword, setShowPassword] = useState(false);
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    const backgroundColor = colorScheme === "dark" ? "#1E1E1E" : "#FFFFFF";
-    SystemUI.setBackgroundColorAsync(backgroundColor);
-  }, [colorScheme]);
 
   // Verificar y gestionar la autenticación
   useEffect(() => {
@@ -91,7 +84,7 @@ export default function Auth() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1">
+      <View className="flex-1 bg-white dark:bg-neutral-900">
         <View className="flex-1 ">
           <View className="flex h-28 pt-14 justify-center items-center rounded-b-full">
             <Text className="text-black dark:text-white text-2xl text-center">
@@ -165,17 +158,7 @@ export default function Auth() {
             <View className="flex-1 justify-between ">
               <View className="space-y-3 gap-5">
                 {/* Google */}
-                <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto">
-                  <Image
-                    source={{
-                      uri: "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
-                    }}
-                    className="w-6 h-6 mr-2"
-                  />
-                  <Text className="text-black dark:text-white font-medium">
-                    Ingresa con Google
-                  </Text>
-                </TouchableOpacity>
+                <GoogleSignInButton />
 
                 {/* Facebook */}
                 <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto">
