@@ -90,9 +90,6 @@ export default function Login() {
     if (!password) {
       setPasswordError("La contraseña es obligatoria");
       isValid = false;
-    } else if (password.length < 6) {
-      setPasswordError("La contraseña debe tener al menos 6 caracteres");
-      isValid = false;
     }
 
     if (!isValid) {
@@ -174,14 +171,6 @@ export default function Login() {
                   onChangeText={(text) => {
                     setPassword(text);
                     if (text) {
-                      if (text.length < 6) {
-                        setPasswordError(
-                          "La contraseña debe tener al menos 6 caracteres"
-                        );
-                      } else {
-                        setPasswordError("");
-                      }
-                    } else {
                       setPasswordError("La contraseña es obligatoria");
                     }
                   }}
@@ -244,7 +233,7 @@ export default function Login() {
                 <GoogleSignInButton />
 
                 {/* Facebook */}
-                <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto">
+                {/* <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto">
                   <Image
                     source={{
                       uri: "https://cdn-icons-png.flaticon.com/512/5968/5968764.png",
@@ -254,13 +243,16 @@ export default function Login() {
                   <Text className="text-black dark:text-white font-medium">
                     Ingresa con Facebook
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 {/* Apple */}
                 <TouchableOpacity className="flex-row items-center justify-center bg-transparent border border-neutral-700 rounded-full h-14 w-11/12 mx-auto  ">
                   <Image
                     source={{
-                      uri: "https://cdn-icons-png.flaticon.com/512/0/747.png",
+                      uri:
+                        colorScheme === "dark"
+                          ? "https://www.iconsdb.com/icons/preview/white/apple-xxl.png"
+                          : "https://cdn-icons-png.flaticon.com/512/0/747.png",
                     }}
                     className="w-6 h-6 mr-2"
                   />
