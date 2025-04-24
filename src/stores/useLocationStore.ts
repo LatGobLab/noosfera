@@ -35,14 +35,9 @@ export const useLocationStore = create<LocationState>((set) => ({
       // let location = await Location.getLastKnownPositionAsync();
       
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
+        accuracy: Location.Accuracy.Low,
       });
 
-      // // Si no hay posición conocida, solicitarla
-      // if (!location) {
-
-      // }
-      
       set({ 
         latitude: location.coords.latitude, 
         longitude: location.coords.longitude,

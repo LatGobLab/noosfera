@@ -4,6 +4,9 @@ import "../global.css";
 import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "@/src/services/queryClient";
+import * as WebBrowser from "expo-web-browser";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function RootLayout() {
   return (
@@ -23,38 +26,36 @@ function RootLayoutNavigation() {
   const statusBarStyle = isDarkMode ? "light" : "dark";
 
   return (
-    <View className={`flex-1`}>
-      <Stack
-        screenOptions={{
-          contentStyle: {
-            backgroundColor: isDarkMode ? "#171717" : "#ffffff",
-          },
-          statusBarBackgroundColor: statusBarColor,
-          statusBarStyle: statusBarStyle,
-          statusBarHidden: false,
+    <Stack
+      screenOptions={{
+        contentStyle: {
+          backgroundColor: isDarkMode ? "#171717" : "#ffffff",
+        },
+        statusBarBackgroundColor: statusBarColor,
+        statusBarStyle: statusBarStyle,
+        statusBarHidden: false,
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          headerShown: false,
         }}
-      >
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="(protected)"
-          options={{
-            headerShown: false,
-          }}
-        />
+      />
+      <Stack.Screen
+        name="(protected)"
+        options={{
+          headerShown: false,
+        }}
+      />
 
-        <Stack.Screen
-          name="(welcome)"
-          options={{
-            headerShown: false,
-            presentation: "modal",
-          }}
-        />
-      </Stack>
-    </View>
+      <Stack.Screen
+        name="(welcome)"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+    </Stack>
   );
 }

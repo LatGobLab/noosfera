@@ -1,58 +1,71 @@
-// googleAuth.tsx
 import { Alert } from "react-native";
 import { router } from "expo-router";
-import supabase from "./supabase";
+import supabase from "./supabase"; 
 import * as Google from "expo-auth-session/providers/google";
+import { useEffect } from 'react';
+import * as AuthSession from 'expo-auth-session';
 
 export const useGoogleAuth = () => {
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
-    iosClientId: "",
-    // clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    // redirectUri: makeRedirectUri("http://localhost:8081"),
+
+  const redirectUri = AuthSession.makeRedirectUri({
+    scheme: 'com.latgoblab.noosfera',
   });
 
-  const signInWithGoogle = async (): Promise<{
-    success: boolean;
-    error?: string;
-  }> => {
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS,
+    // scopes: ['profile', 'email'],
+    redirectUri: redirectUri, 
+
+  });
+
+  useEffect(() => {
+    
+    const handleSignInWithToken = async () => {
+      if (response?.type === 'success') {
+        const { id_token } = response.params; 
+        if (id_token) {
+          const { data, error } = await supabase.auth.signInWithIdToken({
+            provider: 'google',
+            token: id_token,
+            // access_token: response.authentication?.accessToken // Opcional, si necesitas el access token también
+          });
+
+          if (error) {
+            console.error("Supabase signInWithIdToken error:", error);
+            Alert.alert("Error Supabase", `No se pudo iniciar sesión con Google: ${error.message}`);
+          } else if (data.session) {
+            console.log("Supabase session established:", data.session.user.email);
+             router.replace("/(protected)/(tabs)"); 
+          } else {
+             Alert.alert("Error Supabase", "Inicio de sesión con Google exitoso, pero no se obtuvo sesión de Supabase.");
+          }
+        } else {
+          Alert.alert("Error Google Auth", "No se recibió el ID Token de Google después de la autenticación.");
+        }
+      } else if (response?.type === 'error') {
+        console.error("Google Auth Error:", response.error);
+        Alert.alert("Error Google Auth", response.error?.message || "Ocurrió un error durante la autenticación con Google.");
+      } else if (response?.type === 'cancel' || response?.type === 'dismiss') {
+        console.log("Autenticación con Google cancelada por el usuario.");
+      }
+    };
+
+    handleSignInWithToken();
+  }, [response]);
+
+  const signInWithGoogle = async () => {
     try {
-      // First initiate the Google authentication flow
-      const result = await promptAsync();
-      if (result.type !== 'success') {
-        return { success: false, error: "Autenticación de Google cancelada" };
-      }
-
-      // Then sign in with Supabase using the Google provider
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-      });
-
-      if (error) {
-        Alert.alert("Error al iniciar sesión", error.message);
-        return { success: false, error: error.message };
-      }
-
-      // Check if the sign-in was successful
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        router.replace("/(protected)");
-        return { success: true };
-      }
-
-      return { success: false, error: "No se pudo iniciar sesión" };
+      await promptAsync(); 
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Error desconocido";
-      Alert.alert("Error inesperado", errorMessage);
-      return { success: false, error: errorMessage };
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido al iniciar Google Auth";
+        console.error("Error calling promptAsync:", error);
+        Alert.alert("Error inesperado", errorMessage);
     }
   };
 
   return {
-    request,
-    response,
-    signInWithGoogle
+    isAuthenticating: !!request && !response,
+    signInWithGoogle 
   };
 };
-
