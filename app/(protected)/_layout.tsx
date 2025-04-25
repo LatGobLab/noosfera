@@ -9,7 +9,7 @@ export default function ProtectedLayout() {
 
   useEffect(() => {
     if (!session) {
-      router.replace("/(welcome)");
+      router.replace("/(auth)");
     }
   }, [session]);
 

@@ -22,7 +22,7 @@ export default function InitialScreen() {
         await Promise.all([checkUser(), refreshLocation()]);
       } catch (error) {
         console.error("Error during app initialization:", error);
-        router.replace("/(welcome)");
+        router.replace("/(auth)");
       } finally {
         // Mark the app as ready
         setIsAppReady(true);
@@ -44,7 +44,7 @@ export default function InitialScreen() {
       if (session) {
         router.replace("/(protected)/(tabs)");
       } else {
-        router.replace("/(welcome)");
+        router.replace("/(auth)");
       }
 
       const {
@@ -54,14 +54,14 @@ export default function InitialScreen() {
         if (session) {
           router.replace("/(protected)/(tabs)");
         } else {
-          router.replace("/(welcome)");
+          router.replace("/(auth)");
         }
       });
 
       return () => subscription.unsubscribe();
     } catch (error) {
       console.error("Error checking auth:", error);
-      router.replace("/(welcome)");
+      router.replace("/(auth)");
     }
   }
 

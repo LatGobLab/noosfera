@@ -6,8 +6,6 @@ import queryClient from "@/src/services/queryClient";
 import * as WebBrowser from "expo-web-browser";
 import { useColorScheme } from "nativewind";
 
-WebBrowser.maybeCompleteAuthSession();
-
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -50,7 +48,7 @@ function RootLayoutNavigation() {
       />
 
       <Stack.Screen
-        name="(welcome)"
+        name="(auth)"
         options={{
           headerShown: false,
           presentation: "modal",
