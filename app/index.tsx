@@ -2,8 +2,7 @@ import supabase from "@/src/lib/supabase";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import { useLocationStore } from "@/src/stores/useLocationStore";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 
@@ -46,7 +45,7 @@ export default function InitialScreen() {
       if (session) {
         // If we have a session, also load the user profile
         await refreshProfile();
-        router.replace("/(protected)/(tabs)");
+        router.replace("/(protected)");
       } else {
         router.replace("/(auth)");
       }
@@ -56,7 +55,7 @@ export default function InitialScreen() {
       } = supabase.auth.onAuthStateChange((_event, session) => {
         setSession(session);
         if (session) {
-          router.replace("/(protected)/(tabs)");
+          router.replace("/(protected)");
         } else {
           router.replace("/(auth)");
         }

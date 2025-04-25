@@ -36,7 +36,7 @@ export const useGoogleAuth = () => {
             Alert.alert("Error Supabase", `No se pudo iniciar sesión con Google: ${error.message}`);
           } else if (data.session) {
             console.log("Supabase session established:", data.session.user.email);
-             router.replace("/(protected)/(tabs)"); 
+             router.replace("/(protected)"); 
           } else {
              Alert.alert("Error Supabase", "Inicio de sesión con Google exitoso, pero no se obtuvo sesión de Supabase.");
           }
