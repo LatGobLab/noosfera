@@ -1,5 +1,4 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import ThemeSelector from "@/src/components/ThemeSelector";
@@ -22,7 +21,6 @@ export default function ProfileScreen() {
   };
   return (
     <View className="flex-1 bg-white dark:bg-gray-900">
-      <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView className="flex-1">
         {/* Profile Header */}
         <View className="items-center py-8 bg-blue-50 dark:bg-blue-900/20">

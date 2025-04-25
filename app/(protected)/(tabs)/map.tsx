@@ -1,6 +1,5 @@
 import MapView, { Marker, PROVIDER_GOOGLE, UrlTile } from "react-native-maps";
 import { View, StyleSheet } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { useTheme } from "@/src/context/ThemeContext";
 
 function MapScreen() {
@@ -26,7 +25,6 @@ function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style={isDark ? "light" : "dark"} />
       <MapView
         style={styles.map}
         initialRegion={initialRegion}
