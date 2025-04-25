@@ -1,38 +1,83 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import ThemeSelector from "@/src/components/ThemeSelector";
 import { router } from "expo-router";
 import supabase from "@/src/lib/supabase";
 import { useTheme } from "@/src/context/ThemeContext";
+import { useUserProfile } from "@/src/hooks/useUserProfile";
 
 export default function ProfileScreen() {
   const session = useAuthStore((state) => state.session);
+  const { profile, isLoading, error, refreshProfile } = useUserProfile();
   const { colorScheme } = useTheme();
   const isDark = colorScheme === "dark";
 
   const userEmail = session?.user?.email || "usuario@ejemplo.com";
-  const userName = userEmail.split("@")[0] || "Usuario";
+  const userName = profile?.username || userEmail.split("@")[0] || "Usuario";
   const signOut = useAuthStore((state) => state.signOut);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     signOut();
   };
+
+  console.log(profile);
   return (
     <View className="flex-1 bg-white dark:bg-gray-900">
       <ScrollView className="flex-1">
         {/* Profile Header */}
         <View className="items-center py-8 bg-blue-50 dark:bg-blue-900/20">
-          <View className="h-24 w-24 rounded-full bg-blue-200 dark:bg-blue-800 items-center justify-center mb-3">
-            <Text className="text-3xl text-blue-600 dark:text-blue-300">
-              {userName.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-          <Text className="text-2xl font-bold text-gray-900 dark:text-white">
-            {userName}
-          </Text>
-          <Text className="text-gray-600 dark:text-gray-400">{userEmail}</Text>
+          {isLoading ? (
+            <ActivityIndicator
+              size="large"
+              color={isDark ? "#60a5fa" : "#3b82f6"}
+            />
+          ) : (
+            <>
+              <View className="h-24 w-24 rounded-full bg-blue-200 dark:bg-blue-800 items-center justify-center mb-3">
+                {profile?.avatar_url ? (
+                  <Image
+                    source={{ uri: profile.avatar_url }}
+                    className="h-24 w-24 rounded-full"
+                  />
+                ) : (
+                  <Text className="text-3xl text-blue-600 dark:text-blue-300">
+                    {userName.charAt(0).toUpperCase()}
+                  </Text>
+                )}
+              </View>
+              <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                {userName}
+              </Text>
+              <Text className="text-gray-600 dark:text-gray-400">
+                {userEmail}
+              </Text>
+              {profile?.avatar_url && (
+                <Text className="text-blue-500 dark:text-blue-400 mt-1">
+                  {profile.avatar_url}
+                </Text>
+              )}
+              <TouchableOpacity
+                className="mt-3 p-2 bg-blue-100 dark:bg-blue-900 rounded-full"
+                onPress={refreshProfile}
+              >
+                <Ionicons
+                  name="refresh"
+                  size={18}
+                  color={isDark ? "#60a5fa" : "#3b82f6"}
+                />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
         {/* Profile Options */}

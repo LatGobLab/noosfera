@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
+import { useUserProfile } from "@/src/hooks/useUserProfile";
 
 // Prevent the splash screen from automatically hiding
 SplashScreen.preventAutoHideAsync();
@@ -12,6 +13,7 @@ SplashScreen.preventAutoHideAsync();
 export default function InitialScreen() {
   const setSession = useAuthStore((state) => state.setSession);
   const refreshLocation = useLocationStore((state) => state.refreshLocation);
+  const { refreshProfile } = useUserProfile();
   const router = useRouter();
   const [isAppReady, setIsAppReady] = useState(false);
 
@@ -42,6 +44,8 @@ export default function InitialScreen() {
       setSession(session);
 
       if (session) {
+        // If we have a session, also load the user profile
+        await refreshProfile();
         router.replace("/(protected)/(tabs)");
       } else {
         router.replace("/(auth)");
