@@ -31,19 +31,43 @@ export const useLocationStore = create<LocationState>((set) => ({
         }
       }
       
-      // Intentar obtener la última posición conocida primero (más rápido)
-      // let location = await Location.getLastKnownPositionAsync();
+      // Primero intentar obtener la última posición conocida (mucho más rápido)
+      let location = await Location.getLastKnownPositionAsync();
       
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Low,
-      });
-
-      set({ 
-        latitude: location.coords.latitude, 
-        longitude: location.coords.longitude,
-        errorMsg: null,
-        isLoading: false
-      });
+      if (location) {
+        // Si hay una ubicación conocida, actualizamos inmediatamente
+        set({ 
+          latitude: location.coords.latitude, 
+          longitude: location.coords.longitude,
+          isLoading: false 
+        });
+      } else {
+        // Si no hay ubicación conocida, usar getCurrentPosition con un timeout
+        const locationPromise = Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Lowest, // Usar la precisión más baja para mayor velocidad
+        });
+        
+        // Establecer un timeout de 5 segundos para no esperar demasiado
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Timeout obteniendo ubicación')), 5000);
+        });
+        
+        try {
+          location = await Promise.race([locationPromise, timeoutPromise]) as Location.LocationObject;
+          set({ 
+            latitude: location.coords.latitude, 
+            longitude: location.coords.longitude,
+            errorMsg: null,
+            isLoading: false
+          });
+        } catch (timeoutError) {
+          console.warn('Timeout al obtener ubicación precisa');
+          // Si ya tenemos una ubicación anterior, mantenemos esa
+          if (!location) {
+            set({ errorMsg: 'Tiempo de espera agotado', isLoading: false });
+          }
+        }
+      }
     } catch (error) {
       set({ 
         errorMsg: 'Error al obtener la ubicación', 
