@@ -50,13 +50,6 @@
         }
       ],
       [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
-        }
-      ],
-      "expo-secure-store",
-      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Permitir a Noosfera usar tu ubicación para mejorar tu experiencia."

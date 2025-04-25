@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { useRouter, Redirect } from "expo-router";
+import { useRouter } from "expo-router";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 
 export default function ProtectedLayout() {
