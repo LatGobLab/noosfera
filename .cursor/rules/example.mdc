@@ -1,0 +1,109 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
+globs: 
+---
+## 1. Descripción General del Proyecto
+
+Este proyecto es una aplicación móvil desarrollada con Expo (React Native). Se enfoca en un rendimiento óptimo y sigue una arquitectura modular.
+
+**Tecnologías Principales:**
+
+* **Framework:** Expo (React Native)
+* **Navegación:** Expo Router (basada en archivos, en `app/`)
+* **Base de Datos / Backend:** Supabase
+* **Gestión de Datos (Fetching/Caching):** React Query (`@tanstack/react-query`)
+* **Almacenamiento Local:** MMKV (`react-native-mmkv`)
+* **Gestión de Estado Global:** Zustand
+* **Estilos:** NativeWind (Tailwind CSS para React Native)
+* **Theming:** Soporte para modo claro y oscuro (integrado con NativeWind)
+* **Lenguaje:** TypeScript (Asumir uso de TypeScript para tipado estático)
+
+**Prioridad:** El **rendimiento** es clave. Optimizar re-renders, usar memoización (`React.memo`, `useCallback`) cuando sea apropiado y asegurar un buen rendimiento en listas (`FlashList`).
+
+## 2. Estructura del Proyecto
+
+Sigue estrictamente esta estructura de carpetas:
+
+* `app/`: **Exclusivamente** para archivos de rutas y layouts de Expo Router.
+    * `(tabs)/`: Ejemplo de grupo de rutas para navegación por pestañas.
+    * `_layout.tsx`: Layout raíz o de grupo.
+    * `index.tsx`: Pantalla principal de una ruta.
+    * `[param].tsx`: Rutas dinámicas.
+    * `modal.tsx`: Rutas modales.
+* `src/`: Contiene toda la lógica de la aplicación, UI y funcionalidades.
+    * `components/`: Componentes de UI reutilizables (átomos, moléculas, organismos). Deben ser lo más genéricos posible.
+    * `constants/`: Constantes globales (claves de API, configuraciones, etc.).
+    * `contexts/`: Proveedores de React Context (usar con moderación, preferir Zustand para estado global). 
+    * `hooks/`: Hooks personalizados de React (ej: `useAuth`, `useDebounce`, `usePermissions`).
+    * `lib/`: Funciones de utilidad genéricas, helpers, configuración de clientes (ej: Supabase client), instancias de MMKV.
+    * `navigators/`: (Opcional) Si se necesita alguna configuración compleja de navegación que no encaje directamente en `app/`.
+    * `screens/`: (Opcional, preferir poner UI compleja directamente en `app/`) Podría usarse para componentes de pantalla completos si se vuelven muy complejos.
+    * `services/`: Lógica de interacción con APIs externas (Supabase). Aquí se definirán las funciones que usan React Query (`useQuery`, `useMutation`).
+    * `stores/`: Stores de Zustand para el estado global. Cada store en su propio archivo (ej: `userStore.ts`, `settingsStore.ts`).
+    * `types/` o `interfaces/`: Definiciones de tipos e interfaces de TypeScript compartidas.
+
+## 3. Navegación (Expo Router)
+
+* Utiliza la navegación basada en archivos dentro de la carpeta `app/`.
+* Usa `<Link href="...">` para la navegación declarativa.
+* Usa el hook `useRouter` (`router.push`, `router.replace`, `router.back`) para navegación programática.
+* Define layouts (`_layout.tsx`) para estructuras de UI compartidas (ej: headers, tab bars).
+* Usa grupos (`(folder)`) para organizar rutas sin afectar la URL.
+
+## 4. Gestión de Datos (React Query + Supabase)
+
+* **NUNCA** hagas fetch de datos directamente en los componentes.
+* Define **hooks personalizados** en `src/services/` o `src/hooks/` que encapsulen la lógica de React Query.
+    * Ejemplo: `useGetUserData(userId)` que internamente use `useQuery`.
+    * Ejemplo: `useUpdateUserProfile()` que internamente use `useMutation`.
+* Usa claves de query (`queryKey`) descriptivas y bien estructuradas para un caching eficiente.
+* Inicializa el cliente de Supabase en `src/lib/supabaseClient.ts` y úsalo dentro de las funciones de query/mutation.
+* Maneja estados de carga (`isLoading`), error (`isError`, `error`) y éxito (`isSuccess`, `data`) proporcionados por React Query en los componentes de UI.
+
+## 5. Estado Global (Zustand)
+
+* Define stores en `src/stores/` (ej: `src/stores/authStore.ts`).
+* Crea stores simples con el estado y las acciones necesarias.
+* Accede al estado y acciones en los componentes usando el hook generado por `create` (ej: `const { user, login } = useAuthStore();`).
+* Prefiere Zustand sobre React Context para el estado global compartido entre muchas partes de la aplicación. Usa Context para estado muy específico y localizado si es necesario.
+
+## 6. Almacenamiento Local (MMKV)
+
+* Usa `storage.set('key', value)`, `storage.getString('key')`, `storage.getNumber('key')`, etc., para guardar y recuperar datos.
+* Asegúrate de manejar los tipos de datos correctamente (strings, números, booleanos).
+
+## 7. Estilos (NativeWind)
+
+* Usa clases de Tailwind directamente en el prop `className` de los componentes de React Native (`View`, `Text`, `Pressable`, etc.).
+    ```jsx
+    <View className="p-4 bg-blue-500 dark:bg-blue-800 rounded-lg">
+      <Text className="text-white font-bold">Hola Mundo</Text>
+    </View>
+    ```
+* Configuracion personalizada en `tailwind.config.js` para temas personalizados (colores, fuentes, espaciado).
+* Utiliza los prefijos de variantes como `dark:`, `hover:`, `focus:`, `active:` según sea necesario.
+
+## 8. Theming (Modo Claro/Oscuro)
+
+* Usa el hook `useColorScheme` de o `nativewind` para detectar el tema del usuario.
+
+## 9. Rendimiento
+
+* **Memoización:** Usa `React.memo` en componentes funcionales que puedan recibir las mismas props repetidamente.
+* **Callbacks:** Usa `useCallback` para funciones que se pasan como props a componentes memoizados o como dependencias de efectos.
+* **Listas:** Utiliza `FlashList`
+* **Estado:** Evita colocar estado innecesario en el scope global (Zustand). Mantén el estado lo más local posible. Zustand ayuda a evitar re-renders innecesarios mediante la selección de estado (`useStore(state => state.value)`).
+
+## 10. Código y Convenciones
+
+* Escribe código limpio, legible y mantenible.
+* Usa TypeScript para todo el código, definiendo tipos claros para props, estado y datos de API.
+* Divide los componentes y hooks en archivos pequeños y enfocados.
+* Añade comentarios JSDoc o TSDoc para explicar lógica compleja o props de componentes.
+* Sigue las convenciones estándar de React y React Native.
+* Instala librerías adicionales si son necesarias para cumplir los requisitos, pero siempre considera su impacto en el rendimiento y el tamaño del bundle.
