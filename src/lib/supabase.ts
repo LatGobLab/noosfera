@@ -1,12 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
 import * as aesjs from 'aes-js';
 import 'react-native-get-random-values';
+import { MMKV } from "react-native-mmkv";
+
+const storage = new MMKV();
 
 // As Expo's SecureStore does not support values larger than 2048
 // bytes, an AES-256 key is generated and stored in SecureStore, while
-// it is used to encrypt/decrypt values stored in AsyncStorage.
+// it is used to encrypt/decrypt values stored in MMKV.
 class LargeSecureStore {
   private async _encrypt(key: string, value: string) {
     const encryptionKey = crypto.getRandomValues(new Uint8Array(256 / 8));
@@ -31,22 +33,22 @@ class LargeSecureStore {
     return aesjs.utils.utf8.fromBytes(decryptedBytes);
   }
 
-  async getItem(key: string) {
-    const encrypted = await AsyncStorage.getItem(key);
-    if (!encrypted) { return encrypted; }
+  async getItem(key: string): Promise<string | null> {
+    const encrypted = storage.getString(key);
+    if (!encrypted) { return null; }
 
     return await this._decrypt(key, encrypted);
   }
 
   async removeItem(key: string) {
-    await AsyncStorage.removeItem(key);
+    storage.delete(key);
     await SecureStore.deleteItemAsync(key);
   }
 
   async setItem(key: string, value: string) {
     const encrypted = await this._encrypt(key, value);
 
-    await AsyncStorage.setItem(key, encrypted);
+    storage.set(key, encrypted);
   }
 }
 

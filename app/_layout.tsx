@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
-import { View } from "react-native";
 import "../global.css";
-import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
+import { ThemeProvider } from "@/src/context/ThemeContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "@/src/services/queryClient";
 import * as WebBrowser from "expo-web-browser";
+import { useColorScheme } from "nativewind";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -19,7 +19,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNavigation() {
-  const { colorScheme } = useTheme();
+  const { colorScheme } = useColorScheme();
   const isDarkMode = colorScheme === "dark";
 
   const statusBarColor = isDarkMode ? "#171717" : "#ffffff";
@@ -29,7 +29,7 @@ function RootLayoutNavigation() {
     <Stack
       screenOptions={{
         contentStyle: {
-          backgroundColor: isDarkMode ? "#171717" : "#ffffff",
+          backgroundColor: isDarkMode ? "#ffffff" : "#ffffff",
         },
         statusBarBackgroundColor: statusBarColor,
         statusBarStyle: statusBarStyle,

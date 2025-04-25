@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect } from "react";
 import { useColorScheme } from "nativewind";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MMKV } from "react-native-mmkv";
 
-const THEME_PREFERENCE_KEY = "@MyApp:themePreference";
+const storage = new MMKV();
+const THEME_PREFERENCE_KEY = "themePreference";
 
 type ThemeContextType = {
   colorScheme: "light" | "dark" | undefined;
@@ -20,12 +21,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Carga la preferencia de tema al iniciar la app
-    const loadThemePreference = async () => {
+    const loadThemePreference = () => {
       try {
-        const storedPreference = await AsyncStorage.getItem(
-          THEME_PREFERENCE_KEY
-        );
-        if (storedPreference !== null) {
+        const storedPreference = storage.getString(THEME_PREFERENCE_KEY);
+        if (storedPreference !== undefined) {
           const preference = storedPreference as "light" | "dark" | "system";
           setSelectedPreference(preference);
           setColorScheme(preference);
@@ -38,12 +37,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     loadThemePreference();
   }, []);
 
-  const setTheme = async (theme: "light" | "dark" | "system") => {
+  const setTheme = (theme: "light" | "dark" | "system") => {
     setColorScheme(theme);
     setSelectedPreference(theme);
 
     try {
-      await AsyncStorage.setItem(THEME_PREFERENCE_KEY, theme);
+      storage.set(THEME_PREFERENCE_KEY, theme);
     } catch (e) {
       console.error("Failed to save theme preference.", e);
     }

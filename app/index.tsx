@@ -46,9 +46,5 @@ export default function InitialScreen() {
     }
   }
 
-  return (
-    <View className="flex-1 items-center justify-center bg-white dark:bg-[#1E1E1E]">
-      <ActivityIndicator size="large" />
-    </View>
-  );
+  return null;
 }
