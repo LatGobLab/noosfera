@@ -15,6 +15,9 @@ import supabase from "@/src/lib/supabase";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import { UserProfile } from "@/src/stores/useUserProfileStore";
 import { userProfileStorage, PROFILE_STORAGE_KEY } from "@/src/lib/mmkvStorage";
+import { useColorScheme } from "nativewind";
+import AvatarPicker from "@/src/components/Profile/AvatarPicker";
+import * as ImagePicker from "expo-image-picker";
 
 export default function CompleteProfileScreen() {
   const { profile, refreshProfile } = useUserProfile();
@@ -26,6 +29,14 @@ export default function CompleteProfileScreen() {
   const [formError, setFormError] = useState("");
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
+  const { colorScheme } = useColorScheme();
+
+  // Avatar related state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    profile?.avatar_url || null
+  );
+  const [localAvatarUri, setLocalAvatarUri] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const fullNameRef = useRef<TextInput>(null);
   const usernameRef = useRef<TextInput>(null);
@@ -73,6 +84,56 @@ export default function CompleteProfileScreen() {
     return true;
   };
 
+  // Function to handle avatar upload to Supabase
+  const uploadAvatarToSupabase = async (uri: string) => {
+    if (!session?.user) {
+      Alert.alert("Error", "No hay sesión activa");
+      return null;
+    }
+
+    try {
+      setIsUploadingAvatar(true);
+
+      // Convert the local URI to a binary ArrayBuffer
+      const arrayBuffer = await fetch(uri).then((res) => res.arrayBuffer());
+
+      // Get file extension from URI
+      const fileExt = uri.split(".").pop()?.toLowerCase() ?? "jpeg";
+
+      // Create a unique filename
+      const path = `${session.user.id}_${Date.now()}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { data, error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, arrayBuffer, {
+          contentType: `image/${fileExt}`,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(path);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      Alert.alert("Error", "No se pudo subir la imagen. Inténtalo de nuevo.");
+      return null;
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  // Handle avatar selection from AvatarPicker
+  const handleAvatarSelect = (uri: string | null) => {
+    setLocalAvatarUri(uri);
+  };
+
   const handleSubmit = async () => {
     Keyboard.dismiss();
 
@@ -97,12 +158,19 @@ export default function CompleteProfileScreen() {
     try {
       setIsSubmitting(true);
 
+      // Upload avatar if a new one has been selected
+      let finalAvatarUrl = avatarUrl;
+      if (localAvatarUri) {
+        finalAvatarUrl = await uploadAvatarToSupabase(localAvatarUri);
+      }
+
       // Update the profile in Supabase
       const { error } = await supabase
         .from("profiles")
         .update({
           username,
           full_name: fullName,
+          avatar_url: finalAvatarUrl,
         })
         .eq("id", session.user.id);
 
@@ -116,6 +184,7 @@ export default function CompleteProfileScreen() {
         id: session.user.id,
         username,
         full_name: fullName,
+        avatar_url: finalAvatarUrl,
       };
 
       // Save to MMKV storage
@@ -145,6 +214,16 @@ export default function CompleteProfileScreen() {
         <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center pt-5 mb-8">
           Completa tu perfil
         </Text>
+
+        {/* Avatar Picker */}
+        <View className="flex items-center justify-center mb-6">
+          <AvatarPicker
+            currentAvatarUrl={avatarUrl}
+            onAvatarSelect={handleAvatarSelect}
+            size={120}
+            uploading={isUploadingAvatar}
+          />
+        </View>
 
         <View className="space-y-4 mt-4">
           {/* Nombre completo */}
@@ -222,12 +301,14 @@ export default function CompleteProfileScreen() {
           {/* Botón de enviar */}
           <TouchableOpacity
             className={`${
-              isSubmitting ? "bg-gray-500" : "bg-black dark:bg-white"
+              isSubmitting || isUploadingAvatar
+                ? "bg-gray-500"
+                : "bg-black dark:bg-white"
             } rounded-2xl h-12 flex items-center justify-center mt-8 w-5/6 mx-auto`}
             onPress={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isUploadingAvatar}
           >
-            {isSubmitting ? (
+            {isSubmitting || isUploadingAvatar ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
               <Text className="text-white dark:text-black font-semibold text-lg">
