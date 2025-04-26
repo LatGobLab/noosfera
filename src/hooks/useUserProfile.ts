@@ -3,7 +3,7 @@ import { useUserProfileStore } from '@/src/stores/useUserProfileStore';
 import { useAuthStore } from '@/src/stores/useAuthStore';
 import { userProfileStorage, PROFILE_STORAGE_KEY } from '@/src/lib/mmkvStorage';
 import supabase from '@/src/lib/supabase';
-import { UserProfile } from '@/src/Types/user';
+import { UserProfile } from '@/src/types/user';
 
 export function useUserProfile() {
   const session = useAuthStore((state) => state.session);

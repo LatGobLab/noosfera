@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 import supabase from "@/src/lib/supabase";
 import { useAuthStore } from "@/src/stores/useAuthStore";
-import { UserProfile } from "@/src/Types/user";
+import { UserProfile } from "@/src/types/user";
 import { userProfileStorage, PROFILE_STORAGE_KEY } from "@/src/lib/mmkvStorage";
 import { useColorScheme } from "nativewind";
 import AvatarPicker from "@/src/components/Profile/AvatarPicker";
