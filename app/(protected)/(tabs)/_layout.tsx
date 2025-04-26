@@ -1,9 +1,10 @@
 import { Tabs, useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, View } from "react-native";
+import { Pressable, View, Text, ActivityIndicator } from "react-native";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 import { useEffect } from "react";
+import { Image } from "expo-image";
 
 type IconName = "home" | "map" | "person" | "settings-outline";
 
@@ -18,6 +19,12 @@ export default function TabsLayout() {
       router.replace("/(protected)/complete-profile");
     }
   }, [profile, isLoading]);
+
+  const handleProfilePress = () => {
+    router.push("/(protected)/(stack)/profile");
+  };
+
+  const image = profile?.avatar_url ? profile.avatar_url : null;
 
   return (
     <Tabs
@@ -63,7 +70,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Inicio",
+          title: "Feed",
           tabBarIcon: ({ color, size, focused }) => (
             <TabBarIcon
               name="home"
@@ -71,6 +78,34 @@ export default function TabsLayout() {
               size={size}
               focused={focused}
             />
+          ),
+          headerRight: () => (
+            <View className="">
+              {isLoading ? (
+                <ActivityIndicator size="large" color={"#3b82f6"} />
+              ) : profile?.avatar_url ? (
+                <Pressable onPress={handleProfilePress}>
+                  <Image
+                    source={{ uri: profile.avatar_url }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 50,
+                      marginRight: 10,
+                    }}
+                    contentFit="cover"
+                  />
+                </Pressable>
+              ) : (
+                <View className="h-24 w-24 rounded-full bg-gray-300 items-center justify-center">
+                  <Ionicons
+                    name="person"
+                    size={20}
+                    color={isDark ? "#171717" : "#666666"}
+                  />
+                </View>
+              )}
+            </View>
           ),
         }}
       />
@@ -85,29 +120,6 @@ export default function TabsLayout() {
               size={size}
               focused={focused}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Perfil",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name="person"
-              color={color}
-              size={size}
-              focused={focused}
-            />
-          ),
-          headerRight: () => (
-            <Pressable className="mr-4" onPress={() => {}}>
-              <Ionicons
-                name="settings-outline"
-                size={24}
-                color={isDark ? "#ffffff" : "#000000"}
-              />
-            </Pressable>
           ),
         }}
       />

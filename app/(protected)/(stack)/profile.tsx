@@ -30,7 +30,6 @@ export default function ProfileScreen() {
     signOut();
   };
 
-  console.log(profile);
   return (
     <View className="flex-1 bg-white dark:bg-gray-900">
       <ScrollView className="flex-1">
@@ -61,9 +60,9 @@ export default function ProfileScreen() {
               <Text className="text-gray-600 dark:text-gray-400">
                 {userEmail}
               </Text>
-              {profile?.avatar_url && (
+              {profile?.full_name && (
                 <Text className="text-blue-500 dark:text-blue-400 mt-1">
-                  {profile.avatar_url}
+                  {profile.full_name}
                 </Text>
               )}
               <TouchableOpacity

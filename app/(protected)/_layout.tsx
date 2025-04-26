@@ -2,12 +2,15 @@ import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
-import { BackHandler } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { useColorScheme } from "nativewind";
 
 export default function ProtectedLayout() {
   const session = useAuthStore((state) => state.session);
-  const { profile, isLoading } = useUserProfile();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const backgroundColor = isDark ? "#171717" : "#ffffff";
 
   useEffect(() => {
     if (!session) {
@@ -17,18 +20,30 @@ export default function ProtectedLayout() {
   }, [session]);
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(stack)" options={{ presentation: "modal" }} />
-      <Stack.Screen
-        name="complete-profile"
-        options={{
+    <View style={[styles.container, { backgroundColor }]}>
+      <Stack
+        screenOptions={{
           headerShown: false,
-          headerBackVisible: false,
-          gestureEnabled: false,
         }}
-      />
-      <Stack.Screen name="index" redirect={true} />
-    </Stack>
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(stack)" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="complete-profile"
+          options={{
+            headerShown: false,
+            headerBackVisible: false,
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen name="index" redirect={true} />
+      </Stack>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

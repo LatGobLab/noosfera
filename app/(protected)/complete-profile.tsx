@@ -17,7 +17,6 @@ import { UserProfile } from "@/src/stores/useUserProfileStore";
 import { userProfileStorage, PROFILE_STORAGE_KEY } from "@/src/lib/mmkvStorage";
 import { useColorScheme } from "nativewind";
 import AvatarPicker from "@/src/components/Profile/AvatarPicker";
-import * as ImagePicker from "expo-image-picker";
 
 export default function CompleteProfileScreen() {
   const { profile, refreshProfile } = useUserProfile();
