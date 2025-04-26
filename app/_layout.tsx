@@ -3,7 +3,6 @@ import "../global.css";
 import { ThemeProvider } from "@/src/context/ThemeContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "@/src/services/queryClient";
-import * as WebBrowser from "expo-web-browser";
 import { useColorScheme } from "nativewind";
 
 export default function RootLayout() {

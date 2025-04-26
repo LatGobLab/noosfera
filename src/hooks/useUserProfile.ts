@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { useUserProfileStore, UserProfile } from '@/src/stores/useUserProfileStore';
+import { useUserProfileStore } from '@/src/stores/useUserProfileStore';
 import { useAuthStore } from '@/src/stores/useAuthStore';
 import { userProfileStorage, PROFILE_STORAGE_KEY } from '@/src/lib/mmkvStorage';
 import supabase from '@/src/lib/supabase';
+import { UserProfile } from '@/src/Types/user';
 
 export function useUserProfile() {
   const session = useAuthStore((state) => state.session);
@@ -48,7 +49,6 @@ export function useUserProfile() {
         .eq('id', session.user.id)
         .single();
       
-      console.log("Solicitud de perfil de usuario:", data);
       if (supabaseError && status !== 406) {
         throw supabaseError;
       }

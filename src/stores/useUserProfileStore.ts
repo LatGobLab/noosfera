@@ -1,11 +1,6 @@
 import { create } from 'zustand';
+import { UserProfile } from '../Types/user';
 
-export interface UserProfile {
-  id: string;
-  username: string | null;
-  full_name: string | null;
-  avatar_url: string | null;
-}
 
 interface UserProfileState {
   profile: UserProfile | null;
