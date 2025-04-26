@@ -1,8 +1,8 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
-import { useRouter } from "expo-router";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
+import { BackHandler } from "react-native";
 
 export default function ProtectedLayout() {
   const session = useAuthStore((state) => state.session);
@@ -14,11 +14,7 @@ export default function ProtectedLayout() {
       router.replace("/(auth)");
       return;
     }
-
-    if (!isLoading && profile && profile.username === null) {
-      router.push("/(protected)/complete-profile");
-    }
-  }, [session, profile, isLoading]);
+  }, [session]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -29,6 +25,7 @@ export default function ProtectedLayout() {
         options={{
           headerShown: false,
           headerBackVisible: false,
+          gestureEnabled: false,
         }}
       />
       <Stack.Screen name="index" redirect={true} />

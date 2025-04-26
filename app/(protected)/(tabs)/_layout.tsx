@@ -1,14 +1,23 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, View } from "react-native";
+import { useUserProfile } from "@/src/hooks/useUserProfile";
+import { useEffect } from "react";
 
-// Define valid icon names for type safety
 type IconName = "home" | "map" | "person" | "settings-outline";
 
 export default function TabsLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+  const { profile, isLoading } = useUserProfile();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && profile && profile.username === null) {
+      router.replace("/(protected)/complete-profile");
+    }
+  }, [profile, isLoading]);
 
   return (
     <Tabs

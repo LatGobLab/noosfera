@@ -45,7 +45,11 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "tailwindcss": "^3.4.17",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "expo-camera": "~16.0.18",
+    "expo-image-picker": "~16.0.6",
+    "@stripe/stripe-react-native": "0.38.6",
+    "expo-image": "~2.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -1,16 +1,11 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { useColorScheme } from "nativewind";
 import { useRouter } from "expo-router";
 import { useLocationStore } from "@/src/stores/useLocationStore";
 import LocationRefresher from "@/src/components/LocationRefresher";
 
 export default function Home() {
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
   const router = useRouter();
-
   const { latitude, longitude } = useLocationStore();
-
   const goToDetails = (id: string) => {
     router.push(`/(protected)/(stack)/details?id=${id}`);
   };

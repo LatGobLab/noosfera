@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import supabase from "@/src/lib/supabase";
 import { useColorScheme } from "nativewind";
-import * as SystemUI from "expo-system-ui";
 import { router } from "expo-router";
 import { Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -37,11 +36,6 @@ export default function Login() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [formError, setFormError] = useState("");
-
-  useEffect(() => {
-    const backgroundColor = colorScheme === "dark" ? "#1E1E1E" : "#FFFFFF";
-    SystemUI.setBackgroundColorAsync(backgroundColor);
-  }, [colorScheme]);
 
   useEffect(() => {
     const checkAuth = async () => {

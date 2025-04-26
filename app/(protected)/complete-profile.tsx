@@ -15,8 +15,6 @@ import supabase from "@/src/lib/supabase";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import { UserProfile } from "@/src/stores/useUserProfileStore";
 import { userProfileStorage, PROFILE_STORAGE_KEY } from "@/src/lib/mmkvStorage";
-import { useColorScheme } from "nativewind";
-import * as SystemUI from "expo-system-ui";
 
 export default function CompleteProfileScreen() {
   const { profile, refreshProfile } = useUserProfile();
@@ -28,15 +26,9 @@ export default function CompleteProfileScreen() {
   const [formError, setFormError] = useState("");
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
-  const { colorScheme } = useColorScheme();
 
   const fullNameRef = useRef<TextInput>(null);
   const usernameRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    const backgroundColor = colorScheme === "dark" ? "#1E1E1E" : "#FFFFFF";
-    SystemUI.setBackgroundColorAsync(backgroundColor);
-  }, [colorScheme]);
 
   const validateUsername = async (value: string) => {
     if (!value.trim()) {
