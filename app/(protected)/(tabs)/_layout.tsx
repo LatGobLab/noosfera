@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Animated,
   StyleSheet,
+  Easing,
 } from "react-native";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 import { useEffect, useRef } from "react";
@@ -25,20 +26,29 @@ function TabsLayoutContent() {
   const { profile, isLoading } = useUserProfile();
   const router = useRouter();
   const { isHeaderVisible } = useHeaderVisibility();
+  const headerTranslateY = useRef(new Animated.Value(0)).current;
   const headerHeight = useRef(new Animated.Value(56)).current;
   const headerOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.parallel([
+      Animated.timing(headerTranslateY, {
+        toValue: isHeaderVisible ? 0 : -56,
+        duration: 300,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        useNativeDriver: true,
+      }),
       Animated.timing(headerHeight, {
         toValue: isHeaderVisible ? 56 : 0,
-        duration: 250,
+        duration: 300,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
         useNativeDriver: false,
       }),
       Animated.timing(headerOpacity, {
         toValue: isHeaderVisible ? 1 : 0,
-        duration: 200,
-        useNativeDriver: false,
+        duration: 300,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        useNativeDriver: true,
       }),
     ]).start();
   }, [isHeaderVisible]);
@@ -54,6 +64,7 @@ function TabsLayoutContent() {
   };
 
   const AnimatedHeaderBackground = Animated.createAnimatedComponent(View);
+  const AnimatedHeaderContainer = Animated.createAnimatedComponent(View);
 
   return (
     <Tabs
@@ -83,23 +94,23 @@ function TabsLayoutContent() {
         header: ({ options, route, navigation }) => {
           const title = options.title || route.name;
           return (
-            <View
+            <AnimatedHeaderContainer
               style={{
                 backgroundColor: isDark ? "#171717" : "#ffffff",
                 position: "relative",
                 zIndex: 100,
+                height: headerHeight,
+                overflow: "hidden",
               }}
             >
               <AnimatedHeaderBackground
                 style={[
                   styles.headerContainer,
                   {
-                    height: headerHeight,
+                    transform: [{ translateY: headerTranslateY }],
                     opacity: headerOpacity,
                     backgroundColor: isDark ? "#171717" : "#ffffff",
                     borderBottomColor: isDark ? "#222222" : "#f0f0f0",
-                    position: isHeaderVisible ? "relative" : "absolute",
-                    marginTop: isHeaderVisible ? 0 : -1,
                   },
                 ]}
               >
@@ -143,7 +154,7 @@ function TabsLayoutContent() {
                   </View>
                 )}
               </AnimatedHeaderBackground>
-            </View>
+            </AnimatedHeaderContainer>
           );
         },
         headerTintColor: isDark ? "#ffffff" : "#000000",
@@ -221,8 +232,8 @@ function TabBarIcon({
 const styles = StyleSheet.create({
   headerContainer: {
     width: "100%",
+    height: 56,
     borderBottomWidth: 1,
-    overflow: "hidden",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
