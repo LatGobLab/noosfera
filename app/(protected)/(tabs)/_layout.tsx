@@ -97,13 +97,15 @@ export default function TabsLayout() {
                   />
                 </Pressable>
               ) : (
-                <View className="h-24 w-24 rounded-full bg-gray-300 items-center justify-center">
-                  <Ionicons
-                    name="person"
-                    size={20}
-                    color={isDark ? "#171717" : "#666666"}
-                  />
-                </View>
+                <Pressable onPress={handleProfilePress}>
+                  <View className="h-10 w-10 rounded-full bg-gray-300 items-center justify-center mr-5">
+                    <Ionicons
+                      name="person"
+                      size={20}
+                      color={isDark ? "#171717" : "#666666"}
+                    />
+                  </View>
+                </Pressable>
               )}
             </View>
           ),

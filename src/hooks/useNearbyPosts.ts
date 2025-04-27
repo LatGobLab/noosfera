@@ -1,7 +1,7 @@
 import { useInfiniteQuery, InfiniteData, QueryKey } from '@tanstack/react-query';
 import supabase from '@/src/lib/supabase';
 import { useLocationStore } from '@/src/stores/useLocationStore';
-import { ReporteNearby } from '@/src/types/repotes'; 
+import { ReporteNearby } from '@/src/types/reporteNearby'; 
 
 const POSTS_PAGE_LIMIT = 10;
 
