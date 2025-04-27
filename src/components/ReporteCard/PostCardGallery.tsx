@@ -1,17 +1,21 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ScrollView, Image, Dimensions, View } from "react-native";
 
 type PostCardGalleryProps = {
   foto_reporte: any;
+  postId: string | number;
 };
 
-export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
+export const PostCardGallery = ({
+  foto_reporte,
+  postId,
+}: PostCardGalleryProps) => {
   const { width: screenWidth } = Dimensions.get("window");
   const scrollViewRef = useRef<ScrollView>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({
-    0: true,
-  });
+  const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>(
+    {}
+  );
   const BASE_URL = process.env.EXPO_PUBLIC_URL_POST;
 
   const getImageUrls = (): string[] => {
@@ -38,6 +42,19 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
 
   const imageUrls = getImageUrls();
 
+  useEffect(() => {
+    setActiveIndex(0);
+    const initialLoadState: { [key: number]: boolean } = {};
+    for (let i = 0; i < Math.min(3, imageUrls.length); i++) {
+      initialLoadState[i] = true;
+    }
+    setLoadedImages(initialLoadState);
+
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ x: 0, animated: false });
+    }
+  }, [postId, imageUrls.length]);
+
   if (imageUrls.length === 0) {
     return null;
   }
@@ -49,18 +66,14 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
     if (newIndex !== activeIndex) {
       setActiveIndex(newIndex);
 
-      // Pre-load adjacent images for smoother scrolling
       const newLoadedImages = { ...loadedImages };
 
-      // Current image
       newLoadedImages[newIndex] = true;
 
-      // Next image (if exists)
       if (newIndex + 1 < imageUrls.length) {
         newLoadedImages[newIndex + 1] = true;
       }
 
-      // Previous image (if exists)
       if (newIndex - 1 >= 0) {
         newLoadedImages[newIndex - 1] = true;
       }
@@ -82,13 +95,15 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
         snapToInterval={screenWidth}
         snapToAlignment="start"
         contentContainerStyle={{ flexGrow: 0 }}
+        key={`gallery-${postId}`}
+        nestedScrollEnabled={true}
+        removeClippedSubviews={true}
       >
         {imageUrls.map((url: string, index: number) => {
-          // Only render images that have been marked for loading
           if (!loadedImages[index]) {
             return (
               <View
-                key={`placeholder-${index}`}
+                key={`placeholder-${index}-${postId}`}
                 style={{
                   width: screenWidth,
                   height: 600,
@@ -100,24 +115,24 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
 
           return (
             <Image
-              key={`image-${index}`}
+              key={`image-${index}-${postId}`}
               source={{ uri: url }}
               style={{
                 width: screenWidth,
                 height: 600,
               }}
               resizeMode="cover"
+              fadeDuration={0}
             />
           );
         })}
       </ScrollView>
 
-      {/* Pagination Indicators */}
       {imageUrls.length > 1 && (
         <View className="flex-row justify-center mt-2">
           {imageUrls.map((_, index) => (
             <View
-              key={`indicator-${index}`}
+              key={`indicator-${index}-${postId}`}
               className={`h-1.5 w-1.5 rounded-full mx-1 ${
                 activeIndex === index
                   ? "bg-background-dark dark:bg-white"

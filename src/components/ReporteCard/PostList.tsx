@@ -7,7 +7,6 @@ import { FlashList } from "@shopify/flash-list";
 import { useHeaderVisibility } from "@/src/contexts/HeaderVisibilityContext";
 
 export const PostList = () => {
-  const router = useRouter();
   const {
     data,
     error,
@@ -106,6 +105,21 @@ export const PostList = () => {
         showsVerticalScrollIndicator={false}
         onScroll={handleScrollEvent}
         scrollEventThrottle={16} // Para un mejor rendimiento
+        // Add props to optimize FlashList with nested horizontal scrolls
+        nestedScrollEnabled={true}
+        disableScrollViewPanResponder={true} // Help with nested scrolling
+        estimatedFirstItemOffset={0}
+        // Avoid recycling views aggressively
+        overrideItemLayout={(layout, item) => {
+          // Provide more accurate sizing hint to avoid recycling issues
+          layout.size = item?.foto_reporte ? 900 : 300;
+        }}
+        // Boost performance for nested scrolling
+        viewabilityConfig={{
+          waitForInteraction: false,
+          itemVisiblePercentThreshold: 5,
+          minimumViewTime: 100,
+        }}
       />
     </View>
   );

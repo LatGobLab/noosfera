@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import { ReporteNearby } from "@/src/types/reporteNearby";
 import { PostCardHeader } from "./PostCardHeader";
 import { PostCardGallery } from "./PostCardGallery";
@@ -19,7 +19,14 @@ export const PostCard = ({ post }: PostCardProps) => {
           profile_rol_nombre={post.profile_rol_nombre ?? ""}
           estatus={post.estatus ?? false}
         />
-        <PostCardGallery foto_reporte={post.foto_reporte} />
+        <View>
+          {post.foto_reporte && (
+            <PostCardGallery
+              foto_reporte={post.foto_reporte}
+              postId={post.id_reporte}
+            />
+          )}
+        </View>
         <PostCardFooter
           descripcion={post.descripcion}
           likes_count={post.likes_count}
