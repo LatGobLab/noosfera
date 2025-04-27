@@ -28,7 +28,6 @@ export const PostList = () => {
   const handlePostPress = (postId: string | number) => {
     router.push(`/post/${postId.toString()}`);
   };
-  //   console.log(flatData);
 
   // Handle scroll event to implement infinite scrolling
   const handleScroll = useCallback(
@@ -86,11 +85,7 @@ export const PostList = () => {
       scrollEventThrottle={16} // Throttle the scroll event for better performance
     >
       {flatData.map((post) => (
-        <PostCard
-          key={post.id_reporte.toString()}
-          post={post}
-          onPress={() => handlePostPress(post.id_reporte)}
-        />
+        <PostCard key={post.id_reporte.toString()} post={post} />
       ))}
 
       {/* Loading indicator at bottom when fetching more data */}
