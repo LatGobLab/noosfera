@@ -52,6 +52,7 @@ export default function useNearbyPosts() {
         comments_count: item.comments_count,
         profile_username: item.profile_username || null,
         profile_avatar_url: item.profile_avatar_url || null,
+        profile_rol_nombre: item.profile_rol_nombre || null,
         tipo_nombre: item.tipo_nombre || null,
         distance_meters: item.distance_meters
     }));

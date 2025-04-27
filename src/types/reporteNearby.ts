@@ -15,6 +15,7 @@ export interface ReporteNearby {
   comments_count: number;
   profile_username: string | null; 
   profile_avatar_url: string | null; 
+  profile_rol_nombre: string | null;
   tipo_nombre: string | null;
   distance_meters: number;
 }

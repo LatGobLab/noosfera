@@ -6,8 +6,7 @@ type PostCardGalleryProps = {
 };
 
 export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
-  const screenWidth = Dimensions.get("window").width;
-  const imageWidth = screenWidth - 32;
+  const { width: screenWidth } = Dimensions.get("window");
   const scrollViewRef = useRef<ScrollView>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({
@@ -45,7 +44,7 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
 
   const handleScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const newIndex = Math.round(contentOffsetX / imageWidth);
+    const newIndex = Math.round(contentOffsetX / screenWidth);
 
     if (newIndex !== activeIndex) {
       setActiveIndex(newIndex);
@@ -76,13 +75,13 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
         ref={scrollViewRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ alignItems: "center" }}
         pagingEnabled
         onScroll={handleScroll}
         scrollEventThrottle={16}
         decelerationRate="fast"
-        snapToInterval={imageWidth + 8}
-        snapToAlignment="center"
+        snapToInterval={screenWidth}
+        snapToAlignment="start"
+        contentContainerStyle={{ flexGrow: 0 }}
       >
         {imageUrls.map((url: string, index: number) => {
           // Only render images that have been marked for loading
@@ -91,10 +90,8 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
               <View
                 key={`placeholder-${index}`}
                 style={{
-                  width: imageWidth,
-                  height: 500,
-                  borderRadius: 10,
-                  marginRight: index < imageUrls.length - 1 ? 8 : 0,
+                  width: screenWidth,
+                  height: 600,
                   backgroundColor: "#e1e1e1",
                 }}
               />
@@ -106,10 +103,8 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
               key={`image-${index}`}
               source={{ uri: url }}
               style={{
-                width: imageWidth,
-                height: 500,
-                borderRadius: 10,
-                marginRight: index < imageUrls.length - 1 ? 8 : 0,
+                width: screenWidth,
+                height: 600,
               }}
               resizeMode="cover"
             />
@@ -124,7 +119,9 @@ export const PostCardGallery = ({ foto_reporte }: PostCardGalleryProps) => {
             <View
               key={`indicator-${index}`}
               className={`h-1.5 w-1.5 rounded-full mx-1 ${
-                activeIndex === index ? "bg-white" : "bg-white/30"
+                activeIndex === index
+                  ? "bg-background-dark dark:bg-white"
+                  : "bg-slate-300 dark:bg-gray-700"
               }`}
             />
           ))}

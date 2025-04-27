@@ -1,33 +1,50 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
-import { ReporteNearby } from "@/src/types/reporteNearby";
 
 type PostCardHeaderProps = {
-  post: ReporteNearby;
+  profile_avatar_url: string;
+  profile_username: string;
+  profile_rol_nombre: string;
+  estatus: boolean;
 };
-
-export const PostCardHeader = ({ post }: PostCardHeaderProps) => {
+export const PostCardHeader = ({
+  profile_avatar_url,
+  profile_username,
+  profile_rol_nombre,
+  estatus,
+}: PostCardHeaderProps) => {
   return (
     <View>
-      {/* Header with user info */}
-      <View className="flex-row items-center mb-3">
-        {post.profile_avatar_url ? (
-          <Image
-            source={{ uri: post.profile_avatar_url }}
-            className="w-10 h-10 rounded-full mr-3"
-          />
-        ) : (
-          <View className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 mr-3" />
-        )}
-        <Text className="font-semibold text-gray-800 dark:text-gray-200">
-          {post.profile_username ?? "Usuario Anónimo"}
+      <View className="flex-row items-center justify-between mb-3 mx-4">
+        <View className="flex-row items-center">
+          {profile_avatar_url ? (
+            <Image
+              source={{ uri: profile_avatar_url }}
+              className="w-10 h-10 rounded-full mr-3"
+            />
+          ) : (
+            <View className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 mr-3" />
+          )}
+          <View className="flex-col gap-1">
+            <Text className="font-semibold text-gray-800 dark:text-gray-200">
+              {profile_username ?? "Usuario Anónimo"}
+            </Text>
+            <Text className="text-xs text-gray-600 dark:text-gray-400">
+              {profile_rol_nombre ?? ""}
+            </Text>
+          </View>
+        </View>
+
+        <Text
+          className={`text-base font-bold text-center bg-background-dark dark:bg-background rounded-full px-4 py-2 ${
+            estatus
+              ? "text-green-600 dark:text-green-400"
+              : "text-white dark:text-black"
+          }`}
+        >
+          {estatus ? "Resuelto" : "No atendido"}
         </Text>
       </View>
-
-      {/* Post description */}
-      <Text className="text-gray-700 dark:text-gray-300 mb-3">
-        {post.descripcion}
-      </Text>
     </View>
   );
 };

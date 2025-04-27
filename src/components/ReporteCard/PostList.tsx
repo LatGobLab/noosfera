@@ -80,7 +80,7 @@ export const PostList = () => {
 
   return (
     <ScrollView
-      className="flex-1 bg-background dark:bg-background-dark p-4"
+      className="flex-1 bg-background dark:bg-background-dark"
       onScroll={handleScroll}
       scrollEventThrottle={16} // Throttle the scroll event for better performance
     >
