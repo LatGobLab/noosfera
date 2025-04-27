@@ -14,6 +14,14 @@ type PostCardFooterProps = {
   tipo_nombre: string;
 };
 
+// Función para formatear números
+const formatNumber = (num: number): string => {
+  if (num < 1000) return num.toString();
+  if (num < 10000) return num.toLocaleString();
+  if (num < 1000000) return `${(num / 1000).toFixed(1)}k`;
+  return `${(num / 1000000).toFixed(1)}M`;
+};
+
 export const PostCardFooter = ({
   descripcion,
   likes_count,
@@ -29,17 +37,17 @@ export const PostCardFooter = ({
 
   return (
     <View className="px-4 pb-4">
-      <View className="flex-row flex-wrap gap-4 my-2">
+      <View className="flex-row flex-wrap gap-6 mb-2">
         <View className="flex-row items-center">
-          <AntDesign name="hearto" size={20} color={iconColor} />
+          <AntDesign name="hearto" size={22} color={iconColor} />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">
-            {likes_count}
+            {formatNumber(likes_count)}
           </Text>
         </View>
         <View className="flex-row items-center">
-          <Ionicons name="chatbubble-outline" size={20} color={iconColor} />
+          <Ionicons name="chatbubble-outline" size={22} color={iconColor} />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">
-            {comments_count}
+            {formatNumber(comments_count)}
           </Text>
         </View>
       </View>

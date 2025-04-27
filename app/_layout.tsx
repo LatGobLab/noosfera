@@ -4,12 +4,15 @@ import { ThemeProvider } from "@/src/context/ThemeContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "@/src/services/queryClient";
 import { useColorScheme } from "nativewind";
+import { HeaderVisibilityProvider } from "@/src/contexts/HeaderVisibilityContext";
 
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <RootLayoutNavigation />
+        <HeaderVisibilityProvider>
+          <RootLayoutNavigation />
+        </HeaderVisibilityProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

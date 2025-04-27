@@ -1,18 +1,48 @@
 import { Tabs, useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Pressable, View, Text, ActivityIndicator } from "react-native";
+import {
+  Pressable,
+  View,
+  Text,
+  ActivityIndicator,
+  Animated,
+  StyleSheet,
+} from "react-native";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Image } from "expo-image";
+import {
+  HeaderVisibilityProvider,
+  useHeaderVisibility,
+} from "@/src/contexts/HeaderVisibilityContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type IconName = "home" | "map" | "person" | "settings-outline";
 
-export default function TabsLayout() {
+function TabsLayoutContent() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const { profile, isLoading } = useUserProfile();
   const router = useRouter();
+  const { isHeaderVisible } = useHeaderVisibility();
+  const headerHeight = useRef(new Animated.Value(56)).current;
+  const headerOpacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(headerHeight, {
+        toValue: isHeaderVisible ? 56 : 0,
+        duration: 250,
+        useNativeDriver: false,
+      }),
+      Animated.timing(headerOpacity, {
+        toValue: isHeaderVisible ? 1 : 0,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+    ]).start();
+  }, [isHeaderVisible]);
 
   useEffect(() => {
     if (!isLoading && profile && profile.username === null) {
@@ -24,7 +54,7 @@ export default function TabsLayout() {
     router.push("/(protected)/(stack)/profile");
   };
 
-  const image = profile?.avatar_url ? profile.avatar_url : null;
+  const AnimatedHeaderBackground = Animated.createAnimatedComponent(View);
 
   return (
     <Tabs
@@ -51,19 +81,67 @@ export default function TabsLayout() {
           alignItems: "center",
           justifyContent: "center",
         },
-        headerStyle: {
-          backgroundColor: isDark ? "#171717" : "#ffffff",
-          elevation: 0,
-          shadowOpacity: 0,
-          borderBottomWidth: 0,
-        },
-        headerTitleStyle: {
-          fontWeight: "bold",
-          fontSize: 18,
+        header: ({ options, route, navigation }) => {
+          const title = options.title || route.name;
+          return (
+            <AnimatedHeaderBackground
+              style={[
+                styles.headerContainer,
+                {
+                  height: headerHeight,
+                  opacity: headerOpacity,
+                  backgroundColor: isDark ? "#171717" : "#ffffff",
+                  borderBottomColor: isDark ? "#222222" : "#f0f0f0",
+                  position: isHeaderVisible ? "relative" : "absolute",
+                  marginTop: isHeaderVisible ? 0 : -1,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  color: isDark ? "#ffffff" : "#000000",
+                }}
+              >
+                {title}
+              </Text>
+              {route.name === "index" && (
+                <View>
+                  {isLoading ? (
+                    <ActivityIndicator size="large" color={"#3b82f6"} />
+                  ) : profile?.avatar_url ? (
+                    <Pressable onPress={handleProfilePress}>
+                      <Image
+                        source={{ uri: profile.avatar_url }}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 50,
+                          marginRight: 10,
+                        }}
+                        contentFit="cover"
+                      />
+                    </Pressable>
+                  ) : (
+                    <Pressable onPress={handleProfilePress}>
+                      <View className="h-10 w-10 rounded-full bg-gray-300 items-center justify-center mr-5">
+                        <Ionicons
+                          name="person"
+                          size={20}
+                          color={isDark ? "#171717" : "#666666"}
+                        />
+                      </View>
+                    </Pressable>
+                  )}
+                </View>
+              )}
+            </AnimatedHeaderBackground>
+          );
         },
         headerTintColor: isDark ? "#ffffff" : "#000000",
-        tabBarActiveTintColor: "#FFFFFF", // Blanco para el ícono activo
-        tabBarInactiveTintColor: "#666666", // Gris para los inactivos
+        tabBarActiveTintColor: "#FFFFFF",
+        tabBarInactiveTintColor: "#666666",
         tabBarShowLabel: false,
       }}
     >
@@ -78,36 +156,6 @@ export default function TabsLayout() {
               size={size}
               focused={focused}
             />
-          ),
-          headerRight: () => (
-            <View className="">
-              {isLoading ? (
-                <ActivityIndicator size="large" color={"#3b82f6"} />
-              ) : profile?.avatar_url ? (
-                <Pressable onPress={handleProfilePress}>
-                  <Image
-                    source={{ uri: profile.avatar_url }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 50,
-                      marginRight: 10,
-                    }}
-                    contentFit="cover"
-                  />
-                </Pressable>
-              ) : (
-                <Pressable onPress={handleProfilePress}>
-                  <View className="h-10 w-10 rounded-full bg-gray-300 items-center justify-center mr-5">
-                    <Ionicons
-                      name="person"
-                      size={20}
-                      color={isDark ? "#171717" : "#666666"}
-                    />
-                  </View>
-                </Pressable>
-              )}
-            </View>
           ),
         }}
       />
@@ -126,6 +174,14 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <HeaderVisibilityProvider>
+      <TabsLayoutContent />
+    </HeaderVisibilityProvider>
   );
 }
 
@@ -148,9 +204,23 @@ function TabBarIcon({
     >
       <Ionicons
         name={focused ? name : (`${name}` as any)}
-        size={24} // Tamaño fijo para asegurar consistencia
-        color={focused ? "#000000" : color} // Negro si está activo, sino el color pasado
+        size={24}
+        color={focused ? "#000000" : color}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    width: "100%",
+    borderBottomWidth: 1,
+    overflow: "hidden",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingTop: 5,
+    zIndex: 100,
+  },
+});

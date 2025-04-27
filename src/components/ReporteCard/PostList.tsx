@@ -1,16 +1,10 @@
 import React, { useCallback } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { PostCard } from "./PostCard";
 import { useRouter } from "expo-router";
 import useNearbyPosts from "@/src/hooks/useNearbyPosts";
+import { FlashList } from "@shopify/flash-list";
+import { useHeaderVisibility } from "@/src/contexts/HeaderVisibilityContext";
 
 export const PostList = () => {
   const router = useRouter();
@@ -22,28 +16,44 @@ export const PostList = () => {
     isFetchingNextPage,
     isLoading,
   } = useNearbyPosts();
+  const { handleScroll } = useHeaderVisibility();
 
   const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
 
-  const handlePostPress = (postId: string | number) => {
-    router.push(`/post/${postId.toString()}`);
+  // Handle end reached to implement infinite scrolling
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const renderFooter = () => {
+    if (isFetchingNextPage) {
+      return (
+        <View className="py-4 items-center">
+          <ActivityIndicator size="small" color="#0000ff" />
+        </View>
+      );
+    }
+
+    if (!hasNextPage && flatData.length > 0) {
+      return (
+        <Text className="text-center text-gray-500 dark:text-gray-400 py-3">
+          No hay más reportes
+        </Text>
+      );
+    }
+
+    return null;
   };
 
-  // Handle scroll event to implement infinite scrolling
-  const handleScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { layoutMeasurement, contentOffset, contentSize } =
-        event.nativeEvent;
-      const paddingToBottom = 20; // Trigger when within 20px of bottom
-      const isCloseToBottom =
-        layoutMeasurement.height + contentOffset.y >=
-        contentSize.height - paddingToBottom;
-
-      if (isCloseToBottom && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
+  // Manejar el evento de scroll para controlar la visibilidad del header
+  const handleScrollEvent = useCallback(
+    ({ nativeEvent }: { nativeEvent: any }) => {
+      const offsetY = nativeEvent.contentOffset.y;
+      handleScroll(offsetY);
     },
-    [fetchNextPage, hasNextPage, isFetchingNextPage]
+    [handleScroll]
   );
 
   if (isLoading) {
@@ -79,26 +89,24 @@ export const PostList = () => {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background dark:bg-background-dark"
-      onScroll={handleScroll}
-      scrollEventThrottle={16} // Throttle the scroll event for better performance
-    >
-      {flatData.map((post) => (
-        <PostCard key={post.id_reporte.toString()} post={post} />
-      ))}
-
-      {/* Loading indicator at bottom when fetching more data */}
-      {isFetchingNextPage && (
-        <ActivityIndicator className="my-4" size="small" color="#0000ff" />
-      )}
-
-      {/* End of list message */}
-      {!hasNextPage && flatData.length > 0 && (
-        <Text className="text-center text-gray-500 dark:text-gray-400 my-4">
-          No hay más reportes
-        </Text>
-      )}
-    </ScrollView>
+    <View className="flex-1 bg-background dark:bg-background-dark">
+      <FlashList
+        data={flatData}
+        renderItem={({ item }) => <PostCard post={item} />}
+        keyExtractor={(item) => item.id_reporte.toString()}
+        estimatedItemSize={300}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={
+          <Text className="text-center text-gray-600 dark:text-gray-300 py-8">
+            No se encontraron reportes cercanos.
+          </Text>
+        }
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScrollEvent}
+        scrollEventThrottle={16} // Para un mejor rendimiento
+      />
+    </View>
   );
 };
