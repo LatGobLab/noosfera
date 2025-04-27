@@ -6,12 +6,15 @@ import {
   View,
   Text,
   ActivityIndicator,
-  Animated,
   StyleSheet,
-  Easing,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+  Extrapolate,
+} from "react-native-reanimated";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Image } from "expo-image";
 import {
   HeaderVisibilityProvider,
@@ -25,33 +28,28 @@ function TabsLayoutContent() {
   const isDark = colorScheme === "dark";
   const { profile, isLoading } = useUserProfile();
   const router = useRouter();
-  const { isHeaderVisible } = useHeaderVisibility();
-  const headerTranslateY = useRef(new Animated.Value(0)).current;
-  const headerHeight = useRef(new Animated.Value(56)).current;
-  const headerOpacity = useRef(new Animated.Value(1)).current;
+  const { scrollY, headerHeight } = useHeaderVisibility();
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(headerTranslateY, {
-        toValue: isHeaderVisible ? 0 : -56,
-        duration: 300,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-        useNativeDriver: true,
-      }),
-      Animated.timing(headerHeight, {
-        toValue: isHeaderVisible ? 56 : 0,
-        duration: 300,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-        useNativeDriver: false,
-      }),
-      Animated.timing(headerOpacity, {
-        toValue: isHeaderVisible ? 1 : 0,
-        duration: 300,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [isHeaderVisible]);
+  const headerAnimatedStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      scrollY.value,
+      [0, headerHeight],
+      [0, -headerHeight],
+      Extrapolate.CLAMP
+    );
+
+    const opacity = interpolate(
+      scrollY.value,
+      [0, headerHeight * 0.8],
+      [1, 0],
+      Extrapolate.CLAMP
+    );
+
+    return {
+      transform: [{ translateY }],
+      opacity: opacity,
+    };
+  });
 
   useEffect(() => {
     if (!isLoading && profile && profile.username === null) {
@@ -63,8 +61,7 @@ function TabsLayoutContent() {
     router.push("/(protected)/(stack)/profile");
   };
 
-  const AnimatedHeaderBackground = Animated.createAnimatedComponent(View);
-  const AnimatedHeaderContainer = Animated.createAnimatedComponent(View);
+  const AnimatedHeaderContainer = Animated.View;
 
   return (
     <Tabs
@@ -95,54 +92,47 @@ function TabsLayoutContent() {
           const title = options.title || route.name;
           return (
             <AnimatedHeaderContainer
-              style={{
-                backgroundColor: isDark ? "#171717" : "#ffffff",
-                position: "relative",
-                zIndex: 100,
-                height: headerHeight,
-                overflow: "hidden",
-              }}
+              style={[
+                styles.headerBase,
+                { backgroundColor: isDark ? "#171717" : "#ffffff" },
+                headerAnimatedStyle,
+              ]}
             >
-              <AnimatedHeaderBackground
+              <View
                 style={[
-                  styles.headerContainer,
-                  {
-                    transform: [{ translateY: headerTranslateY }],
-                    opacity: headerOpacity,
-                    backgroundColor: isDark ? "#171717" : "#ffffff",
-                    borderBottomColor: isDark ? "#222222" : "#f0f0f0",
-                  },
+                  styles.headerContentContainer,
+                  { borderBottomColor: isDark ? "#222222" : "#f0f0f0" },
                 ]}
               >
                 <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 18,
-                    color: isDark ? "#ffffff" : "#000000",
-                  }}
+                  style={[
+                    styles.headerTitle,
+                    { color: isDark ? "#ffffff" : "#000000" },
+                  ]}
                 >
                   {title}
                 </Text>
                 {route.name === "index" && (
                   <View>
                     {isLoading ? (
-                      <ActivityIndicator size="large" color={"#3b82f6"} />
+                      <ActivityIndicator
+                        size="small"
+                        color={isDark ? "#FFFFFF" : "#000000"}
+                      />
                     ) : profile?.avatar_url ? (
                       <Pressable onPress={handleProfilePress}>
                         <Image
                           source={{ uri: profile.avatar_url }}
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 50,
-                            marginRight: 10,
-                          }}
+                          style={styles.avatarImage}
                           contentFit="cover"
                         />
                       </Pressable>
                     ) : (
                       <Pressable onPress={handleProfilePress}>
-                        <View className="h-10 w-10 rounded-full bg-gray-300 items-center justify-center mr-5">
+                        <View
+                          style={styles.placeholderAvatar}
+                          className="bg-gray-300 dark:bg-gray-600 mr-2"
+                        >
                           <Ionicons
                             name="person"
                             size={20}
@@ -153,7 +143,7 @@ function TabsLayoutContent() {
                     )}
                   </View>
                 )}
-              </AnimatedHeaderBackground>
+              </View>
             </AnimatedHeaderContainer>
           );
         },
@@ -230,15 +220,41 @@ function TabBarIcon({
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
+  headerBase: {
     width: "100%",
     height: 56,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    overflow: "hidden",
+  },
+  headerContentContainer: {
+    height: "100%",
+    width: "100%",
     borderBottomWidth: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: 5,
-    zIndex: 100,
+  },
+  headerTitle: {
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  avatarImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  placeholderAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
   },
 });

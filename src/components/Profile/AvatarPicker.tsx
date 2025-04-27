@@ -52,10 +52,10 @@ const AvatarPicker: React.FC<AvatarUploaderProps> = ({
     setIsLoading(true);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true, // Permite al usuario recortar/rotar
-        aspect: [1, 1], // Fuerza un aspecto cuadrado
-        quality: 1, // Calidad inicial alta, la reduciremos al manipular
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -64,8 +64,8 @@ const AvatarPicker: React.FC<AvatarUploaderProps> = ({
         // Redimensionar y comprimir la imagen
         const manipResult = await ImageManipulator.manipulateAsync(
           selectedAsset.uri,
-          [{ resize: { width: 300 } }], // Redimensiona a un ancho máximo de 300px (ajusta según necesites)
-          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG } // Comprime (0-1) y guarda como JPEG
+          [{ resize: { width: 100 } }], // Redimensiona a un ancho máximo de 300px (ajusta según necesites)
+          { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG } // Comprime (0-1) y guarda como JPEG
         );
 
         setSelectedImageUri(manipResult.uri);

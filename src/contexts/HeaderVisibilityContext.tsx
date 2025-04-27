@@ -1,64 +1,39 @@
-import React, { createContext, useContext, useState, useRef } from "react";
+import React, { createContext, useContext } from "react";
+import Animated, {
+  useSharedValue,
+  useAnimatedScrollHandler,
+  SharedValue,
+  useAnimatedReaction,
+  runOnJS,
+} from "react-native-reanimated";
 
 interface HeaderVisibilityContextType {
-  isHeaderVisible: boolean;
-  setHeaderVisible: (visible: boolean) => void;
-  handleScroll: (offsetY: number) => void;
+  scrollY: SharedValue<number>;
+  headerHeight: number; // Keep track of header height for calculations
+  // We might expose derived values later if needed
 }
 
 const HeaderVisibilityContext = createContext<
   HeaderVisibilityContextType | undefined
 >(undefined);
 
+const DEFAULT_HEADER_HEIGHT = 56; // Default header height
+
 export function HeaderVisibilityProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isHeaderVisible, setHeaderVisible] = useState(true);
-  const lastScrollY = useRef(0);
-  const scrollVelocity = useRef(0);
-  const lastScrollTime = useRef(Date.now());
-  const scrollThresholdUp = 15; // Menos sensible para mostrar
-  const scrollThresholdDown = 20; // Más sensible para ocultar
-  const velocityThreshold = 2; // Umbral de velocidad mínima
+  // Shared value to store the current scroll position
+  const scrollY = useSharedValue(0);
+  const headerHeight = DEFAULT_HEADER_HEIGHT; // Or make this dynamic if needed
 
-  // Esta función maneja el scroll y calcula la velocidad
-  const handleScroll = (offsetY: number) => {
-    const now = Date.now();
-    const timeDelta = now - lastScrollTime.current;
-    const distance = offsetY - lastScrollY.current;
-
-    // Calculamos velocidad en pixeles/ms
-    if (timeDelta > 0) {
-      scrollVelocity.current = Math.abs(distance / timeDelta);
-    }
-
-    // Si estamos scrolleando hacia arriba y la posición es menor que el umbral, mostramos el header
-    if (
-      distance < -scrollThresholdUp &&
-      scrollVelocity.current > velocityThreshold
-    ) {
-      setHeaderVisible(true);
-    }
-    // Si estamos scrolleando hacia abajo, ya pasamos el umbral inicial, y tenemos suficiente velocidad
-    else if (
-      distance > scrollThresholdDown &&
-      offsetY > 50 &&
-      scrollVelocity.current > velocityThreshold
-    ) {
-      setHeaderVisible(false);
-    }
-
-    // Actualizamos los valores para el próximo cálculo
-    lastScrollTime.current = now;
-    lastScrollY.current = offsetY;
-  };
+  // Note: The scroll handler itself will be defined in the screen component
+  // where the ScrollView/FlatList exists, as it needs access to the scroll events.
+  // This context primarily holds the shared scrollY value.
 
   return (
-    <HeaderVisibilityContext.Provider
-      value={{ isHeaderVisible, setHeaderVisible, handleScroll }}
-    >
+    <HeaderVisibilityContext.Provider value={{ scrollY, headerHeight }}>
       {children}
     </HeaderVisibilityContext.Provider>
   );
@@ -72,4 +47,15 @@ export function useHeaderVisibility() {
     );
   }
   return context;
+}
+
+// Helper hook to create the scroll handler in the screen component
+export function useHeaderScrollHandler() {
+  const { scrollY } = useHeaderVisibility();
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+  return scrollHandler;
 }
