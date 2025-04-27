@@ -12,7 +12,7 @@ import { useAuthStore } from "@/src/stores/useAuthStore";
 import ThemeSelector from "@/src/components/ThemeSelector";
 import { router } from "expo-router";
 import supabase from "@/src/lib/supabase";
-import { useTheme } from "@/src/context/ThemeContext";
+import { useTheme } from "@/src/contexts/ThemeContext";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 
 export default function ProfileScreen() {

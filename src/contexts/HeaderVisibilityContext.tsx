@@ -19,7 +19,7 @@ export function HeaderVisibilityProvider({
   const lastScrollY = useRef(0);
   const scrollVelocity = useRef(0);
   const lastScrollTime = useRef(Date.now());
-  const scrollThresholdUp = 5; // Menos sensible para mostrar
+  const scrollThresholdUp = 15; // Menos sensible para mostrar
   const scrollThresholdDown = 20; // Más sensible para ocultar
   const velocityThreshold = 2; // Umbral de velocidad mínima
 
@@ -35,7 +35,10 @@ export function HeaderVisibilityProvider({
     }
 
     // Si estamos scrolleando hacia arriba y la posición es menor que el umbral, mostramos el header
-    if (distance < -scrollThresholdUp) {
+    if (
+      distance < -scrollThresholdUp &&
+      scrollVelocity.current > velocityThreshold
+    ) {
       setHeaderVisible(true);
     }
     // Si estamos scrolleando hacia abajo, ya pasamos el umbral inicial, y tenemos suficiente velocidad

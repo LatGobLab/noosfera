@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import "../global.css";
-import { ThemeProvider } from "@/src/context/ThemeContext";
+import { ThemeProvider } from "@/src/contexts/ThemeContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "@/src/services/queryClient";
 import { useColorScheme } from "nativewind";

@@ -16,7 +16,6 @@ import {
   HeaderVisibilityProvider,
   useHeaderVisibility,
 } from "@/src/contexts/HeaderVisibilityContext";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type IconName = "home" | "map" | "person" | "settings-outline";
 
@@ -84,59 +83,67 @@ function TabsLayoutContent() {
         header: ({ options, route, navigation }) => {
           const title = options.title || route.name;
           return (
-            <AnimatedHeaderBackground
-              style={[
-                styles.headerContainer,
-                {
-                  height: headerHeight,
-                  opacity: headerOpacity,
-                  backgroundColor: isDark ? "#171717" : "#ffffff",
-                  borderBottomColor: isDark ? "#222222" : "#f0f0f0",
-                  position: isHeaderVisible ? "relative" : "absolute",
-                  marginTop: isHeaderVisible ? 0 : -1,
-                },
-              ]}
+            <View
+              style={{
+                backgroundColor: isDark ? "#171717" : "#ffffff",
+                position: "relative",
+                zIndex: 100,
+              }}
             >
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 18,
-                  color: isDark ? "#ffffff" : "#000000",
-                }}
+              <AnimatedHeaderBackground
+                style={[
+                  styles.headerContainer,
+                  {
+                    height: headerHeight,
+                    opacity: headerOpacity,
+                    backgroundColor: isDark ? "#171717" : "#ffffff",
+                    borderBottomColor: isDark ? "#222222" : "#f0f0f0",
+                    position: isHeaderVisible ? "relative" : "absolute",
+                    marginTop: isHeaderVisible ? 0 : -1,
+                  },
+                ]}
               >
-                {title}
-              </Text>
-              {route.name === "index" && (
-                <View>
-                  {isLoading ? (
-                    <ActivityIndicator size="large" color={"#3b82f6"} />
-                  ) : profile?.avatar_url ? (
-                    <Pressable onPress={handleProfilePress}>
-                      <Image
-                        source={{ uri: profile.avatar_url }}
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 50,
-                          marginRight: 10,
-                        }}
-                        contentFit="cover"
-                      />
-                    </Pressable>
-                  ) : (
-                    <Pressable onPress={handleProfilePress}>
-                      <View className="h-10 w-10 rounded-full bg-gray-300 items-center justify-center mr-5">
-                        <Ionicons
-                          name="person"
-                          size={20}
-                          color={isDark ? "#171717" : "#666666"}
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    color: isDark ? "#ffffff" : "#000000",
+                  }}
+                >
+                  {title}
+                </Text>
+                {route.name === "index" && (
+                  <View>
+                    {isLoading ? (
+                      <ActivityIndicator size="large" color={"#3b82f6"} />
+                    ) : profile?.avatar_url ? (
+                      <Pressable onPress={handleProfilePress}>
+                        <Image
+                          source={{ uri: profile.avatar_url }}
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 50,
+                            marginRight: 10,
+                          }}
+                          contentFit="cover"
                         />
-                      </View>
-                    </Pressable>
-                  )}
-                </View>
-              )}
-            </AnimatedHeaderBackground>
+                      </Pressable>
+                    ) : (
+                      <Pressable onPress={handleProfilePress}>
+                        <View className="h-10 w-10 rounded-full bg-gray-300 items-center justify-center mr-5">
+                          <Ionicons
+                            name="person"
+                            size={20}
+                            color={isDark ? "#171717" : "#666666"}
+                          />
+                        </View>
+                      </Pressable>
+                    )}
+                  </View>
+                )}
+              </AnimatedHeaderBackground>
+            </View>
           );
         },
         headerTintColor: isDark ? "#ffffff" : "#000000",

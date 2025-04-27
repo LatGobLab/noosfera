@@ -1,6 +1,6 @@
 import MapView, { Marker, PROVIDER_GOOGLE, UrlTile } from "react-native-maps";
 import { View, StyleSheet } from "react-native";
-import { useTheme } from "@/src/context/ThemeContext";
+import { useTheme } from "@/src/contexts/ThemeContext";
 
 function MapScreen() {
   const { colorScheme } = useTheme();

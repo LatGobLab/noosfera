@@ -89,7 +89,7 @@ export const PostList = () => {
   }
 
   return (
-    <View className="flex-1 bg-background dark:bg-background-dark">
+    <View className="flex-1 bg-background dark:bg-background-dark mt-2">
       <FlashList
         data={flatData}
         renderItem={({ item }) => <PostCard post={item} />}
