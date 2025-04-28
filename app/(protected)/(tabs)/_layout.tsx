@@ -8,11 +8,6 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  interpolate,
-  Extrapolate,
-} from "react-native-reanimated";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 import { useEffect } from "react";
 import { Image } from "expo-image";
@@ -20,36 +15,20 @@ import {
   HeaderVisibilityProvider,
   useHeaderVisibility,
 } from "@/src/contexts/HeaderVisibilityContext";
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+  Extrapolation,
+} from "react-native-reanimated";
 
-type IconName = "home" | "map" | "person" | "settings-outline";
-
+// Componente interno que usa el contexto
 function TabsLayoutContent() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const { profile, isLoading } = useUserProfile();
   const router = useRouter();
-  const { scrollY, headerHeight } = useHeaderVisibility();
-
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(
-      scrollY.value,
-      [0, headerHeight],
-      [0, -headerHeight],
-      Extrapolate.CLAMP
-    );
-
-    const opacity = interpolate(
-      scrollY.value,
-      [0, headerHeight * 0.8],
-      [1, 0],
-      Extrapolate.CLAMP
-    );
-
-    return {
-      transform: [{ translateY }],
-      opacity: opacity,
-    };
-  });
+  // Obtén los valores compartidos del contexto
+  const { headerTranslateY, headerHeight } = useHeaderVisibility();
 
   useEffect(() => {
     if (!isLoading && profile && profile.username === null) {
@@ -61,7 +40,12 @@ function TabsLayoutContent() {
     router.push("/(protected)/(stack)/profile");
   };
 
-  const AnimatedHeaderContainer = Animated.View;
+  // Estilo animado para el contenedor del header
+  const animatedHeaderContainerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: headerTranslateY.value }],
+    };
+  });
 
   return (
     <Tabs
@@ -88,63 +72,73 @@ function TabsLayoutContent() {
           alignItems: "center",
           justifyContent: "center",
         },
-        header: ({ options, route, navigation }) => {
-          const title = options.title || route.name;
+        // Usa una función para renderizar el header personalizado
+        header: ({ options, route }) => {
+          const title = options.title ?? route.name;
           return (
-            <AnimatedHeaderContainer
+            // Contenedor exterior ANIMADO que controla la altura y el fondo
+            <Animated.View
               style={[
-                styles.headerBase,
-                { backgroundColor: isDark ? "#171717" : "#ffffff" },
-                headerAnimatedStyle,
+                styles.outerHeaderContainer, // Added base style
+                animatedHeaderContainerStyle, // <<< APPLY ANIMATION HERE
+                {
+                  backgroundColor: isDark ? "#171717" : "#ffffff",
+                  height: headerHeight, // Use shared value directly
+                },
               ]}
             >
-              <View
+              {/* Contenedor interior NO animado directamente */}
+              <Animated.View
                 style={[
-                  styles.headerContentContainer,
-                  { borderBottomColor: isDark ? "#222222" : "#f0f0f0" },
+                  styles.headerBase, // Estilo base del header
+                  { backgroundColor: isDark ? "#171717" : "#ffffff" },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.headerTitle,
-                    { color: isDark ? "#ffffff" : "#000000" },
-                  ]}
-                >
-                  {title}
-                </Text>
-                {route.name === "index" && (
-                  <View>
-                    {isLoading ? (
-                      <ActivityIndicator
-                        size="small"
-                        color={isDark ? "#FFFFFF" : "#000000"}
-                      />
-                    ) : profile?.avatar_url ? (
-                      <Pressable onPress={handleProfilePress}>
-                        <Image
-                          source={{ uri: profile.avatar_url }}
-                          style={styles.avatarImage}
-                          contentFit="cover"
-                        />
-                      </Pressable>
-                    ) : (
-                      <Pressable onPress={handleProfilePress}>
-                        <View
-                          style={styles.placeholderAvatar}
-                          className="bg-gray-300 dark:bg-gray-600 mr-2"
-                        >
-                          <Ionicons
-                            name="person"
-                            size={20}
-                            color={isDark ? "#171717" : "#666666"}
+                {/* Contenido del Header */}
+                <View style={styles.headerContent}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 18,
+                      color: isDark ? "#ffffff" : "#000000",
+                    }}
+                  >
+                    {title}
+                  </Text>
+                  {/* Icono de perfil solo en la pantalla 'index' */}
+                  {route.name === "index" && (
+                    <View>
+                      {isLoading ? (
+                        <ActivityIndicator size="small" color={"#3b82f6"} />
+                      ) : profile?.avatar_url ? (
+                        <Pressable onPress={handleProfilePress}>
+                          <Image
+                            source={{ uri: profile.avatar_url }}
+                            style={styles.profileImage}
+                            contentFit="cover"
                           />
-                        </View>
-                      </Pressable>
-                    )}
-                  </View>
-                )}
-              </View>
-            </AnimatedHeaderContainer>
+                        </Pressable>
+                      ) : (
+                        <Pressable onPress={handleProfilePress}>
+                          <View
+                            style={[
+                              styles.profilePlaceholder,
+                              { backgroundColor: isDark ? "#555" : "#e0e0e0" },
+                            ]}
+                          >
+                            <Ionicons
+                              name="person"
+                              size={20}
+                              color={isDark ? "#ccc" : "#666666"}
+                            />
+                          </View>
+                        </Pressable>
+                      )}
+                    </View>
+                  )}
+                </View>
+              </Animated.View>
+            </Animated.View>
           );
         },
         headerTintColor: isDark ? "#ffffff" : "#000000",
@@ -181,10 +175,12 @@ function TabsLayoutContent() {
           ),
         }}
       />
+      {/* Asegúrate de tener pantallas para 'person' y 'settings-outline' si las usas en TabBarIcon */}
     </Tabs>
   );
 }
 
+// Componente principal que envuelve con el Provider
 export default function TabsLayout() {
   return (
     <HeaderVisibilityProvider>
@@ -192,6 +188,9 @@ export default function TabsLayout() {
     </HeaderVisibilityProvider>
   );
 }
+
+// Componente TabBarIcon (sin cambios relevantes)
+type IconName = "home" | "map" | "person" | "settings-outline"; // Asegúrate que estos nombres coincidan con tus pantallas o iconos
 
 function TabBarIcon({
   name,
@@ -204,57 +203,60 @@ function TabBarIcon({
   size: number;
   focused: boolean;
 }) {
+  // Usando clases de NativeWind directamente si está configurado
+  const iconContainerClass = `items-center justify-center rounded-full w-10 h-10 flex ${
+    focused ? "bg-white dark:bg-neutral-200" : "bg-transparent" // Ajuste de color dark
+  }`;
+  const iconColor = focused ? "#000000" : color;
+
   return (
-    <View
-      className={`items-center justify-center ${
-        focused ? "bg-white dark:bg-white" : "bg-transparent"
-      } rounded-full w-10 h-10 flex`}
-    >
+    <View className={iconContainerClass}>
       <Ionicons
-        name={focused ? name : (`${name}` as any)}
+        name={focused ? name : (`${name}-outline` as any)} // Asume patrón outline para inactivo
         size={24}
-        color={focused ? "#000000" : color}
+        color={iconColor}
       />
     </View>
   );
 }
 
+// Estilos con StyleSheet
 const styles = StyleSheet.create({
-  headerBase: {
-    width: "100%",
-    height: 56,
-    position: "absolute",
+  outerHeaderContainer: {
+    overflow: "hidden", // Prevents content spill during animation
+    position: "absolute", // Make the outer container absolute to lift off the content flow
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 100,
-    overflow: "hidden",
+    zIndex: 100, // Ensure it's above other content
+    borderBottomWidth: 1, // Keep the border on the outer container
+    borderBottomColor: "transparent", // Adjust color as needed or based on theme
   },
-  headerContentContainer: {
-    height: "100%",
-    width: "100%",
-    borderBottomWidth: 1,
+  headerBase: {
+    // No longer needs absolute positioning or zIndex, it sits inside the outer container
+    // No longer needs border, handled by outer container
+    // overflow: "hidden", // Might still be useful depending on content
+  },
+  headerContent: {
+    height: 56, // Altura fija del contenido
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
+    // paddingTop: 5, // No necesario si la altura es fija
   },
-  headerTitle: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  avatarImage: {
+  profileImage: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 20, // Mitad del ancho/alto
     marginRight: 10,
   },
-  placeholderAvatar: {
+  profilePlaceholder: {
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 10,
+    marginRight: 10, // Ajustado para consistencia
   },
 });

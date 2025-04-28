@@ -1,10 +1,18 @@
 import React, { useCallback } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
-import { PostCard } from "./PostCard";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { PostCard } from "./PostCard"; // Asegúrate que la ruta sea correcta
 import { useRouter } from "expo-router";
-import useNearbyPosts from "@/src/hooks/useNearbyPosts";
-import { FlashList } from "@shopify/flash-list";
-import { useHeaderVisibility } from "@/src/contexts/HeaderVisibilityContext";
+import useNearbyPosts from "@/src/hooks/useNearbyPosts"; // Asegúrate que la ruta sea correcta
+import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
+import { useHeaderVisibility } from "@/src/contexts/HeaderVisibilityContext"; // Asegúrate que la ruta sea correcta
+import Animated from "react-native-reanimated";
+import { ReporteNearby } from "@/src/types/reporteNearby"; // Asegúrate que la ruta sea correcta
+
+const AnimatedFlashList = Animated.createAnimatedComponent(
+  FlashList<ReporteNearby>
+);
+
+const MemoizedPostCard = React.memo(PostCard);
 
 export const PostList = () => {
   const {
@@ -15,112 +23,167 @@ export const PostList = () => {
     isFetchingNextPage,
     isLoading,
   } = useNearbyPosts();
-  const { handleScroll } = useHeaderVisibility();
+
+  const { scrollHandler, headerHeight } = useHeaderVisibility();
 
   const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
 
-  // Handle end reached to implement infinite scrolling
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const renderFooter = () => {
+  // Renderiza el componente PostCard (memoizado)
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<ReporteNearby>) => {
+      // Pasa el post al componente memoizado
+      return <MemoizedPostCard post={item} />;
+    },
+    []
+  ); // El array de dependencias vacío es correcto si PostCard no depende de nada más en este scope
+
+  // Renderiza el indicador de carga en el footer
+  const renderFooter = useCallback(() => {
     if (isFetchingNextPage) {
       return (
-        <View className="py-4 items-center">
-          <ActivityIndicator size="small" color="#0000ff" />
+        <View style={styles.footerLoading}>
+          <ActivityIndicator size="small" color="#3b82f6" />
         </View>
       );
     }
-
+    // Muestra mensaje si no hay más páginas y ya hay datos cargados
     if (!hasNextPage && flatData.length > 0) {
-      return (
-        <Text className="text-center text-gray-500 dark:text-gray-400 py-3">
-          No hay más reportes
-        </Text>
-      );
+      return <Text style={styles.footerText}>No hay más reportes</Text>;
     }
-
+    // No renderiza nada si hay más páginas o si no hay datos iniciales
     return null;
-  };
+  }, [isFetchingNextPage, hasNextPage, flatData.length]);
 
-  // Manejar el evento de scroll para controlar la visibilidad del header
-  const handleScrollEvent = useCallback(
-    ({ nativeEvent }: { nativeEvent: any }) => {
-      const offsetY = nativeEvent.contentOffset.y;
-      handleScroll(offsetY);
-    },
-    [handleScroll]
-  );
-
+  // --- Estados de Carga y Error ---
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-background dark:bg-background-dark">
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text className="mt-2 text-gray-600 dark:text-gray-300">
-          Buscando reportes cercanos...
-        </Text>
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Buscando reportes cercanos...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center bg-background dark:bg-background-dark">
-        <Text className="mb-2 text-gray-800 dark:text-gray-200 font-medium">
-          Error al cargar los reportes:
-        </Text>
-        <Text className="text-red-500 dark:text-red-400">{error.message}</Text>
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorTitle}>Error al cargar los reportes:</Text>
+        <Text style={styles.errorText}>{error.message}</Text>
       </View>
     );
   }
 
-  if (flatData.length === 0) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background dark:bg-background-dark">
-        <Text className="text-gray-600 dark:text-gray-300">
-          No se encontraron reportes cercanos.
-        </Text>
-      </View>
-    );
-  }
-
+  // --- Renderizado de la Lista ---
   return (
-    <View className="flex-1 bg-background dark:bg-background-dark mt-2">
-      <FlashList
+    // Usamos StyleSheet para mejorar la legibilidad y rendimiento vs className
+    <View style={styles.listContainer}>
+      <AnimatedFlashList
         data={flatData}
-        renderItem={({ item }) => <PostCard post={item} />}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id_reporte.toString()}
-        estimatedItemSize={300}
+        // Proporciona una altura estimada *promedio*. Ajusta este valor
+        // a la altura más común de tus PostCard. Es crucial para el rendimiento.
+        estimatedItemSize={350} // AJUSTA ESTE VALOR
+        // --- Infinite Scroll ---
         onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.8} // Carga un poco antes (80% del final visible)
         ListFooterComponent={renderFooter}
+        // --- Manejo de Lista Vacía ---
         ListEmptyComponent={
-          <Text className="text-center text-gray-600 dark:text-gray-300 py-8">
-            No se encontraron reportes cercanos.
-          </Text>
+          <View style={styles.centerContainer}>
+            <Text style={styles.emptyText}>
+              No se encontraron reportes cercanos.
+            </Text>
+          </View>
         }
+        // --- Conexión con Animación del Header ---
+        onScroll={scrollHandler} // Conecta el scroll a reanimated
+        scrollEventThrottle={16} // Necesario para que onScroll funcione fluidamente en iOS
+        // --- Optimización y Comportamiento ---
         showsVerticalScrollIndicator={false}
-        onScroll={handleScrollEvent}
-        scrollEventThrottle={16} // Para un mejor rendimiento
-        // Add props to optimize FlashList with nested horizontal scrolls
-        nestedScrollEnabled={true}
-        disableScrollViewPanResponder={true} // Help with nested scrolling
-        estimatedFirstItemOffset={0}
-        // Avoid recycling views aggressively
+        // contentContainerStyle={{ paddingTop: headerHeight.value }} // DESCOMENTA si el header se superpone al contenido
+
+        // --- Props Avanzadas (Simplificadas/Comentadas para Debugging) ---
+
+        // nestedScrollEnabled={true} // Solo si FlashList está DENTRO de otro ScrollView/Lista. Si no, elimínalo.
+        // disableScrollViewPanResponder={true} // Solo si hay conflictos de gestos con un componente padre. Si no, elimínalo.
+
+        /* overrideItemLayout: Es potente pero complejo. Puede causar saltos si la lógica no es perfecta
+           o si las alturas reales varían. Comienza sin él y confía en estimatedItemSize.
+           Si tienes problemas de rendimiento/saltos DESPUÉS de optimizar PostCard y estimatedItemSize,
+           puedes reintroducirlo con cuidado.
         overrideItemLayout={(layout, item) => {
-          // Provide more accurate sizing hint to avoid recycling issues
-          layout.size = item?.foto_reporte ? 900 : 300;
+            // Asegúrate que 'item' y 'foto_reporte' existan antes de usarlos
+            const hasPhoto = !!item?.foto_reporte;
+            // Usa alturas consistentes o calculadas más precisamente si es posible
+            layout.size = hasPhoto ? 900 : 300; // Ejemplo simplificado
         }}
-        // Boost performance for nested scrolling
+        */
+
+        /* viewabilityConfig: La configuración por defecto suele ser buena.
+           Ajusta solo si tienes problemas específicos de rendimiento con elementos que entran/salen de la vista.
         viewabilityConfig={{
-          waitForInteraction: false,
-          itemVisiblePercentThreshold: 5,
-          minimumViewTime: 100,
+          itemVisiblePercentThreshold: 50 // Por defecto es 50, prueba diferentes valores si es necesario
         }}
+        */
       />
     </View>
   );
 };
+
+// --- Estilos con StyleSheet ---
+// (Usar StyleSheet es generalmente más performante que clases de Tailwind/NativeWind en listas largas)
+const styles = StyleSheet.create({
+  centerContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    // Adapta los colores según tu tema (background/dark:bg-background-dark)
+    // backgroundColor: '#ffffff', // Ejemplo claro
+    backgroundColor: "#171717", // Ejemplo oscuro
+  },
+  loadingText: {
+    marginTop: 10,
+    // color: '#666666', // Ejemplo claro
+    color: "#aaaaaa", // Ejemplo oscuro
+  },
+  errorTitle: {
+    marginBottom: 8,
+    fontWeight: "500",
+    // color: '#333333', // Ejemplo claro
+    color: "#eeeeee", // Ejemplo oscuro
+  },
+  errorText: {
+    // color: '#dc2626', // red-500
+    color: "#f87171", // red-400 dark
+    textAlign: "center",
+  },
+  emptyText: {
+    // color: '#666666', // Ejemplo claro
+    color: "#aaaaaa", // Ejemplo oscuro
+    textAlign: "center",
+  },
+  listContainer: {
+    flex: 1,
+    // backgroundColor: '#ffffff', // Ejemplo claro
+    backgroundColor: "#171717", // Ejemplo oscuro
+    // marginTop: 8, // Equivalente a mt-2
+  },
+  footerLoading: {
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  footerText: {
+    textAlign: "center",
+    // color: '#6b7280', // gray-500
+    color: "#9ca3af", // gray-400 dark
+    paddingVertical: 12,
+  },
+});
