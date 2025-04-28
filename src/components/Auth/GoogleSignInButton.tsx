@@ -2,7 +2,6 @@ import React from "react";
 import { TouchableOpacity, Text, Image } from "react-native";
 import { useGoogleAuth } from "@/src/lib/googleAuth";
 
-// GoogleSignInButton component
 interface GoogleSignInButtonProps {
   className?: string;
 }

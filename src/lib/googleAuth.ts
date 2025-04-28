@@ -28,7 +28,6 @@ export const useGoogleAuth = () => {
           const { data, error } = await supabase.auth.signInWithIdToken({
             provider: 'google',
             token: id_token,
-            // access_token: response.authentication?.accessToken // Opcional, si necesitas el access token también
           });
 
           if (error) {

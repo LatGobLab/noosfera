@@ -1,4 +1,3 @@
-// Nombres de los meses en español
 const MONTH_NAMES_ES = [
     "Enero",
     "Febrero",

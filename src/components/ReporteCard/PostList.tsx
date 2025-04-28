@@ -1,12 +1,11 @@
 import React, { useCallback } from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import { PostCard } from "./PostCard"; // Asegúrate que la ruta sea correcta
-import { useRouter } from "expo-router";
-import useNearbyPosts from "@/src/hooks/useNearbyPosts"; // Asegúrate que la ruta sea correcta
+import { PostCard } from "./PostCard";
+import useNearbyPosts from "@/src/hooks/useNearbyPosts";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
-import { useHeaderVisibility } from "@/src/contexts/HeaderVisibilityContext"; // Asegúrate que la ruta sea correcta
+import { useHeaderVisibility } from "@/src/contexts/HeaderVisibilityContext";
 import Animated from "react-native-reanimated";
-import { ReporteNearby } from "@/src/types/reporteNearby"; // Asegúrate que la ruta sea correcta
+import { ReporteNearby } from "@/src/types/reporteNearby";
 
 const AnimatedFlashList = Animated.createAnimatedComponent(
   FlashList<ReporteNearby>
@@ -24,7 +23,7 @@ export const PostList = () => {
     isLoading,
   } = useNearbyPosts();
 
-  const { scrollHandler, headerHeight } = useHeaderVisibility();
+  const { scrollHandler } = useHeaderVisibility();
 
   const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
 
@@ -34,16 +33,13 @@ export const PostList = () => {
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  // Renderiza el componente PostCard (memoizado)
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ReporteNearby>) => {
-      // Pasa el post al componente memoizado
       return <MemoizedPostCard post={item} />;
     },
     []
   ); // El array de dependencias vacío es correcto si PostCard no depende de nada más en este scope
 
-  // Renderiza el indicador de carga en el footer
   const renderFooter = useCallback(() => {
     if (isFetchingNextPage) {
       return (
@@ -60,7 +56,6 @@ export const PostList = () => {
     return null;
   }, [isFetchingNextPage, hasNextPage, flatData.length]);
 
-  // --- Estados de Carga y Error ---
   if (isLoading) {
     return (
       <View style={styles.centerContainer}>
@@ -79,18 +74,13 @@ export const PostList = () => {
     );
   }
 
-  // --- Renderizado de la Lista ---
   return (
-    // Usamos StyleSheet para mejorar la legibilidad y rendimiento vs className
     <View style={styles.listContainer}>
       <AnimatedFlashList
         data={flatData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id_reporte.toString()}
-        // Proporciona una altura estimada *promedio*. Ajusta este valor
-        // a la altura más común de tus PostCard. Es crucial para el rendimiento.
-        estimatedItemSize={350} // AJUSTA ESTE VALOR
-        // --- Infinite Scroll ---
+        estimatedItemSize={350}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.8} // Carga un poco antes (80% del final visible)
         ListFooterComponent={renderFooter}
@@ -103,8 +93,8 @@ export const PostList = () => {
           </View>
         }
         // --- Conexión con Animación del Header ---
-        onScroll={scrollHandler} // Conecta el scroll a reanimated
-        scrollEventThrottle={16} // Necesario para que onScroll funcione fluidamente en iOS
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
         // --- Optimización y Comportamiento ---
         showsVerticalScrollIndicator={false}
         // contentContainerStyle={{ paddingTop: headerHeight.value }} // DESCOMENTA si el header se superpone al contenido
@@ -137,17 +127,13 @@ export const PostList = () => {
   );
 };
 
-// --- Estilos con StyleSheet ---
-// (Usar StyleSheet es generalmente más performante que clases de Tailwind/NativeWind en listas largas)
 const styles = StyleSheet.create({
   centerContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    // Adapta los colores según tu tema (background/dark:bg-background-dark)
-    // backgroundColor: '#ffffff', // Ejemplo claro
-    backgroundColor: "#171717", // Ejemplo oscuro
+    backgroundColor: "#171717",
   },
   loadingText: {
     marginTop: 10,

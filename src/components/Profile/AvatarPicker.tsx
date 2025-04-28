@@ -26,9 +26,8 @@ const AvatarPicker: React.FC<AvatarUploaderProps> = ({
   uploading = false,
 }) => {
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // Carga interna para el picker/manipulador
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Limpiar selección si la URL actual cambia externamente (ej: al guardar)
   useEffect(() => {
     setSelectedImageUri(null);
   }, [currentAvatarUrl]);
@@ -74,7 +73,7 @@ const AvatarPicker: React.FC<AvatarUploaderProps> = ({
     } catch (error) {
       console.error("Error picking or manipulating image:", error);
       Alert.alert("Error", "No se pudo seleccionar o procesar la imagen.");
-      onAvatarSelect(null); // Resetea si hay error
+      onAvatarSelect(null);
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +120,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 999, // Circular
+    borderRadius: 999,
     overflow: "hidden", // Asegura que la imagen no se salga del círculo
     marginBottom: 20,
     backgroundColor: "#e0e0e0", // Color de fondo mientras carga o si no hay imagen

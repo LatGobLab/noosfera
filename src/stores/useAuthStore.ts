@@ -11,9 +11,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   session: null,
   setSession: (session) => set({ session }),
   signOut: () => {
-    // Clear user profile from MMKV
     userProfileStorage.delete(PROFILE_STORAGE_KEY);
-    // Clear session
     set({ session: null });
   },
 }));

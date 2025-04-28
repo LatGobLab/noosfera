@@ -1,9 +1,9 @@
 import React from "react";
 import { View } from "react-native";
 import { ReporteNearby } from "@/src/types/reporteNearby";
-import { PostCardHeader } from "./PostCardHeader";
-import { PostCardGallery } from "./PostCardGallery";
-import { PostCardFooter } from "./PostCardFooter";
+import { PostCardHeader } from "./Card/PostCardHeader";
+import { PostCardGallery } from "./Card/PostCardGallery";
+import { PostCardFooter } from "./Card/PostCardFooter";
 
 type PostCardProps = {
   post: ReporteNearby;

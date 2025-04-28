@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 import formatRelativeDate from "@/src/lib/formatRelativeDate";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
+import { formatNumber } from "@/src/lib/formatNumber";
 
 type PostCardFooterProps = {
   descripcion: string;
@@ -15,12 +16,6 @@ type PostCardFooterProps = {
 };
 
 // Función para formatear números
-const formatNumber = (num: number): string => {
-  if (num < 1000) return num.toString();
-  if (num < 10000) return num.toLocaleString();
-  if (num < 1000000) return `${(num / 1000).toFixed(1)}k`;
-  return `${(num / 1000000).toFixed(1)}M`;
-};
 
 export const PostCardFooter = ({
   descripcion,
