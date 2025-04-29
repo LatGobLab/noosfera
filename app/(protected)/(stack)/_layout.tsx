@@ -48,6 +48,7 @@ export default function StackLayout() {
           options={{
             title: "Reportar Incidente",
             headerTitleAlign: "center",
+            headerShown: true,
           }}
         />
       </Stack>
