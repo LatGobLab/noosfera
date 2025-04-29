@@ -15,20 +15,14 @@ import {
   HeaderVisibilityProvider,
   useHeaderVisibility,
 } from "@/src/contexts/HeaderVisibilityContext";
-import Animated, {
-  useAnimatedStyle,
-  interpolate,
-  Extrapolation,
-} from "react-native-reanimated";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import React from "react";
 
-// Componente interno que usa el contexto
 function TabsLayoutContent() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const { profile, isLoading } = useUserProfile();
   const router = useRouter();
-  // Obtén los valores compartidos del contexto
   const { headerTranslateY, headerHeight } = useHeaderVisibility();
 
   useEffect(() => {
@@ -45,7 +39,6 @@ function TabsLayoutContent() {
     router.push("/(protected)/(stack)/report");
   };
 
-  // Estilo animado para el contenedor del header
   const animatedHeaderContainerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: headerTranslateY.value }],
@@ -78,29 +71,25 @@ function TabsLayoutContent() {
             alignItems: "center",
             justifyContent: "center",
           },
-          // Usa una función para renderizar el header personalizado
           header: ({ options, route }) => {
             const title = options.title ?? route.name;
             return (
-              // Contenedor exterior ANIMADO que controla la altura y el fondo
               <Animated.View
                 style={[
-                  styles.outerHeaderContainer, // Added base style
-                  animatedHeaderContainerStyle, // <<< APPLY ANIMATION HERE
+                  styles.outerHeaderContainer,
+                  animatedHeaderContainerStyle,
                   {
                     backgroundColor: isDark ? "#171717" : "#ffffff",
-                    height: headerHeight, // Use shared value directly
+                    height: headerHeight,
                   },
                 ]}
               >
-                {/* Contenedor interior NO animado directamente */}
                 <Animated.View
                   style={[
-                    styles.headerBase, // Estilo base del header
+                    styles.headerBase,
                     { backgroundColor: isDark ? "#171717" : "#ffffff" },
                   ]}
                 >
-                  {/* Contenido del Header */}
                   <View style={styles.headerContent}>
                     <Text
                       style={{
@@ -111,7 +100,6 @@ function TabsLayoutContent() {
                     >
                       {title}
                     </Text>
-                    {/* Icono de perfil solo en la pantalla 'index' */}
 
                     <View>
                       {isLoading ? (
@@ -199,7 +187,6 @@ function TabsLayoutContent() {
   );
 }
 
-// Componente principal que envuelve con el Provider
 export default function TabsLayout() {
   return (
     <HeaderVisibilityProvider>
@@ -208,8 +195,7 @@ export default function TabsLayout() {
   );
 }
 
-// Componente TabBarIcon (sin cambios relevantes)
-type IconName = "home" | "map" | "person" | "settings-outline"; // Asegúrate que estos nombres coincidan con tus pantallas o iconos
+type IconName = "home" | "map" | "person" | "settings-outline";
 
 function TabBarIcon({
   name,
@@ -222,7 +208,6 @@ function TabBarIcon({
   size: number;
   focused: boolean;
 }) {
-  // Usando clases de NativeWind directamente si está configurado
   const iconContainerClass = `items-center justify-center rounded-full w-10 h-10 flex ${
     focused ? "bg-white dark:bg-neutral-200" : "bg-transparent" // Ajuste de color dark
   }`;
@@ -251,11 +236,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, // Keep the border on the outer container
     borderBottomColor: "transparent", // Adjust color as needed or based on theme
   },
-  headerBase: {
-    // No longer needs absolute positioning or zIndex, it sits inside the outer container
-    // No longer needs border, handled by outer container
-    // overflow: "hidden", // Might still be useful depending on content
-  },
+  headerBase: {},
   headerContent: {
     height: 56, // Altura fija del contenido
     flexDirection: "row",

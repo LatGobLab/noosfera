@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getReportLocations } from "@/src/services/reportService";
 import { ReportMap } from "@/src/types/reporteMap";
 
-// Define query key
 const reportsLocationQueryKey = ["reports", "locations"];
 
 export const useGetReportsLocation = () => {
