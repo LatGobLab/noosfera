@@ -20,6 +20,7 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from "react-native-reanimated";
+import React from "react";
 
 // Componente interno que usa el contexto
 function TabsLayoutContent() {
@@ -40,6 +41,10 @@ function TabsLayoutContent() {
     router.push("/(protected)/(stack)/profile");
   };
 
+  const handleReportPress = () => {
+    router.push("/(protected)/(stack)/report");
+  };
+
   // Estilo animado para el contenedor del header
   const animatedHeaderContainerStyle = useAnimatedStyle(() => {
     return {
@@ -48,65 +53,66 @@ function TabsLayoutContent() {
   });
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarStyle: {
-          position: "absolute",
-          width: "30%",
-          bottom: 20,
-          left: 20,
-          right: 20,
-          marginLeft: "5%",
-          elevation: 50,
-          borderRadius: 30,
-          height: 56,
-          backgroundColor: "#171717",
-          borderTopWidth: 0,
-          paddingHorizontal: 0,
-          overflow: "hidden",
-          paddingTop: 7,
-        },
-        tabBarItemStyle: {
-          flex: 1,
-          height: 56,
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        // Usa una función para renderizar el header personalizado
-        header: ({ options, route }) => {
-          const title = options.title ?? route.name;
-          return (
-            // Contenedor exterior ANIMADO que controla la altura y el fondo
-            <Animated.View
-              style={[
-                styles.outerHeaderContainer, // Added base style
-                animatedHeaderContainerStyle, // <<< APPLY ANIMATION HERE
-                {
-                  backgroundColor: isDark ? "#171717" : "#ffffff",
-                  height: headerHeight, // Use shared value directly
-                },
-              ]}
-            >
-              {/* Contenedor interior NO animado directamente */}
+    <>
+      <Tabs
+        screenOptions={{
+          tabBarStyle: {
+            position: "absolute",
+            width: "30%",
+            bottom: 20,
+            left: 20,
+            right: 20,
+            marginLeft: "5%",
+            elevation: 50,
+            borderRadius: 30,
+            height: 56,
+            backgroundColor: "#171717",
+            borderTopWidth: 0,
+            paddingHorizontal: 0,
+            overflow: "hidden",
+            paddingTop: 7,
+          },
+          tabBarItemStyle: {
+            flex: 1,
+            height: 56,
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          // Usa una función para renderizar el header personalizado
+          header: ({ options, route }) => {
+            const title = options.title ?? route.name;
+            return (
+              // Contenedor exterior ANIMADO que controla la altura y el fondo
               <Animated.View
                 style={[
-                  styles.headerBase, // Estilo base del header
-                  { backgroundColor: isDark ? "#171717" : "#ffffff" },
+                  styles.outerHeaderContainer, // Added base style
+                  animatedHeaderContainerStyle, // <<< APPLY ANIMATION HERE
+                  {
+                    backgroundColor: isDark ? "#171717" : "#ffffff",
+                    height: headerHeight, // Use shared value directly
+                  },
                 ]}
               >
-                {/* Contenido del Header */}
-                <View style={styles.headerContent}>
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: 18,
-                      color: isDark ? "#ffffff" : "#000000",
-                    }}
-                  >
-                    {title}
-                  </Text>
-                  {/* Icono de perfil solo en la pantalla 'index' */}
-                  {route.name === "index" && (
+                {/* Contenedor interior NO animado directamente */}
+                <Animated.View
+                  style={[
+                    styles.headerBase, // Estilo base del header
+                    { backgroundColor: isDark ? "#171717" : "#ffffff" },
+                  ]}
+                >
+                  {/* Contenido del Header */}
+                  <View style={styles.headerContent}>
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: 18,
+                        color: isDark ? "#ffffff" : "#000000",
+                      }}
+                    >
+                      {title}
+                    </Text>
+                    {/* Icono de perfil solo en la pantalla 'index' */}
+
                     <View>
                       {isLoading ? (
                         <ActivityIndicator size="small" color={"#3b82f6"} />
@@ -123,7 +129,9 @@ function TabsLayoutContent() {
                           <View
                             style={[
                               styles.profilePlaceholder,
-                              { backgroundColor: isDark ? "#555" : "#e0e0e0" },
+                              {
+                                backgroundColor: isDark ? "#555" : "#e0e0e0",
+                              },
                             ]}
                           >
                             <Ionicons
@@ -135,48 +143,59 @@ function TabsLayoutContent() {
                         </Pressable>
                       )}
                     </View>
-                  )}
-                </View>
+                  </View>
+                </Animated.View>
               </Animated.View>
-            </Animated.View>
-          );
-        },
-        headerTintColor: isDark ? "#ffffff" : "#000000",
-        tabBarActiveTintColor: "#FFFFFF",
-        tabBarInactiveTintColor: "#666666",
-        tabBarShowLabel: false,
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Feed",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name="home"
-              color={color}
-              size={size}
-              focused={focused}
-            />
-          ),
+            );
+          },
+          headerTintColor: isDark ? "#ffffff" : "#000000",
+          tabBarActiveTintColor: "#FFFFFF",
+          tabBarInactiveTintColor: "#666666",
+          tabBarShowLabel: false,
         }}
-      />
-      <Tabs.Screen
-        name="map"
-        options={{
-          title: "Mapa",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name="map"
-              color={color}
-              size={size}
-              focused={focused}
-            />
-          ),
-        }}
-      />
-      {/* Asegúrate de tener pantallas para 'person' y 'settings-outline' si las usas en TabBarIcon */}
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Feed",
+            tabBarIcon: ({ color, size, focused }) => (
+              <TabBarIcon
+                name="home"
+                color={color}
+                size={size}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="map"
+          options={{
+            title: "Mapa",
+            tabBarIcon: ({ color, size, focused }) => (
+              <TabBarIcon
+                name="map"
+                color={color}
+                size={size}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        {/* Asegúrate de tener pantallas para 'person' y 'settings-outline' si las usas en TabBarIcon */}
+      </Tabs>
+
+      {/* Botón de reporte en la esquina inferior derecha */}
+      <Pressable
+        style={[
+          styles.reportButton,
+          { backgroundColor: isDark ? "#171717" : "#171717" },
+        ]}
+        onPress={handleReportPress}
+      >
+        <Ionicons name="alert-circle" size={24} color="#FFFFFF" />
+      </Pressable>
+    </>
   );
 }
 
@@ -258,5 +277,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10, // Ajustado para consistencia
+  },
+  reportButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 50,
   },
 });

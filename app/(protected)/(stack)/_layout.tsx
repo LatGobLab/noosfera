@@ -39,7 +39,14 @@ export default function StackLayout() {
         <Stack.Screen
           name="profile"
           options={{
-            title: "Profile",
+            title: "Perfil",
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="report"
+          options={{
+            title: "Reportar Incidente",
             headerTitleAlign: "center",
           }}
         />
