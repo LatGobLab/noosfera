@@ -1,12 +1,12 @@
 import React from "react";
-import { StyleSheet, View, Dimensions } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps"; // Importa PROVIDER_GOOGLE
+import { Dimensions, StyleSheet, View } from "react-native";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <MapView
-        provider={PROVIDER_GOOGLE} // ¡Importante para usar Google Maps en Android!
+        provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
           latitude: 37.78825, // Latitud inicial (ej: San Francisco)
@@ -27,9 +27,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   map: {
-    // width: Dimensions.get('window').width,
-    // height: Dimensions.get('window').height,
-    // O usa StyleSheet.absoluteFillObject para que ocupe todo
-    ...StyleSheet.absoluteFillObject,
+    marginTop: 100,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
 });

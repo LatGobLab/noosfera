@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import { PostCard } from "./PostCard";
 import useNearbyPosts from "@/src/hooks/useNearbyPosts";
@@ -14,6 +14,8 @@ const AnimatedFlashList = Animated.createAnimatedComponent(
 const MemoizedPostCard = React.memo(PostCard);
 
 export const PostList = () => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const {
     data,
     error,
@@ -21,6 +23,7 @@ export const PostList = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
+    refetch,
   } = useNearbyPosts();
 
   const { scrollHandler } = useHeaderVisibility();
@@ -32,6 +35,12 @@ export const PostList = () => {
       fetchNextPage();
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
+  }, [refetch]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ReporteNearby>) => {
@@ -77,6 +86,7 @@ export const PostList = () => {
   return (
     <View style={styles.listContainer}>
       <AnimatedFlashList
+        className="pt-12 "
         data={flatData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id_reporte.toString()}
@@ -84,6 +94,8 @@ export const PostList = () => {
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.8} // Carga un poco antes (80% del final visible)
         ListFooterComponent={renderFooter}
+        refreshing={isRefreshing}
+        onRefresh={handleRefresh}
         // --- Manejo de Lista Vacía ---
         ListEmptyComponent={
           <View style={styles.centerContainer}>

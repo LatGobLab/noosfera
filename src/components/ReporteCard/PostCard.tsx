@@ -11,7 +11,7 @@ type PostCardProps = {
 
 export const PostCard = ({ post }: PostCardProps) => {
   return (
-    <View className="bg-background dark:bg-background-dark">
+    <View className="bg-background dark:bg-background-dark pt-5">
       <View className="">
         <PostCardHeader
           profile_avatar_url={post.profile_avatar_url ?? ""}
