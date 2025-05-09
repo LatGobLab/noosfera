@@ -47,16 +47,6 @@ export default function ReportScreen() {
       className="flex-1"
       style={{ backgroundColor: isDark ? "#171717" : "#ffffff" }}
     >
-      <Stack.Screen
-        options={{
-          title: "Reportar",
-          headerTintColor: isDark ? "#ffffff" : "#000000",
-          headerStyle: {
-            backgroundColor: isDark ? "#171717" : "#ffffff",
-          },
-        }}
-      />
-
       <ScrollView className="flex-1 p-4">
         <Text
           className="mb-6"

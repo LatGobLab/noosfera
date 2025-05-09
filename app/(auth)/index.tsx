@@ -34,7 +34,7 @@ export default function Welcome() {
           className="dark:bg-white bg-[#1E1E1E] w-full py-3 rounded-2xl items-center justify-center"
           onPress={() => router.push("/login")}
         >
-          <Text className="text-white dark:text-black font-bold">
+          <Text className="text-white dark:text-black font-semibold">
             Iniciar sesión
           </Text>
         </Pressable>

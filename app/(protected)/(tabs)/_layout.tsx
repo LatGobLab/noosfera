@@ -170,10 +170,8 @@ function TabsLayoutContent() {
             ),
           }}
         />
-        {/* Asegúrate de tener pantallas para 'person' y 'settings-outline' si las usas en TabBarIcon */}
       </Tabs>
 
-      {/* Botón de reporte en la esquina inferior derecha */}
       <Pressable
         style={[
           styles.reportButton,
@@ -209,14 +207,14 @@ function TabBarIcon({
   focused: boolean;
 }) {
   const iconContainerClass = `items-center justify-center rounded-full w-10 h-10 flex ${
-    focused ? "bg-white dark:bg-neutral-200" : "bg-transparent" // Ajuste de color dark
+    focused ? "bg-white dark:bg-neutral-200" : "bg-transparent"
   }`;
   const iconColor = focused ? "#000000" : color;
 
   return (
     <View className={iconContainerClass}>
       <Ionicons
-        name={focused ? name : (`${name}-outline` as any)} // Asume patrón outline para inactivo
+        name={focused ? name : (`${name}-outline` as any)}
         size={24}
         color={iconColor}
       />

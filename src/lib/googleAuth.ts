@@ -16,7 +16,6 @@ export const useGoogleAuth = () => {
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS,
     // scopes: ['profile', 'email'],
     redirectUri: redirectUri, 
-
   });
 
   useEffect(() => {
@@ -29,7 +28,6 @@ export const useGoogleAuth = () => {
             provider: 'google',
             token: id_token,
           });
-
           if (error) {
             console.error("Supabase signInWithIdToken error:", error);
             Alert.alert("Error Supabase", `No se pudo iniciar sesión con Google: ${error.message}`);

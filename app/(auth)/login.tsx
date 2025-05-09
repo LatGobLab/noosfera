@@ -165,7 +165,7 @@ export default function Login() {
                   onChangeText={(text) => {
                     setPassword(text);
                     if (text) {
-                      setPasswordError("La contraseña es obligatoria");
+                      setPasswordError("");
                     }
                   }}
                   secureTextEntry={!showPassword}
