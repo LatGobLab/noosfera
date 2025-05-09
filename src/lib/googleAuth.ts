@@ -7,15 +7,15 @@ import * as AuthSession from 'expo-auth-session';
 
 export const useGoogleAuth = () => {
 
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: 'com.latgoblab.noosfera',
-  });
+  // const redirectUri = AuthSession.makeRedirectUri({
+  //   scheme: 'com.latgoblab.noosfera',
+  // });
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS,
     // scopes: ['profile', 'email'],
-    redirectUri: redirectUri, 
+    // redirectUri: redirectUri, 
   });
 
   useEffect(() => {
