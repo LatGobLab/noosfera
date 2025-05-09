@@ -14,6 +14,7 @@ import { router } from "expo-router";
 import supabase from "@/src/lib/supabase";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
+import ToastExample from "@/src/components/ToastExample";
 
 export default function ProfileScreen() {
   const session = useAuthStore((state) => state.session);
@@ -65,6 +66,7 @@ export default function ProfileScreen() {
                   {profile.full_name}
                 </Text>
               )}
+              <ToastExample />
               <TouchableOpacity
                 className="mt-3 p-2 bg-blue-100 dark:bg-blue-900 rounded-full"
                 onPress={refreshProfile}
