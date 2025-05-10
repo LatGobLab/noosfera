@@ -1,11 +1,13 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import formatRelativeDate from "@/src/lib/formatRelativeDate";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
 import { formatNumber } from "@/src/lib/formatNumber";
+import { useLike } from "@/src/hooks/useLike";
 
 type PostCardFooterProps = {
+  id_reporte: number;
   descripcion: string;
   likes_count: number;
   comments_count: number;
@@ -15,9 +17,8 @@ type PostCardFooterProps = {
   tipo_nombre: string;
 };
 
-// Función para formatear números
-
 export const PostCardFooter = ({
+  id_reporte,
   descripcion,
   likes_count,
   comments_count,
@@ -30,15 +31,33 @@ export const PostCardFooter = ({
   const isDark = colorScheme === "dark";
   const iconColor = isDark ? "#e5e7eb" : "#374151"; // gray-200 for dark, gray-800 for light
 
+  // Use the like hook
+  const { isLiked, isPending, toggleLike } = useLike(id_reporte);
+
+  // Handle the like button press
+  const handleLikePress = () => {
+    if (!isPending) {
+      toggleLike();
+    }
+  };
+
   return (
     <View className="px-4 pb-4">
       <View className="flex-row flex-wrap gap-6 mb-2">
-        <View className="flex-row items-center">
-          <AntDesign name="hearto" size={22} color={iconColor} />
+        <Pressable
+          onPress={handleLikePress}
+          className="flex-row items-center"
+          disabled={isPending}
+        >
+          <AntDesign
+            name={isLiked ? "heart" : "hearto"}
+            size={22}
+            color={isLiked ? "#ef4444" : iconColor} // red-500 if liked
+          />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">
             {formatNumber(likes_count)}
           </Text>
-        </View>
+        </Pressable>
         <View className="flex-row items-center">
           <Ionicons name="chatbubble-outline" size={22} color={iconColor} />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">

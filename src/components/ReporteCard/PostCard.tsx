@@ -28,6 +28,7 @@ export const PostCard = ({ post }: PostCardProps) => {
           )}
         </View>
         <PostCardFooter
+          id_reporte={post.id_reporte}
           descripcion={post.descripcion}
           likes_count={post.likes_count}
           comments_count={post.comments_count}
