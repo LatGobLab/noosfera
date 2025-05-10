@@ -20,7 +20,7 @@ type PostCardFooterProps = {
 export const PostCardFooter = ({
   id_reporte,
   descripcion,
-  likes_count,
+  likes_count: initialLikesCount,
   comments_count,
   distance_meters,
   fecha_creacion,
@@ -32,7 +32,10 @@ export const PostCardFooter = ({
   const iconColor = isDark ? "#e5e7eb" : "#374151"; // gray-200 for dark, gray-800 for light
 
   // Use the like hook
-  const { isLiked, isPending, toggleLike } = useLike(id_reporte);
+  const { isLiked, isPending, toggleLike, optimisticLikesCount } = useLike(
+    id_reporte,
+    initialLikesCount
+  );
 
   // Handle the like button press
   const handleLikePress = () => {
@@ -55,7 +58,7 @@ export const PostCardFooter = ({
             color={isLiked ? "#ef4444" : iconColor} // red-500 if liked
           />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">
-            {formatNumber(likes_count)}
+            {formatNumber(optimisticLikesCount)}
           </Text>
         </Pressable>
         <View className="flex-row items-center">
