@@ -6,6 +6,7 @@ import queryClient from "@/src/services/queryClient";
 import { useColorScheme } from "nativewind";
 import { HeaderVisibilityProvider } from "@/src/contexts/HeaderVisibilityContext";
 import { ToastProvider } from "@/src/contexts/ToastContext";
+import { GlobalCommentsBottomSheet } from "@/src/components/BottomSheets/GlobalCommentsBottomSheet";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -17,6 +18,7 @@ export default function RootLayout() {
           <HeaderVisibilityProvider>
             <ToastProvider>
               <RootLayoutNavigation />
+              <GlobalCommentsBottomSheet />
             </ToastProvider>
           </HeaderVisibilityProvider>
         </ThemeProvider>

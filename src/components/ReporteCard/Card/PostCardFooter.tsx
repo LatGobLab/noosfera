@@ -5,6 +5,7 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
 import { formatNumber } from "@/src/lib/formatNumber";
 import { useLike } from "@/src/hooks/useLike";
+import { useCommentsBottomSheetStore } from "@/src/stores/commentsBottomSheetStore";
 
 type PostCardFooterProps = {
   id_reporte: number;
@@ -31,6 +32,9 @@ export const PostCardFooter = ({
   const isDark = colorScheme === "dark";
   const iconColor = isDark ? "#e5e7eb" : "#374151"; // gray-200 for dark, gray-800 for light
 
+  // Use the global comments bottom sheet store
+  const openCommentsSheet = useCommentsBottomSheetStore((state) => state.open);
+
   // Use the like hook
   const { isLiked, isPending, toggleLike, optimisticLikesCount } = useLike(
     id_reporte,
@@ -42,6 +46,11 @@ export const PostCardFooter = ({
     if (!isPending) {
       toggleLike();
     }
+  };
+
+  // Handle opening comments bottom sheet
+  const handleOpenComments = () => {
+    openCommentsSheet(id_reporte);
   };
 
   return (
@@ -61,12 +70,15 @@ export const PostCardFooter = ({
             {formatNumber(optimisticLikesCount)}
           </Text>
         </Pressable>
-        <View className="flex-row items-center">
+        <Pressable
+          className="flex-row items-center"
+          onPress={handleOpenComments}
+        >
           <Ionicons name="chatbubble-outline" size={22} color={iconColor} />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">
             {formatNumber(comments_count)}
           </Text>
-        </View>
+        </Pressable>
       </View>
 
       <View className="flex-row flex-wrap justify-between">
