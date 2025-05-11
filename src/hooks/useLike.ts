@@ -1,24 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toggleLike, checkLikeStatus } from '../services/likeService';
 import { useUserProfile } from './useUserProfile';
-import { useState, useEffect } from 'react';
 import { useToast } from "@/src/contexts/ToastContext";
 import { useLocationStore } from '@/src/stores/useLocationStore';
 
-type ReportInCache = {
-  id_reporte: number;
-  likes_count: number;
-};
 
-export const useLike = (reporteId: number, initialLikesCount: number) => {
+export const useLike = (reporteId: number) => {
   const { profile } = useUserProfile();
   const queryClient = useQueryClient();
   const userId = profile?.id;
   const { showToast } = useToast();
   const { latitude, longitude } = useLocationStore();
-
-  const [optimisticLikesCount, setOptimisticLikesCount] = useState(initialLikesCount);
-  console.log("optimisticLikesCount", optimisticLikesCount, initialLikesCount);
 
   const { data: isLiked = false, isLoading: isLikeStatusLoading } = useQuery({
     queryKey: ['like', userId, reporteId],
@@ -28,10 +20,6 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
     },
     enabled: !!userId,
   });
-
-  useEffect(() => {
-    setOptimisticLikesCount(initialLikesCount);
-  }, [initialLikesCount]);
 
   // Mutation to toggle like status
   const { mutate: toggleLikeMutation, isPending } = useMutation({
@@ -54,31 +42,6 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
       const newOptimisticIsLiked = !previousIsLiked;
       queryClient.setQueryData(['like', userId, reporteId], newOptimisticIsLiked);
 
-      // Update local optimistic likes count
-      setOptimisticLikesCount(prevCount => 
-        prevCount + (newOptimisticIsLiked ? 1 : -1)
-      );
-
-      // Optimistically update the likes_count in the 'nearbyPosts' cache
-      queryClient.setQueryData(['nearbyPosts', latitude, longitude], (oldData: any) => {
-        if (!oldData) return oldData;
-        
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page: any) => ({
-            ...page,
-            data: page.data.map((report: ReportInCache) =>
-              report.id_reporte === reporteId
-                ? {
-                    ...report,
-                    likes_count: report.likes_count + (newOptimisticIsLiked ? 1 : -1),
-                  }
-                : report
-            )
-          }))
-        };
-      });
-
       // Return a context object with the snapshotted value
       return { previousIsLiked, previousReports };
     },
@@ -90,43 +53,21 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
         queryClient.setQueryData(['nearbyPosts', latitude, longitude], context.previousReports);
       }
       
-      // Rollback the optimistic likes count
-      setOptimisticLikesCount(initialLikesCount);
       showToast("Error al dar like", "error");
     },
     onSuccess: (data) => {
-      // `data` is { isLiked: boolean, likesCount: number } from the server
       if (!userId) return;
 
       // Ensure the 'like' status is up-to-date with server response
       queryClient.setQueryData(['like', userId, reporteId], data.isLiked);
 
-      // Update the local optimistic count with the server value
-      setOptimisticLikesCount(data.likesCount);
-
-      // Ensure the likes_count in 'nearbyPosts' cache is up-to-date with server response
-      queryClient.setQueryData(['nearbyPosts', latitude, longitude], (oldData: any) => {
-        if (!oldData) return oldData;
-        
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page: any) => ({
-            ...page,
-            data: page.data.map((report: ReportInCache) =>
-              report.id_reporte === reporteId
-                ? { ...report, likes_count: data.likesCount }
-                : report
-            )
-          }))
-        };
-      });
+      // Instead of updating optimistic count, just invalidate queries to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ['nearbyPosts', latitude, longitude] });
     },
     onSettled: () => {
       if (!userId) return;
       // Always refetch after error or success to ensure consistency
       queryClient.invalidateQueries({ queryKey: ['like', userId, reporteId] });
-      // No invalidamos nearbyPosts para evitar refetch innecesario
-      // La actualización optimista debería ser suficiente
     },
   });
 
@@ -135,6 +76,5 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
     isLoading: isLikeStatusLoading || !userId, 
     isPending,
     toggleLike: toggleLikeMutation,
-    optimisticLikesCount,
   };
 }; 

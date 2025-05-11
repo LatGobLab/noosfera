@@ -25,7 +25,7 @@ type PostCardFooterProps = {
 export const PostCardFooter = ({
   id_reporte,
   descripcion,
-  likes_count: initialLikesCount,
+  likes_count,
   comments_count,
   distance_meters,
   fecha_creacion,
@@ -37,10 +37,7 @@ export const PostCardFooter = ({
   const iconColor = isDark ? "#e5e7eb" : "#374151";
 
   // Use the like hook
-  const { isLiked, isPending, toggleLike, optimisticLikesCount } = useLike(
-    id_reporte,
-    initialLikesCount
-  );
+  const { isLiked, isPending, toggleLike } = useLike(id_reporte);
 
   // Ref for the bottom sheet modal
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -71,7 +68,7 @@ export const PostCardFooter = ({
             color={isLiked ? "#ef4444" : iconColor} // red-500 if liked
           />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">
-            {formatNumber(optimisticLikesCount)}
+            {formatNumber(likes_count)}
           </Text>
         </Pressable>
         <Pressable
