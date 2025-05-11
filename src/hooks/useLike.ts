@@ -3,9 +3,10 @@ import { toggleLike, checkLikeStatus } from '../services/likeService';
 import { useUserProfile } from './useUserProfile';
 import { useState, useEffect } from 'react';
 import { useToast } from "@/src/contexts/ToastContext";
+import { useLocationStore } from '@/src/stores/useLocationStore';
 
 type ReportInCache = {
-  id: number;
+  id_reporte: number;
   likes_count: number;
 };
 
@@ -14,8 +15,10 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
   const queryClient = useQueryClient();
   const userId = profile?.id;
   const { showToast } = useToast();
+  const { latitude, longitude } = useLocationStore();
 
   const [optimisticLikesCount, setOptimisticLikesCount] = useState(initialLikesCount);
+  console.log("optimisticLikesCount", optimisticLikesCount, initialLikesCount);
 
   const { data: isLiked = false, isLoading: isLikeStatusLoading } = useQuery({
     queryKey: ['like', userId, reporteId],
@@ -41,11 +44,11 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
 
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: ['like', userId, reporteId] });
-      await queryClient.cancelQueries({ queryKey: ['reports'] }); // Assuming 'reports' is your general query key for posts
+      await queryClient.cancelQueries({ queryKey: ['nearbyPosts', latitude, longitude] });
 
       // Snapshot the previous value
       const previousIsLiked = queryClient.getQueryData<boolean>(['like', userId, reporteId]);
-      const previousReports = queryClient.getQueryData<ReportInCache[]>(['reports']);
+      const previousReports = queryClient.getQueryData(['nearbyPosts', latitude, longitude]);
 
       // Optimistically update to the new value
       const newOptimisticIsLiked = !previousIsLiked;
@@ -56,17 +59,25 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
         prevCount + (newOptimisticIsLiked ? 1 : -1)
       );
 
-      // Optimistically update the likes_count in the 'reports' cache
-      queryClient.setQueryData<ReportInCache[] | undefined>(['reports'], (oldReports) =>
-        oldReports?.map(report =>
-          report.id === reporteId
-            ? {
-                ...report,
-                likes_count: report.likes_count + (newOptimisticIsLiked ? 1 : -1),
-              }
-            : report
-        )
-      );
+      // Optimistically update the likes_count in the 'nearbyPosts' cache
+      queryClient.setQueryData(['nearbyPosts', latitude, longitude], (oldData: any) => {
+        if (!oldData) return oldData;
+        
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: page.data.map((report: ReportInCache) =>
+              report.id_reporte === reporteId
+                ? {
+                    ...report,
+                    likes_count: report.likes_count + (newOptimisticIsLiked ? 1 : -1),
+                  }
+                : report
+            )
+          }))
+        };
+      });
 
       // Return a context object with the snapshotted value
       return { previousIsLiked, previousReports };
@@ -76,16 +87,12 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
       // Rollback on error
       queryClient.setQueryData(['like', userId, reporteId], context.previousIsLiked);
       if (context.previousReports) {
-        queryClient.setQueryData(['reports'], context.previousReports);
+        queryClient.setQueryData(['nearbyPosts', latitude, longitude], context.previousReports);
       }
       
       // Rollback the optimistic likes count
       setOptimisticLikesCount(initialLikesCount);
       showToast("Error al dar like", "error");
-
-      
-      // console.error("Failed to toggle like:", err);
-      // Here you could also add a toast notification to inform the user
     },
     onSuccess: (data) => {
       // `data` is { isLiked: boolean, likesCount: number } from the server
@@ -97,20 +104,29 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
       // Update the local optimistic count with the server value
       setOptimisticLikesCount(data.likesCount);
 
-      // Ensure the likes_count in 'reports' cache is up-to-date with server response
-      queryClient.setQueryData<ReportInCache[] | undefined>(['reports'], (oldReports) =>
-        oldReports?.map(report =>
-          report.id === reporteId
-            ? { ...report, likes_count: data.likesCount }
-            : report
-        )
-      );
+      // Ensure the likes_count in 'nearbyPosts' cache is up-to-date with server response
+      queryClient.setQueryData(['nearbyPosts', latitude, longitude], (oldData: any) => {
+        if (!oldData) return oldData;
+        
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: page.data.map((report: ReportInCache) =>
+              report.id_reporte === reporteId
+                ? { ...report, likes_count: data.likesCount }
+                : report
+            )
+          }))
+        };
+      });
     },
     onSettled: () => {
       if (!userId) return;
       // Always refetch after error or success to ensure consistency
       queryClient.invalidateQueries({ queryKey: ['like', userId, reporteId] });
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      // No invalidamos nearbyPosts para evitar refetch innecesario
+      // La actualización optimista debería ser suficiente
     },
   });
 

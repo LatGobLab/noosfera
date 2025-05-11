@@ -9,7 +9,7 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
-import { CommentsBottomSheet } from "../../BottomSheets/CommentsSheet";
+import { CommentsBottomSheet } from "@/src/components/BottomSheets/Comments/CommentsSheet";
 
 type PostCardFooterProps = {
   id_reporte: number;
@@ -34,7 +34,7 @@ export const PostCardFooter = ({
 }: PostCardFooterProps) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
-  const iconColor = isDark ? "#e5e7eb" : "#374151"; // gray-200 for dark, gray-800 for light
+  const iconColor = isDark ? "#e5e7eb" : "#374151";
 
   // Use the like hook
   const { isLiked, isPending, toggleLike, optimisticLikesCount } = useLike(

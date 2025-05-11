@@ -36,7 +36,7 @@ export const PostCardHeader = ({
         </View>
 
         <Text
-          className={`text-base text-center bg-background-dark dark:bg-background rounded-full px-4 py-2 ${
+          className={`font-semibold text-base text-center bg-background-dark dark:bg-background rounded-full px-4 py-2 ${
             estatus
               ? "text-green-600 dark:text-green-400"
               : "text-white dark:text-black"
