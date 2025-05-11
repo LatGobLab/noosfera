@@ -2,30 +2,21 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toggleLike, checkLikeStatus } from '../services/likeService';
 import { useUserProfile } from './useUserProfile';
 import { useState, useEffect } from 'react';
+import { useToast } from "@/src/contexts/ToastContext";
 
-// Assuming a Report type might look like this, adjust if you have a defined type
-// For example, import { Report } from '@/src/types';
 type ReportInCache = {
   id: number;
   likes_count: number;
-  // ... other report properties
-};
-
-// Define return type for toggleLike service
-type LikeStatus = {
-  isLiked: boolean;
-  likesCount: number;
 };
 
 export const useLike = (reporteId: number, initialLikesCount: number) => {
   const { profile } = useUserProfile();
   const queryClient = useQueryClient();
   const userId = profile?.id;
-  
-  // Local state for optimistic likes count
+  const { showToast } = useToast();
+
   const [optimisticLikesCount, setOptimisticLikesCount] = useState(initialLikesCount);
 
-  // Query to check if the post is liked by the current user
   const { data: isLiked = false, isLoading: isLikeStatusLoading } = useQuery({
     queryKey: ['like', userId, reporteId],
     queryFn: () => {
@@ -35,7 +26,6 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
     enabled: !!userId,
   });
 
-  // Update optimistic count when initial count changes from props
   useEffect(() => {
     setOptimisticLikesCount(initialLikesCount);
   }, [initialLikesCount]);
@@ -91,6 +81,8 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
       
       // Rollback the optimistic likes count
       setOptimisticLikesCount(initialLikesCount);
+      showToast("Error al dar like", "error");
+
       
       // console.error("Failed to toggle like:", err);
       // Here you could also add a toast notification to inform the user
@@ -124,7 +116,7 @@ export const useLike = (reporteId: number, initialLikesCount: number) => {
 
   return {
     isLiked,
-    isLoading: isLikeStatusLoading || !userId, // isLoading for the initial check
+    isLoading: isLikeStatusLoading || !userId, 
     isPending,
     toggleLike: toggleLikeMutation,
     optimisticLikesCount,

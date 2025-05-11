@@ -8,7 +8,7 @@ export default function StackLayout() {
   const backgroundColor = isDark ? "#171717" : "#ffffff";
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View className="flex-1" style={{ backgroundColor }}>
       <Stack
         screenOptions={{
           headerStyle: {
@@ -19,7 +19,7 @@ export default function StackLayout() {
             fontWeight: "bold",
           },
           contentStyle: { backgroundColor },
-          animation: "fade",
+          animation: "fade_from_bottom",
         }}
       >
         <Stack.Screen
@@ -51,13 +51,23 @@ export default function StackLayout() {
             headerShown: true,
           }}
         />
+        <Stack.Screen
+          name="comentarios"
+          options={{
+            headerShown: false,
+            presentation: "formSheet",
+            gestureDirection: "vertical",
+            animation: "slide_from_bottom",
+            gestureEnabled: false,
+            sheetGrabberVisible: false,
+            sheetInitialDetentIndex: 0,
+            sheetAllowedDetents: [0.9],
+            sheetCornerRadius: 20,
+            sheetExpandsWhenScrolledToEdge: false,
+            sheetElevation: 24,
+          }}
+        />
       </Stack>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

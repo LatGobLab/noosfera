@@ -20,12 +20,8 @@ export default function ProtectedLayout() {
   }, [session]);
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
+    <View className="flex-1" style={{ backgroundColor }}>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(stack)" options={{ presentation: "modal" }} />
         <Stack.Screen
@@ -41,9 +37,3 @@ export default function ProtectedLayout() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

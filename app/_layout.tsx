@@ -7,17 +7,21 @@ import { useColorScheme } from "nativewind";
 import { HeaderVisibilityProvider } from "@/src/contexts/HeaderVisibilityContext";
 import { ToastProvider } from "@/src/contexts/ToastContext";
 
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <HeaderVisibilityProvider>
-          <ToastProvider>
-            <RootLayoutNavigation />
-          </ToastProvider>
-        </HeaderVisibilityProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <HeaderVisibilityProvider>
+            <ToastProvider>
+              <RootLayoutNavigation />
+            </ToastProvider>
+          </HeaderVisibilityProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
 
