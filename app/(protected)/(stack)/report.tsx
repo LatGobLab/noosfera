@@ -45,7 +45,7 @@ export default function ReportScreen() {
   return (
     <View
       className="flex-1"
-      style={{ backgroundColor: isDark ? "#171717" : "#ffffff" }}
+      style={{ backgroundColor: isDark ? "#0d0f15" : "#ffffff" }}
     >
       <ScrollView className="flex-1 p-4">
         <Text

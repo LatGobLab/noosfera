@@ -59,7 +59,7 @@
           "backgroundColor": "#ffffff",
           "dark": {
             "image": "./assets/images/noosferaWhite.png",
-            "backgroundColor": "#171717"
+            "backgroundColor": "#0d0f15"
           }
         }
       ],

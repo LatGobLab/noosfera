@@ -23,7 +23,7 @@ module.exports = {
         },
         background: {
           DEFAULT: "#FFFFFF",
-          dark: "#171717",
+          dark: "#0d0f15",
         },
         text: {
           DEFAULT: "#000000",

@@ -5,7 +5,7 @@ import { View, StyleSheet } from "react-native";
 export default function StackLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
-  const backgroundColor = isDark ? "#171717" : "#ffffff";
+  const backgroundColor = isDark ? "#0d0f15" : "#ffffff";
 
   return (
     <View style={[styles.container, { backgroundColor }]}>

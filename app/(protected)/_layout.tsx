@@ -10,7 +10,7 @@ export default function ProtectedLayout() {
   const router = useRouter();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
-  const backgroundColor = isDark ? "#171717" : "#ffffff";
+  const backgroundColor = isDark ? "#0d0f15" : "#ffffff";
 
   useEffect(() => {
     if (!session) {

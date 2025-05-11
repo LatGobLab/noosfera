@@ -59,7 +59,7 @@ function TabsLayoutContent() {
             elevation: 50,
             borderRadius: 30,
             height: 56,
-            backgroundColor: "#171717",
+            backgroundColor: "#0d0f15",
             borderTopWidth: 0,
             paddingHorizontal: 0,
             overflow: "hidden",
@@ -79,7 +79,7 @@ function TabsLayoutContent() {
                   styles.outerHeaderContainer,
                   animatedHeaderContainerStyle,
                   {
-                    backgroundColor: isDark ? "#171717" : "#ffffff",
+                    backgroundColor: isDark ? "#0d0f15" : "#ffffff",
                     height: headerHeight,
                   },
                 ]}
@@ -87,7 +87,7 @@ function TabsLayoutContent() {
                 <Animated.View
                   style={[
                     styles.headerBase,
-                    { backgroundColor: isDark ? "#171717" : "#ffffff" },
+                    { backgroundColor: isDark ? "#0d0f15" : "#ffffff" },
                   ]}
                 >
                   <View style={styles.headerContent}>
@@ -175,7 +175,7 @@ function TabsLayoutContent() {
       <Pressable
         style={[
           styles.reportButton,
-          { backgroundColor: isDark ? "#171717" : "#171717" },
+          { backgroundColor: isDark ? "#0d0f15" : "#0d0f15" },
         ]}
         onPress={handleReportPress}
       >

@@ -32,7 +32,7 @@ function RootLayoutNavigation() {
   const { colorScheme } = useColorScheme();
   const isDarkMode = colorScheme === "dark";
 
-  const statusBarColor = isDarkMode ? "#171717" : "#ffffff";
+  const statusBarColor = isDarkMode ? "#0d0f15" : "#ffffff";
   const statusBarStyle = isDarkMode ? "light" : "dark";
 
   return (

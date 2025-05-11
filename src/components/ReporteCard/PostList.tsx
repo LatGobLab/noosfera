@@ -96,6 +96,7 @@ export const PostList = () => {
         ListFooterComponent={renderFooter}
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
+        progressViewOffset={60}
         // --- Manejo de Lista Vacía ---
         ListEmptyComponent={
           <View style={styles.centerContainer}>
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#171717",
+    backgroundColor: "#0d0f15",
   },
   loadingText: {
     marginTop: 10,
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     // backgroundColor: '#ffffff', // Ejemplo claro
-    backgroundColor: "#171717", // Ejemplo oscuro
+    backgroundColor: "#0d0f15", // Ejemplo oscuro
     // marginTop: 8, // Equivalente a mt-2
   },
   footerLoading: {
