@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useRef, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
 import formatRelativeDate from "@/src/lib/formatRelativeDate";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
 import { formatNumber } from "@/src/lib/formatNumber";
 import { useLike } from "@/src/hooks/useLike";
-import { useCommentsBottomSheetStore } from "@/src/stores/commentsBottomSheetStore";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import { CommentsBottomSheet } from "../../BottomSheets/CommentsSheet";
 
 type PostCardFooterProps = {
   id_reporte: number;
@@ -32,14 +36,14 @@ export const PostCardFooter = ({
   const isDark = colorScheme === "dark";
   const iconColor = isDark ? "#e5e7eb" : "#374151"; // gray-200 for dark, gray-800 for light
 
-  // Use the global comments bottom sheet store
-  const openCommentsSheet = useCommentsBottomSheetStore((state) => state.open);
-
   // Use the like hook
   const { isLiked, isPending, toggleLike, optimisticLikesCount } = useLike(
     id_reporte,
     initialLikesCount
   );
+
+  // Ref for the bottom sheet modal
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   // Handle the like button press
   const handleLikePress = () => {
@@ -48,10 +52,10 @@ export const PostCardFooter = ({
     }
   };
 
-  // Handle opening comments bottom sheet
-  const handleOpenComments = () => {
-    openCommentsSheet(id_reporte);
-  };
+  // Handle comments press
+  const handleCommentsPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
 
   return (
     <View className="px-4 pb-4">
@@ -71,8 +75,8 @@ export const PostCardFooter = ({
           </Text>
         </Pressable>
         <Pressable
+          onPress={handleCommentsPress}
           className="flex-row items-center"
-          onPress={handleOpenComments}
         >
           <Ionicons name="chatbubble-outline" size={22} color={iconColor} />
           <Text className="text-sm text-gray-800 dark:text-gray-200 ml-1">
@@ -102,6 +106,9 @@ export const PostCardFooter = ({
             : "N/A"}
         </Text>
       </View>
+
+      {/* CommentsBottomSheet component */}
+      <CommentsBottomSheet ref={bottomSheetModalRef} id_reporte={id_reporte} />
     </View>
   );
 };

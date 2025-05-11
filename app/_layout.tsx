@@ -6,23 +6,24 @@ import queryClient from "@/src/services/queryClient";
 import { useColorScheme } from "nativewind";
 import { HeaderVisibilityProvider } from "@/src/contexts/HeaderVisibilityContext";
 import { ToastProvider } from "@/src/contexts/ToastContext";
-import { GlobalCommentsBottomSheet } from "@/src/components/BottomSheets/GlobalCommentsBottomSheet";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <HeaderVisibilityProvider>
-            <ToastProvider>
-              <RootLayoutNavigation />
-              <GlobalCommentsBottomSheet />
-            </ToastProvider>
-          </HeaderVisibilityProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <BottomSheetModalProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <HeaderVisibilityProvider>
+              <ToastProvider>
+                <RootLayoutNavigation />
+              </ToastProvider>
+            </HeaderVisibilityProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }
