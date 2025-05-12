@@ -98,3 +98,65 @@ export const fetchRepliesForComment = async ({
   }
   return (data as unknown as Comment[]) || []; 
 };
+
+/**
+ * Agrega un nuevo comentario a una publicación.
+ * @param payload Los datos del comentario a agregar.
+ * @param supabase La instancia del cliente de Supabase (opcional, usa una por defecto).
+ * @returns El comentario recién creado, incluyendo la información del perfil del autor.
+ */
+
+export interface AddCommentPayload {
+  reportId: number | string; // Corresponde a fk_comentario_reporte
+  userId: string;             // Corresponde a fk_comentario_users (uuid)
+  content: string;
+  parentId?: number | string | null; // Opcional, para respuestas (fk_parent_comentario)
+}
+export const addComment = async (
+  payload: AddCommentPayload,
+  supabase = supabaseClient,
+): Promise<Comment> => {
+  const { reportId, userId, content, parentId = null } = payload;
+
+  if (!content.trim()) {
+    throw new Error('El contenido del comentario no puede estar vacío.');
+  }
+  if (!userId) {
+    throw new Error('Se requiere el ID del usuario para comentar.');
+  }
+  if (!reportId) {
+    throw new Error('Se requiere el ID del reporte para comentar.');
+  }
+
+  const { data, error } = await supabase
+    .from('comentarios')
+    .insert({
+      fk_comentario_reporte: reportId,
+      fk_comentario_users: userId,
+      contenido: content.trim(),
+      fk_parent_comentario: parentId,
+    })
+    .select(
+      `
+      id_comentario,
+      contenido,
+      fecha_creacion,
+      likes_count,
+      fk_comentario_reporte,
+      fk_parent_comentario
+    `
+    ) // Selecciona el comentario completo
+    .single(); // Esperamos que la inserción devuelva un solo registro
+
+  if (error) {
+    console.error('Error al agregar comentario en Supabase:', error);
+    throw error; // Propaga el error para que React Query lo maneje
+  }
+
+  if (!data) {
+    // Esto no debería suceder si la inserción fue exitosa y .single() se usó correctamente
+    throw new Error('No se recibieron datos después de agregar el comentario.');
+  }
+
+  return data as unknown as Comment; 
+};

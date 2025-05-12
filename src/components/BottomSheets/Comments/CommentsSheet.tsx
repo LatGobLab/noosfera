@@ -1,26 +1,21 @@
 import React, { forwardRef, useMemo, useCallback, useState } from "react";
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  Pressable,
-  TextInput,
-} from "react-native";
+import { View, Text, Alert } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
-  BottomSheetFlatList,
 } from "@gorhom/bottom-sheet";
 import { useColorScheme } from "nativewind";
-import { Ionicons } from "@expo/vector-icons";
 
 // Import our custom components and hooks
-import { CommentItem } from "./CommentItem";
 import { useInfiniteComments } from "@/src/hooks/useComments";
-import type { Comment, PaginatedCommentsResponse } from "@/src/types/comments";
+import { useAddComment } from "@/src/hooks/useAddComment";
+import type { PaginatedCommentsResponse } from "@/src/types/comments";
 import { InfiniteData } from "@tanstack/react-query";
+import { useUserProfile } from "@/src/hooks/useUserProfile";
+import { CommentsList } from "./CommentsList";
+import { CommentInput } from "./CommentInput";
 
 type CommentsBottomSheetProps = {
   id_reporte: number;
@@ -33,6 +28,7 @@ export const CommentsBottomSheet = forwardRef<
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const [commentText, setCommentText] = useState("");
+  const { profile } = useUserProfile();
 
   // Use the infinite comments hook with explicit typing
   const {
@@ -43,6 +39,9 @@ export const CommentsBottomSheet = forwardRef<
     isFetchingNextPage,
     error,
   } = useInfiniteComments(id_reporte);
+
+  // Use the add comment mutation
+  const { mutate: addComment, isPending: isAddingComment } = useAddComment();
 
   // Flatten the comments from all pages with proper type handling
   const comments = useMemo(() => {
@@ -61,22 +60,46 @@ export const CommentsBottomSheet = forwardRef<
 
   // Handle like and reply actions
   const handleLikeComment = useCallback((commentId: number) => {
-    // Implement like logic here
+    // Implement like logic here (for future implementation)
     console.log(`Like comment ${commentId}`);
   }, []);
 
   const handleReplyComment = useCallback((commentId: number) => {
-    // Implement reply logic here
+    // Implement reply logic here (for future implementation)
     console.log(`Reply to comment ${commentId}`);
   }, []);
 
   const handleSubmitComment = useCallback(() => {
-    if (commentText.trim()) {
-      // Implement submit comment logic here
-      console.log(`Submitting comment: ${commentText}`);
-      setCommentText("");
+    if (!commentText.trim()) return;
+
+    if (!profile || !profile.id) {
+      Alert.alert("Error", "Debes iniciar sesión para comentar");
+      return;
     }
-  }, [commentText]);
+
+    // Add the new comment
+    addComment(
+      {
+        reportId: id_reporte,
+        userId: profile.id,
+        content: commentText.trim(),
+        parentId: null, // No parent comment for now
+      },
+      {
+        onSuccess: () => {
+          // Clear the input on success
+          setCommentText("");
+        },
+        onError: (error) => {
+          console.error("Error al agregar comentario:", error);
+          Alert.alert(
+            "Error",
+            "No se pudo agregar el comentario. Inténtalo de nuevo."
+          );
+        },
+      }
+    );
+  }, [commentText, profile, id_reporte, addComment]);
 
   // Configure points for bottom sheet
   const snapPoints = useMemo(() => ["100%"], []);
@@ -108,30 +131,6 @@ export const CommentsBottomSheet = forwardRef<
     ),
     []
   );
-
-  // Render item for the comments list
-  const renderItem = useCallback(
-    ({ item }: { item: Comment }) => (
-      <CommentItem
-        comment={item}
-        onLike={handleLikeComment}
-        onReply={handleReplyComment}
-      />
-    ),
-    [handleLikeComment, handleReplyComment]
-  );
-
-  // Render footer with loading indicator when fetching next page
-  const renderFooter = useCallback(() => {
-    if (isFetchingNextPage) {
-      return (
-        <View className="py-4 items-center">
-          <ActivityIndicator size="small" color={isDark ? "#FFF" : "#000"} />
-        </View>
-      );
-    }
-    return null;
-  }, [isFetchingNextPage, isDark]);
 
   // Check if data exists and has pages
   const hasData =
@@ -168,55 +167,25 @@ export const CommentsBottomSheet = forwardRef<
           Comentarios
         </Text>
 
-        {isLoading && !hasData ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={isDark ? "#FFF" : "#000"} />
-          </View>
-        ) : error ? (
-          <View className="flex-1 items-center justify-center">
-            <Text className="text-red-500">
-              Error al cargar comentarios: {error.message}
-            </Text>
-          </View>
-        ) : (
-          <BottomSheetFlatList
-            data={comments}
-            keyExtractor={(item) => item.id_comentario.toString()}
-            renderItem={renderItem}
-            onEndReached={loadMoreComments}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={renderFooter}
-            ListEmptyComponent={
-              <View className="flex-1 items-center justify-center py-10">
-                <Text className="text-gray-500 dark:text-gray-400">
-                  No hay comentarios aún.
-                </Text>
-              </View>
-            }
-            contentContainerStyle={{ paddingBottom: 80 }}
-          />
-        )}
+        <CommentsList
+          comments={comments}
+          isLoading={isLoading}
+          isFetchingNextPage={isFetchingNextPage}
+          hasData={!!hasData}
+          error={error ? (error as Error) : null}
+          onEndReached={loadMoreComments}
+          onLikeComment={handleLikeComment}
+          onReplyComment={handleReplyComment}
+          isDark={isDark}
+        />
 
-        {/* Comment input box */}
-        <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#25292c] border-t border-gray-200 dark:border-gray-700 px-4 py-6">
-          <View className="flex-row items-center ">
-            <TextInput
-              className="flex-1 rounded-full bg-gray-100 dark:bg-gray-800 px-4 py-4 text-gray-800 dark:text-gray-200 "
-              placeholder="Escribe un comentario..."
-              placeholderTextColor={isDark ? "#9CA3AF" : "#6B7280"}
-              value={commentText}
-              onChangeText={setCommentText}
-              multiline
-            />
-            <Pressable
-              onPress={handleSubmitComment}
-              className="ml-2 p-2 rounded-full bg-blue-500 items-center justify-center"
-              disabled={!commentText.trim()}
-            >
-              <Ionicons name="send" size={20} color="white" />
-            </Pressable>
-          </View>
-        </View>
+        <CommentInput
+          commentText={commentText}
+          onChangeText={setCommentText}
+          onSubmit={handleSubmitComment}
+          isSubmitting={isAddingComment}
+          isDark={isDark}
+        />
       </BottomSheetView>
     </BottomSheetModal>
   );
