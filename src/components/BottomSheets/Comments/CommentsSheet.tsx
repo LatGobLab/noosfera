@@ -6,7 +6,13 @@ import React, {
   useEffect,
   useImperativeHandle,
 } from "react";
-import { View, Text, Alert, BackHandler } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  BackHandler,
+  ActivityIndicator,
+} from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -37,12 +43,19 @@ export const CommentsBottomSheet = forwardRef<
   const [commentText, setCommentText] = useState("");
   const { profile } = useUserProfile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [shouldFetchData, setShouldFetchData] = useState(false);
 
   // Create internal ref we can safely use
   const bottomSheetRef = React.useRef<BottomSheetModal>(null);
 
   // Forward the internal ref methods to the parent
-  useImperativeHandle(ref, () => bottomSheetRef.current!);
+  useImperativeHandle(ref, () => ({
+    ...bottomSheetRef.current!,
+    present: () => {
+      bottomSheetRef.current?.present();
+      setShouldFetchData(true);
+    },
+  }));
 
   // Use the infinite comments hook with explicit typing
   const {
@@ -52,7 +65,10 @@ export const CommentsBottomSheet = forwardRef<
     isLoading,
     isFetchingNextPage,
     error,
-  } = useInfiniteComments(id_reporte);
+    refetch,
+  } = useInfiniteComments(id_reporte, 20, {
+    enabled: shouldFetchData,
+  });
 
   // Use the add comment mutation
   const { mutate: addComment, isPending: isAddingComment } = useAddComment();
@@ -78,6 +94,10 @@ export const CommentsBottomSheet = forwardRef<
   // Track sheet open/close state
   const handleSheetChange = useCallback((index: number) => {
     setIsSheetOpen(index >= 0);
+    // Reset fetching flag when closed
+    if (index === -1) {
+      setShouldFetchData(false);
+    }
   }, []);
 
   // Flatten the comments from all pages with proper type handling
@@ -173,6 +193,16 @@ export const CommentsBottomSheet = forwardRef<
   const hasData =
     data && (data as InfiniteData<PaginatedCommentsResponse>).pages.length > 0;
 
+  // Loading indicator component
+  const LoadingIndicator = () => (
+    <View className="flex-1 justify-center items-center py-8">
+      <ActivityIndicator size="large" color={isDark ? "#FFFFFF" : "#0d0f15"} />
+      <Text className="mt-2 text-gray-600 dark:text-gray-300">
+        Cargando comentarios...
+      </Text>
+    </View>
+  );
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -206,17 +236,21 @@ export const CommentsBottomSheet = forwardRef<
         </Text>
 
         <View className="flex-1">
-          <CommentsList
-            comments={comments}
-            isLoading={isLoading}
-            isFetchingNextPage={isFetchingNextPage}
-            hasData={!!hasData}
-            error={error ? (error as Error) : null}
-            onEndReached={loadMoreComments}
-            onLikeComment={handleLikeComment}
-            onReplyComment={handleReplyComment}
-            isDark={isDark}
-          />
+          {isLoading && shouldFetchData ? (
+            <LoadingIndicator />
+          ) : (
+            <CommentsList
+              comments={comments}
+              isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
+              hasData={!!hasData}
+              error={error ? (error as Error) : null}
+              onEndReached={loadMoreComments}
+              onLikeComment={handleLikeComment}
+              onReplyComment={handleReplyComment}
+              isDark={isDark}
+            />
+          )}
         </View>
 
         <CommentInput

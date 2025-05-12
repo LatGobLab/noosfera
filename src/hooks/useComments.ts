@@ -2,7 +2,7 @@ import {
     useInfiniteQuery,
     type InfiniteData,
     type QueryFunctionContext,
-    type GetNextPageParamFunction,
+    type UseInfiniteQueryOptions,
   } from '@tanstack/react-query';
   import supabaseClient from '@/src/lib/supabase'; 
   import { fetchPaginatedTopLevelComments } from '@/src/services/commentService';
@@ -15,7 +15,15 @@ import {
   
   export const useInfiniteComments = (
     reportId: number | string, 
-    pageSize: number = DEFAULT_COMMENTS_PAGE_SIZE_FOR_HOOK
+    pageSize: number = DEFAULT_COMMENTS_PAGE_SIZE_FOR_HOOK,
+    options?: Omit<UseInfiniteQueryOptions<
+      PaginatedCommentsResponse,
+      Error,
+      InfiniteData<PaginatedCommentsResponse>,
+      PaginatedCommentsResponse,
+      CommentsQueryKey,
+      number
+    >, 'queryKey' | 'queryFn' | 'initialPageParam' | 'getNextPageParam'>
   ) => {
     return useInfiniteQuery<
       PaginatedCommentsResponse,
@@ -51,77 +59,8 @@ import {
         return undefined; // No hay más páginas
       },
   
-      // Opciones adicionales (opcionales)
-      // enabled: !!reportId,
-      // staleTime: 1000 * 60 * 5, // 5 minutos
+      // Spread de opciones adicionales si existen
+      ...options,
     });
   };
   
-  // Ejemplo de cómo usarías el hook en tu componente de React Native (con tipos):
-  /*
-  import React from 'react';
-  import { View, Text, FlatList, Button, ActivityIndicator } from 'react-native';
-  import { useInfiniteComments } from './src/hooks/useInfiniteComments'; // Ajusta la ruta
-  import type { Comment as CommentType } from './src/types/database.types'; // Ajusta la ruta
-  
-  interface CommentsScreenProps {
-    reportId: number | string;
-  }
-  
-  const CommentsScreen: React.FC<CommentsScreenProps> = ({ reportId }) => {
-    const {
-      data,
-      fetchNextPage,
-      hasNextPage,
-      isLoading,
-      isFetchingNextPage,
-      error,
-    } = useInfiniteComments(reportId);
-  
-    if (isLoading && !data?.pages.length) {
-      return <ActivityIndicator size="large" style={{ marginTop: 20 }} />;
-    }
-  
-    if (error) {
-      return <Text>Error al cargar comentarios: {error.message}</Text>;
-    }
-  
-    // `data.pages` es un array de `PaginatedCommentsResponse`.
-    // Aplanamos para obtener una lista única de comentarios.
-    const comments: CommentType[] = data?.pages.flatMap(page => page.comments) || [];
-  
-    const loadMoreComments = () => {
-      if (hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    };
-  
-    const renderComment = ({ item }: { item: CommentType }) => (
-      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
-        <Text style={{ fontWeight: 'bold' }}>
-          {item.profiles?.username || 'Usuario Anónimo'}
-        </Text>
-        <Text>{item.contenido}</Text>
-        <Text style={{ fontSize: 12, color: 'gray' }}>
-          Likes: {item.likes_count} - Creado: {new Date(item.fecha_creacion).toLocaleDateString()}
-        </Text>
-      </View>
-    );
-  
-    return (
-      <FlatList
-        data={comments}
-        renderItem={renderComment}
-        keyExtractor={(item) => item.id_comentario.toString()}
-        onEndReached={loadMoreComments}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={() =>
-          isFetchingNextPage ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null
-        }
-        ListEmptyComponent={!isLoading ? <Text>No hay comentarios aún.</Text> : null}
-      />
-    );
-  };
-  
-  export default CommentsScreen;
-  */
