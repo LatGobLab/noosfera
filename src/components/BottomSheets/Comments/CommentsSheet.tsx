@@ -185,7 +185,7 @@ export const CommentsBottomSheet = forwardRef<
       enableContentPanningGesture={true}
       enableHandlePanningGesture={true}
       animateOnMount={true}
-      overDragResistanceFactor={0.5}
+      overDragResistanceFactor={0}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
@@ -200,22 +200,24 @@ export const CommentsBottomSheet = forwardRef<
       )}
       onChange={handleSheetChange}
     >
-      <BottomSheetView className="flex-1 px-2 pt-4">
+      <BottomSheetView className="flex-1 px-2 pt-4" style={{ flex: 1 }}>
         <Text className="text-xl font-bold text-center mb-4 text-gray-800 dark:text-gray-200">
           Comentarios
         </Text>
 
-        <CommentsList
-          comments={comments}
-          isLoading={isLoading}
-          isFetchingNextPage={isFetchingNextPage}
-          hasData={!!hasData}
-          error={error ? (error as Error) : null}
-          onEndReached={loadMoreComments}
-          onLikeComment={handleLikeComment}
-          onReplyComment={handleReplyComment}
-          isDark={isDark}
-        />
+        <View className="flex-1">
+          <CommentsList
+            comments={comments}
+            isLoading={isLoading}
+            isFetchingNextPage={isFetchingNextPage}
+            hasData={!!hasData}
+            error={error ? (error as Error) : null}
+            onEndReached={loadMoreComments}
+            onLikeComment={handleLikeComment}
+            onReplyComment={handleReplyComment}
+            isDark={isDark}
+          />
+        </View>
 
         <CommentInput
           commentText={commentText}

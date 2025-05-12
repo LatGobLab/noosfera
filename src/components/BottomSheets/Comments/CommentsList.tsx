@@ -82,6 +82,8 @@ export const CommentsList = ({
         </View>
       }
       contentContainerStyle={{ paddingBottom: 80 }}
+      showsVerticalScrollIndicator={true}
+      bounces={true}
     />
   );
 };
