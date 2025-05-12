@@ -1,5 +1,12 @@
-import React, { forwardRef, useMemo, useCallback, useState } from "react";
-import { View, Text, Alert } from "react-native";
+import React, {
+  forwardRef,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+  useImperativeHandle,
+} from "react";
+import { View, Text, Alert, BackHandler } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -29,6 +36,13 @@ export const CommentsBottomSheet = forwardRef<
   const isDark = colorScheme === "dark";
   const [commentText, setCommentText] = useState("");
   const { profile } = useUserProfile();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Create internal ref we can safely use
+  const bottomSheetRef = React.useRef<BottomSheetModal>(null);
+
+  // Forward the internal ref methods to the parent
+  useImperativeHandle(ref, () => bottomSheetRef.current!);
 
   // Use the infinite comments hook with explicit typing
   const {
@@ -42,6 +56,29 @@ export const CommentsBottomSheet = forwardRef<
 
   // Use the add comment mutation
   const { mutate: addComment, isPending: isAddingComment } = useAddComment();
+
+  // Handle back button press to close sheet instead of app
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (isSheetOpen && bottomSheetRef.current) {
+        bottomSheetRef.current.close();
+        return true; // Prevent default back action
+      }
+      return false; // Let default back action occur
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackPress
+    );
+
+    return () => backHandler.remove();
+  }, [isSheetOpen]);
+
+  // Track sheet open/close state
+  const handleSheetChange = useCallback((index: number) => {
+    setIsSheetOpen(index >= 0);
+  }, []);
 
   // Flatten the comments from all pages with proper type handling
   const comments = useMemo(() => {
@@ -138,7 +175,7 @@ export const CommentsBottomSheet = forwardRef<
 
   return (
     <BottomSheetModal
-      ref={ref}
+      ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
       enablePanDownToClose={true}
@@ -161,6 +198,7 @@ export const CommentsBottomSheet = forwardRef<
           className="bg-background dark:bg-[#25292c]"
         />
       )}
+      onChange={handleSheetChange}
     >
       <BottomSheetView className="flex-1 px-2 pt-4">
         <Text className="text-xl font-bold text-center mb-4 text-gray-800 dark:text-gray-200">

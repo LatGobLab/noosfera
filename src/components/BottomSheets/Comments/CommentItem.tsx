@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { Comment } from "@/src/types/comments";
+import formatRelativeDate from "@/src/lib/formatRelativeDate";
 
 type CommentItemProps = {
   comment: Comment;
@@ -10,18 +11,7 @@ type CommentItemProps = {
 };
 
 export const CommentItem = ({ comment, onReply, onLike }: CommentItemProps) => {
-  // Format date manually since date-fns might not be installed
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString();
-    } catch (e) {
-      return dateString;
-    }
-  };
-
-  const formattedDate = formatDate(comment.fecha_creacion);
-  // Assuming the Comment type doesn't have user_has_liked property
+  const formattedDate = formatRelativeDate(comment.fecha_creacion);
   const hasLiked = false; // This should be replaced with actual logic if available
 
   return (
