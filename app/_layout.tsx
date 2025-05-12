@@ -13,17 +13,17 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <HeaderVisibilityProvider>
-              <ToastProvider>
+      <ToastProvider>
+        <BottomSheetModalProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <HeaderVisibilityProvider>
                 <RootLayoutNavigation />
-              </ToastProvider>
-            </HeaderVisibilityProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </BottomSheetModalProvider>
+              </HeaderVisibilityProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </BottomSheetModalProvider>
+      </ToastProvider>
     </GestureHandlerRootView>
   );
 }
