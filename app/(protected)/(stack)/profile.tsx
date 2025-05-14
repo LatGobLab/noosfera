@@ -32,7 +32,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-900">
+    <View className="flex-1 bg-background dark:bg-background-dark pt-16">
       <ScrollView className="flex-1">
         {/* Profile Header */}
         <View className="items-center py-8 bg-blue-50 dark:bg-blue-900/20">
@@ -66,7 +66,6 @@ export default function ProfileScreen() {
                   {profile.full_name}
                 </Text>
               )}
-              <ToastExample />
               <TouchableOpacity
                 className="mt-3 p-2 bg-blue-100 dark:bg-blue-900 rounded-full"
                 onPress={refreshProfile}
@@ -114,14 +113,6 @@ export default function ProfileScreen() {
                 />
               </TouchableOpacity>
             ))}
-          </View>
-
-          {/* Appearance */}
-          <View className="mb-6">
-            <Text className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-              Apariencia
-            </Text>
-            <ThemeSelector />
           </View>
 
           {/* Support */}
