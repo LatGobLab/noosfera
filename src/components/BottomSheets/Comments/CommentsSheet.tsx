@@ -41,7 +41,7 @@ export const CommentsBottomSheet = forwardRef<
     data,
     fetchNextPage,
     hasNextPage,
-    isLoading,
+    isFetching,
     isFetchingNextPage,
     error,
     refetch,
@@ -132,10 +132,6 @@ export const CommentsBottomSheet = forwardRef<
     []
   );
 
-  // Check if data exists and has pages
-  const hasData =
-    data && (data as InfiniteData<PaginatedCommentsResponse>).pages.length > 0;
-
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -171,9 +167,8 @@ export const CommentsBottomSheet = forwardRef<
         <View className="flex-1">
           <CommentsList
             comments={comments}
-            isLoading={isLoading}
+            isFetching={isFetching}
             isFetchingNextPage={isFetchingNextPage}
-            hasData={!!hasData}
             error={error ? (error as Error) : null}
             onEndReached={loadMoreComments}
             onLikeComment={handleLikeComment}

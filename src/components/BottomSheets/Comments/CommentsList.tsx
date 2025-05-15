@@ -1,14 +1,16 @@
-import React from "react";
-import { View, Text, ActivityIndicator } from "react-native";
-import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import React, { useState, useEffect } from "react";
+import { View, Text, ActivityIndicator, Dimensions } from "react-native";
+import {
+  BottomSheetFlashList,
+  BottomSheetFlatList,
+} from "@gorhom/bottom-sheet";
 import type { Comment } from "@/src/types/comments";
 import { CommentItem } from "./CommentItem";
 
 type CommentsListProps = {
   comments: Comment[];
-  isLoading: boolean;
+  isFetching: boolean;
   isFetchingNextPage: boolean;
-  hasData: boolean;
   error: Error | null | undefined;
   onEndReached: () => void;
   onLikeComment: (commentId: number) => void;
@@ -18,15 +20,18 @@ type CommentsListProps = {
 
 export const CommentsList = ({
   comments,
-  isLoading,
+  isFetching,
   isFetchingNextPage,
-  hasData,
   error,
   onEndReached,
   onLikeComment,
   onReplyComment,
   isDark,
 }: CommentsListProps) => {
+  const [screenHeight, setScreenHeight] = useState(
+    Dimensions.get("window").height
+  );
+
   // Render item for the comments list
   const renderItem = ({ item }: { item: Comment }) => (
     <CommentItem
@@ -48,7 +53,16 @@ export const CommentsList = ({
     return null;
   };
 
-  if (isLoading && !hasData) {
+  // Empty list component
+  const renderEmptyList = () => (
+    <View className="flex-1 items-center justify-center pt-10">
+      <Text className="text-gray-500 dark:text-gray-400">
+        No hay comentarios aún.
+      </Text>
+    </View>
+  );
+
+  if (isFetching) {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color={isDark ? "#FFF" : "#000"} />
@@ -67,23 +81,24 @@ export const CommentsList = ({
   }
 
   return (
-    <BottomSheetFlatList
-      data={comments}
-      keyExtractor={(item) => item.id_comentario.toString()}
-      renderItem={renderItem}
-      onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={renderFooter}
-      ListEmptyComponent={
-        <View className="flex-1 items-center justify-center pt-10">
-          <Text className="text-gray-500 dark:text-gray-400">
-            No hay comentarios aún.
-          </Text>
-        </View>
-      }
-      contentContainerStyle={{ paddingBottom: 10 }}
-      showsVerticalScrollIndicator={true}
-      bounces={true}
-    />
+    <View style={{ height: screenHeight * 0.82 }}>
+      <BottomSheetFlashList
+        data={comments}
+        keyExtractor={(item) => item.id_comentario.toString()}
+        renderItem={renderItem}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={renderEmptyList}
+        contentContainerStyle={{ paddingBottom: 10 }}
+        showsVerticalScrollIndicator={true}
+        bounces={true}
+        estimatedItemSize={100}
+        estimatedListSize={{
+          height: screenHeight * 0.82,
+          width: Dimensions.get("window").width,
+        }}
+      />
+    </View>
   );
 };
