@@ -17,10 +17,8 @@ import { useColorScheme } from "nativewind";
 
 // Import our custom components and hooks
 import { useInfiniteComments } from "@/src/hooks/useComments";
-import { useAddComment } from "@/src/hooks/useAddComment";
 import type { PaginatedCommentsResponse } from "@/src/types/comments";
 import { InfiniteData } from "@tanstack/react-query";
-import { useUserProfile } from "@/src/hooks/useUserProfile";
 import { CommentsList } from "./CommentsList";
 import { CommentInput } from "./CommentInput";
 
@@ -34,8 +32,6 @@ export const CommentsBottomSheet = forwardRef<
 >(({ id_reporte }, ref) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
-  const [commentText, setCommentText] = useState("");
-  const { profile } = useUserProfile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Create internal ref we can safely use
@@ -52,10 +48,8 @@ export const CommentsBottomSheet = forwardRef<
     isLoading,
     isFetchingNextPage,
     error,
+    refetch,
   } = useInfiniteComments(id_reporte);
-
-  // Use the add comment mutation
-  const { mutate: addComment, isPending: isAddingComment } = useAddComment();
 
   // Handle back button press to close sheet instead of app
   useEffect(() => {
@@ -106,37 +100,10 @@ export const CommentsBottomSheet = forwardRef<
     console.log(`Reply to comment ${commentId}`);
   }, []);
 
-  const handleSubmitComment = useCallback(() => {
-    if (!commentText.trim()) return;
-
-    if (!profile || !profile.id) {
-      Alert.alert("Error", "Debes iniciar sesión para comentar");
-      return;
-    }
-
-    // Add the new comment
-    addComment(
-      {
-        reportId: id_reporte,
-        userId: profile.id,
-        content: commentText.trim(),
-        parentId: null, // No parent comment for now
-      },
-      {
-        onSuccess: () => {
-          // Clear the input on success
-          setCommentText("");
-        },
-        onError: (error) => {
-          console.error("Error al agregar comentario:", error);
-          Alert.alert(
-            "Error",
-            "No se pudo agregar el comentario. Inténtalo de nuevo."
-          );
-        },
-      }
-    );
-  }, [commentText, profile, id_reporte, addComment]);
+  // Handle successful comment submission
+  const handleCommentAdded = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   // Configure points for bottom sheet
   const snapPoints = useMemo(() => ["100%"], []);
@@ -220,11 +187,8 @@ export const CommentsBottomSheet = forwardRef<
         </View>
 
         <CommentInput
-          commentText={commentText}
-          onChangeText={setCommentText}
-          onSubmit={handleSubmitComment}
-          isSubmitting={isAddingComment}
-          isDark={isDark}
+          reportId={id_reporte}
+          onCommentAdded={handleCommentAdded}
         />
       </BottomSheetView>
     </BottomSheetModal>

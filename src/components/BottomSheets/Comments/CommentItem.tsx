@@ -26,6 +26,7 @@ export const CommentItem = ({ comment, onReply, onLike }: CommentItemProps) => {
       }
     } catch (error) {
       console.error("Error al copiar texto:", error);
+      showToast("Error al copiar texto", "error");
     }
   };
 
