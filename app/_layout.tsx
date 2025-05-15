@@ -14,15 +14,15 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ToastProvider>
-        <BottomSheetModalProvider>
-          <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <BottomSheetModalProvider>
             <ThemeProvider>
               <HeaderVisibilityProvider>
                 <RootLayoutNavigation />
               </HeaderVisibilityProvider>
             </ThemeProvider>
-          </QueryClientProvider>
-        </BottomSheetModalProvider>
+          </BottomSheetModalProvider>
+        </QueryClientProvider>
       </ToastProvider>
     </GestureHandlerRootView>
   );
