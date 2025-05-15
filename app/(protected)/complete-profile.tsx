@@ -21,10 +21,8 @@ import AvatarPicker from "@/src/components/Profile/AvatarPicker";
 export default function CompleteProfileScreen() {
   const { profile, refreshProfile } = useUserProfile();
   const [username, setUsername] = useState(profile?.username || "");
-  const [fullName, setFullName] = useState(profile?.full_name || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [usernameError, setUsernameError] = useState("");
-  const [fullNameError, setFullNameError] = useState("");
   const [formError, setFormError] = useState("");
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
@@ -62,22 +60,6 @@ export default function CompleteProfileScreen() {
         setUsernameError("Este nombre de usuario ya está en uso");
         return false;
       }
-    }
-
-    return true;
-  };
-
-  const validateFullName = (value: string) => {
-    if (!value.trim()) {
-      setFullNameError("El nombre completo es requerido");
-      return false;
-    }
-
-    // Check if full name has at least two parts (name and surname)
-    const nameParts = value.trim().split(/\s+/);
-    if (nameParts.length < 2) {
-      setFullNameError("Ingresa nombre y apellido");
-      return false;
     }
 
     return true;
@@ -138,16 +120,7 @@ export default function CompleteProfileScreen() {
 
     // Reset previous errors
     setUsernameError("");
-    setFullNameError("");
     setFormError("");
-
-    // Validate fields
-    const isUsernameValid = await validateUsername(username);
-    const isFullNameValid = validateFullName(fullName);
-
-    if (!isUsernameValid || !isFullNameValid) {
-      return;
-    }
 
     if (!session?.user) {
       Alert.alert("Error", "No hay sesión activa");
@@ -168,7 +141,6 @@ export default function CompleteProfileScreen() {
         .from("profiles")
         .update({
           username,
-          full_name: fullName,
           avatar_url: finalAvatarUrl,
         })
         .eq("id", session.user.id);
@@ -182,7 +154,6 @@ export default function CompleteProfileScreen() {
         ...profile!,
         id: session.user.id,
         username,
-        full_name: fullName,
         avatar_url: finalAvatarUrl,
       };
 
@@ -225,38 +196,6 @@ export default function CompleteProfileScreen() {
         </View>
 
         <View className="space-y-4 mt-4">
-          {/* Nombre completo */}
-          <View>
-            <Text className="text-gray-900 dark:text-white text-sm ml-6 mb-1">
-              Nombre completo
-            </Text>
-            <TextInput
-              ref={fullNameRef}
-              className={`bg-white dark:bg-neutral-800 text-black dark:text-white border ${
-                fullNameError
-                  ? "border-red-500"
-                  : "border-neutral-700 dark:border-neutral-700"
-              } w-11/12 mx-auto p-4 h-14 rounded-2xl`}
-              placeholder="Nombre completo"
-              placeholderTextColor="#9ca3af"
-              value={fullName}
-              onChangeText={(text) => {
-                setFullName(text);
-                if (text.trim()) setFullNameError("");
-              }}
-              autoCapitalize="words"
-              keyboardAppearance="dark"
-              onSubmitEditing={() =>
-                usernameRef.current && usernameRef.current.focus()
-              }
-            />
-            {fullNameError ? (
-              <Text className="text-red-500 text-sm ml-6 mt-1">
-                {fullNameError}
-              </Text>
-            ) : null}
-          </View>
-
           {/* Nombre de usuario */}
           <View className="mt-4">
             <Text className="text-gray-900 dark:text-white text-sm ml-6 mb-1">

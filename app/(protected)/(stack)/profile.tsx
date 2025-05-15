@@ -9,12 +9,10 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/src/stores/useAuthStore";
-import ThemeSelector from "@/src/components/ThemeSelector";
 import { router } from "expo-router";
 import supabase from "@/src/lib/supabase";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
-import ToastExample from "@/src/components/ToastExample";
 
 export default function ProfileScreen() {
   const session = useAuthStore((state) => state.session);
@@ -61,11 +59,6 @@ export default function ProfileScreen() {
               <Text className="text-gray-600 dark:text-gray-400">
                 {userEmail}
               </Text>
-              {profile?.full_name && (
-                <Text className="text-blue-500 dark:text-blue-400 mt-1">
-                  {profile.full_name}
-                </Text>
-              )}
               <TouchableOpacity
                 className="mt-3 p-2 bg-blue-100 dark:bg-blue-900 rounded-full"
                 onPress={refreshProfile}

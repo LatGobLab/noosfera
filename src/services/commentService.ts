@@ -39,7 +39,6 @@ export const fetchPaginatedTopLevelComments = async ({
       profiles (
         id,
         username,
-        full_name,
         avatar_url
       )
     `,
@@ -85,7 +84,6 @@ export const fetchRepliesForComment = async ({
       profiles (
         id,
         username,
-        full_name,
         avatar_url
       )
     `)

@@ -45,7 +45,7 @@ export function useUserProfile() {
       // If profile doesn't exist in storage or is for a different user, fetch from Supabase
       const { data, error: supabaseError, status } = await supabase
         .from('profiles')
-        .select('username, full_name, avatar_url')
+        .select('username , avatar_url')
         .eq('id', session.user.id)
         .single();
       
@@ -57,7 +57,6 @@ export function useUserProfile() {
       const userProfile: UserProfile = {
         id: session.user.id,
         username: data?.username || null,
-        full_name: data?.full_name || null,
         avatar_url: data?.avatar_url || null
       };
       

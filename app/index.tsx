@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 
-// Prevent the splash screen from automatically hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function InitialScreen() {
