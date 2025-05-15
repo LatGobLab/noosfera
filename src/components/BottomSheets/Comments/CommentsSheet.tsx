@@ -33,14 +33,10 @@ export const CommentsBottomSheet = forwardRef<
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  // Create internal ref we can safely use
   const bottomSheetRef = React.useRef<BottomSheetModal>(null);
-
-  // Forward the internal ref methods to the parent
   useImperativeHandle(ref, () => bottomSheetRef.current!);
 
-  // Use the infinite comments hook with explicit typing
+  // Use the infinite comments hook
   const {
     data,
     fetchNextPage,

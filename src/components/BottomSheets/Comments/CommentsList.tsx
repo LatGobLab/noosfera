@@ -75,13 +75,13 @@ export const CommentsList = ({
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}
       ListEmptyComponent={
-        <View className="flex-1 items-center justify-center py-10">
+        <View className="flex-1 items-center justify-center pt-10">
           <Text className="text-gray-500 dark:text-gray-400">
             No hay comentarios aún.
           </Text>
         </View>
       }
-      contentContainerStyle={{ paddingBottom: 80 }}
+      contentContainerStyle={{ paddingBottom: 10 }}
       showsVerticalScrollIndicator={true}
       bounces={true}
     />

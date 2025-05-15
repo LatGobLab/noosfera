@@ -116,15 +116,6 @@ export const addComment = async (
 ): Promise<Comment> => {
   const { reportId, userId, content, parentId = null } = payload;
 
-  if (!content.trim()) {
-    throw new Error('El contenido del comentario no puede estar vacío.');
-  }
-  if (!userId) {
-    throw new Error('Se requiere el ID del usuario para comentar.');
-  }
-  if (!reportId) {
-    throw new Error('Se requiere el ID del reporte para comentar.');
-  }
 
   const { data, error } = await supabase
     .from('comentarios')
