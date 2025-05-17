@@ -23,12 +23,16 @@ export const useLocationStore = create<LocationState>((set) => ({
       set({ isLoading: true });
       
       let { status } = await Location.getForegroundPermissionsAsync();
+      let permissionJustGranted = false;
+      
       if (status !== 'granted') {
-        status = (await Location.requestForegroundPermissionsAsync()).status;
+        const result = await Location.requestForegroundPermissionsAsync();
+        status = result.status;
         if (status !== 'granted') {
           set({ errorMsg: 'Permiso de ubicación denegado', isLoading: false });
           return;
         }
+        permissionJustGranted = true;
       }
       
       // Primero intentar obtener la última posición conocida (mucho más rápido)
@@ -39,21 +43,35 @@ export const useLocationStore = create<LocationState>((set) => ({
         set({ 
           latitude: location.coords.latitude, 
           longitude: location.coords.longitude,
+          errorMsg: null,
           isLoading: false 
         });
       } else {
-        // Si no hay ubicación conocida, usar getCurrentPosition con un timeout
-        const locationPromise = Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Lowest, // Usar la precisión más baja para mayor velocidad
-        });
-        
-        // Establecer un timeout de 5 segundos para no esperar demasiado
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Timeout obteniendo ubicación')), 5000);
-        });
+        // Si el permiso acaba de ser concedido o no hay ubicación conocida
+        // usar un timeout más largo y hacer reintentos
+        const getLocationWithRetry = async (retries = 2, timeout = permissionJustGranted ? 15000 : 5000) => {
+          const locationPromise = Location.getCurrentPositionAsync({
+            accuracy: permissionJustGranted ? Location.Accuracy.Balanced : Location.Accuracy.Lowest,
+          });
+          
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout obteniendo ubicación')), timeout);
+          });
+          
+          try {
+            const result = await Promise.race([locationPromise, timeoutPromise]) as Location.LocationObject;
+            return result;
+          } catch (error) {
+            if (retries > 0) {
+              console.log(`Reintentando obtener ubicación. Intentos restantes: ${retries}`);
+              return getLocationWithRetry(retries - 1, timeout);
+            }
+            throw error;
+          }
+        };
         
         try {
-          location = await Promise.race([locationPromise, timeoutPromise]) as Location.LocationObject;
+          location = await getLocationWithRetry();
           set({ 
             latitude: location.coords.latitude, 
             longitude: location.coords.longitude,
@@ -61,11 +79,8 @@ export const useLocationStore = create<LocationState>((set) => ({
             isLoading: false
           });
         } catch (timeoutError) {
-          console.warn('Timeout al obtener ubicación precisa');
-          // Si ya tenemos una ubicación anterior, mantenemos esa
-          if (!location) {
-            set({ errorMsg: 'Tiempo de espera agotado', isLoading: false });
-          }
+          console.warn('No se pudo obtener la ubicación después de múltiples intentos');
+          set({ errorMsg: 'No se pudo obtener la ubicación. Intente nuevamente.', isLoading: false });
         }
       }
     } catch (error) {
