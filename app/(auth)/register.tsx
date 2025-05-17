@@ -105,7 +105,7 @@ export default function Register() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1 bg-white dark:bg-neutral-900">
+      <View className="flex-1 bg-background dark:bg-background-dark">
         <View className="flex-1">
           <View className="flex h-28 pt-14 justify-center items-center rounded-b-full">
             <Text className="text-black dark:text-white text-xl text-center">
