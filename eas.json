@@ -9,7 +9,13 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "android": {
+        "buildType": "apk"
+      },
+      "distribution": "internal",
+      "env": {
+        "EXPO_USE_LEGACY_PEER_DEPS": "1"
+      }
     },
     "production": {
       "autoIncrement": true
