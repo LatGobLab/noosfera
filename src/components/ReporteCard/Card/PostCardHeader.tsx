@@ -4,13 +4,13 @@ import { View, Text, Image } from "react-native";
 type PostCardHeaderProps = {
   profile_avatar_url: string;
   profile_username: string;
-  profile_rol_nombre: string;
+  nombre_organizacion: string;
   estatus: boolean;
 };
 export const PostCardHeader = ({
   profile_avatar_url,
   profile_username,
-  profile_rol_nombre,
+  nombre_organizacion,
   estatus,
 }: PostCardHeaderProps) => {
   return (
@@ -30,7 +30,7 @@ export const PostCardHeader = ({
               {profile_username ?? "Usuario Anónimo"}
             </Text>
             <Text className="text-xs text-gray-600 dark:text-gray-400">
-              {profile_rol_nombre ?? ""}
+              {nombre_organizacion ?? ""}
             </Text>
           </View>
         </View>

@@ -13,9 +13,10 @@ export interface ReporteNearby {
   estatus: boolean;
   likes_count: number;
   comments_count: number;
+  fk_organizaciones: number | null;
   profile_username: string | null; 
   profile_avatar_url: string | null; 
-  profile_rol_nombre: string | null;
+  nombre_organizacion: string | null;
   tipo_nombre: string | null;
   distance_meters: number;
 }

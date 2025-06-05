@@ -16,7 +16,7 @@ export const PostCard = ({ post }: PostCardProps) => {
         <PostCardHeader
           profile_avatar_url={post.profile_avatar_url ?? ""}
           profile_username={post.profile_username ?? ""}
-          profile_rol_nombre={post.profile_rol_nombre ?? ""}
+          nombre_organizacion={post.nombre_organizacion ?? ""}
           estatus={post.estatus ?? false}
         />
         <View>

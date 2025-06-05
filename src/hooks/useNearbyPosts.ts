@@ -50,9 +50,10 @@ export default function useNearbyPosts() {
         estatus: item.estatus,
         likes_count: item.likes_count,
         comments_count: item.comments_count,
+        fk_organizaciones: item.fk_organizaciones || null,
         profile_username: item.profile_username || null,
         profile_avatar_url: item.profile_avatar_url || null,
-        profile_rol_nombre: item.profile_rol_nombre || null,
+        nombre_organizacion: item.nombre_organizacion || null,
         tipo_nombre: item.tipo_nombre || null,
         distance_meters: item.distance_meters
     }));
