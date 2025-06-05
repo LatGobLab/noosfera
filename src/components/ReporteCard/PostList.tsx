@@ -23,7 +23,7 @@ export const PostList = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    refetch,
+    refreshPosts,
   } = useNearbyPosts();
 
   const { scrollHandler } = useHeaderVisibility();
@@ -38,9 +38,9 @@ export const PostList = () => {
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await refetch();
+    await refreshPosts();
     setIsRefreshing(false);
-  }, [refetch]);
+  }, [refreshPosts]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ReporteNearby>) => {

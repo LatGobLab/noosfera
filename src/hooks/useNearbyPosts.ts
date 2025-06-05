@@ -1,4 +1,5 @@
 import { useInfiniteQuery, InfiniteData, QueryKey } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import supabase from '@/src/lib/supabase';
 import { useLocationStore } from '@/src/stores/useLocationStore';
 import { ReporteNearby } from '@/src/types/reporteNearby'; 
@@ -12,9 +13,21 @@ interface FetchPostsResponse {
 
 export default function useNearbyPosts() {
   const { latitude, longitude } = useLocationStore();
+  const [stableLocation, setStableLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  // Solo actualizar la ubicación estable cuando hay cambios significativos (>100 metros aprox)
+  useEffect(() => {
+    if (!latitude || !longitude) return;
+
+    if (!stableLocation || 
+        Math.abs(latitude - stableLocation.lat) > 0.001 || // ~100 metros
+        Math.abs(longitude - stableLocation.lng) > 0.001) {
+      setStableLocation({ lat: latitude, lng: longitude });
+    }
+  }, [latitude, longitude, stableLocation]);
 
   const fetchPosts = async ({ pageParam = 0 }): Promise<FetchPostsResponse> => { // Tipar el retorno
-    if (!latitude || !longitude) {
+    if (!stableLocation) {
       return { data: [], nextPage: undefined };
     }
 
@@ -23,8 +36,8 @@ export default function useNearbyPosts() {
     // Supabase client infiere tipos si tienes los 'database types' generados,
     // pero podemos ser explícitos si no.
     const { data, error } = await supabase.rpc('get_reporte_nearby', {
-      user_lat: latitude,
-      user_lon: longitude,
+      user_lat: stableLocation.lat,
+      user_lon: stableLocation.lng,
       page_limit: POSTS_PAGE_LIMIT,
       page_offset: offset,
     });
@@ -73,12 +86,15 @@ export default function useNearbyPosts() {
     number             
   >({
     initialPageParam: 0,
-    queryKey: ['nearbyPosts', latitude, longitude],
+    queryKey: ['nearbyPosts', stableLocation?.lat, stableLocation?.lng],
     queryFn: fetchPosts,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    enabled: !!latitude && !!longitude
-    // staleTime: 5 * 60 * 1000,
-    // refetchOnWindowFocus: true,
+    enabled: !!stableLocation,
+    staleTime: 10 * 60 * 1000, // 10 minutos - posts más frescos que pins
+    gcTime: 20 * 60 * 1000, // 20 minutos en caché
+    refetchOnWindowFocus: false,
+    refetchOnMount: false, // No refetch automáticamente al montar
+    refetchOnReconnect: false, // No refetch al reconectar
   });
 
   // Puedes añadir un selector si quieres aplanar los datos directamente
@@ -88,5 +104,7 @@ export default function useNearbyPosts() {
     ...queryResult,
     // Opcionalmente, puedes devolver los datos aplanados
     posts: flatData,
+    // Función para refrescar manualmente si es necesario
+    refreshPosts: () => queryResult.refetch(),
   };
 }
