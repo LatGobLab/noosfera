@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text } from "react-native";
+import { View, Image, ImageSourcePropType } from "react-native";
 import { ReportePin } from "@/src/types/reportePin";
 
 interface MapPinProps {
@@ -7,48 +7,63 @@ interface MapPinProps {
   onPress?: () => void;
 }
 
-// Función externa para evitar recrearla en cada render
-const getPinColor = (categoriaId: number): string => {
+// Función externa para obtener la imagen del pin según la categoría
+const getPinImage = (categoriaId: number): ImageSourcePropType => {
   switch (categoriaId) {
     case 1:
-      return "#ef4444"; // Rojo para emergencias
+      return require("@/assets/images/pins/ciudad_pin.png");
     case 2:
-      return "#f97316"; // Naranja para infraestructura
+      return require("@/assets/images/pins/sociedad_pin.png");
     case 3:
-      return "#eab308"; // Amarillo para limpieza
+      return require("@/assets/images/pins/economia_pin.png");
     case 4:
-      return "#22c55e"; // Verde para medio ambiente
+      return require("@/assets/images/pins/ambiente_pin.png");
     case 5:
-      return "#3b82f6"; // Azul para servicios públicos
+      return require("@/assets/images/pins/salud_pin.png");
+    case 6:
+      return require("@/assets/images/pins/Gobernanza_pin.png");
+    case 7:
+      return require("@/assets/images/pins/seguridad_pin.png");
     default:
-      return "#6b7280"; // Gris por defecto
+      return require("@/assets/images/pins/ciudad_pin.png"); // Default - Ciudad
   }
 };
 
 export const MapPin: React.FC<MapPinProps> = React.memo(({ pin, onPress }) => {
-  // Memoizar el estilo para evitar recrearlo en cada render
-  const pinStyle = useMemo(
-    () => ({
-      backgroundColor: getPinColor(pin.fk_categoria_reporte),
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      borderWidth: 2,
-      borderColor: "white",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
-    }),
+  // Memoizar la imagen para evitar recrearla en cada render
+  const pinImage = useMemo(
+    () => getPinImage(pin.fk_categoria_reporte),
     [pin.fk_categoria_reporte]
   );
 
+  // Estilo del contenedor del pin
+  const containerStyle = useMemo(
+    () => ({
+      width: 40,
+      height: 40,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 6, // Para Android
+    }),
+    []
+  );
+
   return (
-    <View className="items-center justify-center" style={pinStyle}>
-      <Text className="text-white text-xs font-bold">
-        {pin.fk_categoria_reporte}
-      </Text>
+    <View style={containerStyle} className="items-center justify-center">
+      <Image
+        source={pinImage}
+        style={{
+          width: 40,
+          height: 40,
+          resizeMode: "contain",
+        }}
+        accessible={true}
+        accessibilityLabel={`Pin de ${pin.nombre_categoria}`}
+      />
     </View>
   );
 });
+
+MapPin.displayName = "MapPin";
