@@ -9,7 +9,7 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
-import { CommentsBottomSheet } from "@/src/components/BottomSheets/Comments/CommentsSheet";
+import { CommentsBottomSheet } from "@/src/components/Comments/CommentsSheet";
 
 type PostCardFooterProps = {
   id_reporte: number;
