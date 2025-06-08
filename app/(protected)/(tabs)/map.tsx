@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import useMapPins from "@/src/hooks/useMapPins";
 import { useMapLogic } from "@/src/components/Map/useMapLogic";
 import { MapViewComponent } from "@/src/components/Map/MapViewComponent";
@@ -26,7 +26,7 @@ export default function MapScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background dark:bg-background-dark">
       <MapViewComponent
         initialRegion={initialRegion}
         pins={stablePins}
@@ -35,9 +35,3 @@ export default function MapScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
