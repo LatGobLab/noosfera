@@ -52,42 +52,42 @@ export default function useMapPins() {
     // Mapear y tipar los datos recibidos
     const pins: ReportePin[] = (data as any[] || []).map(item => ({
       id_reporte: item.id_reporte,
-      latitud: item.latitud,
-      longitud: item.longitud,
-      fk_categoria_reporte: item.fk_categoria_reporte,
-      nombre_categoria: item.nombre_categoria,
-      distance_meters: item.distance_meters,
-    }));
+              latitud: item.latitud,
+        longitud: item.longitud,
+        fk_categoria_reporte: item.fk_categoria_reporte,
+        nombre_categoria: item.nombre_categoria,
+        distance_meters: item.distance_meters,
+      }));
 
-    return pins;
-  };
+      return pins;
+    };
 
-  const queryResult = useQuery<ReportePin[], Error>({
-    queryKey: ['mapPins', stableLocation?.lat, stableLocation?.lng],
-    queryFn: fetchPins,
-    enabled: !!stableLocation,
-    staleTime: 30 * 60 * 1000, // 30 minutos - datos muy frescos
-    gcTime: 60 * 60 * 1000, // 1 hora en caché
-    refetchOnWindowFocus: false,
-    refetchOnMount: false, 
-    refetchOnReconnect: false,
-    refetchInterval: false, // Desactivar refetch automático por intervalo
-    refetchIntervalInBackground: false,
-    notifyOnChangeProps: ['data', 'error', 'isLoading'], // Solo notificar cambios en estas props
-  });
+    const queryResult = useQuery<ReportePin[], Error>({
+      queryKey: ['mapPins', stableLocation?.lat, stableLocation?.lng],
+      queryFn: fetchPins,
+      enabled: !!stableLocation,
+      staleTime: 30 * 60 * 1000, // 30 minutos - datos muy frescos
+      gcTime: 60 * 60 * 1000, // 1 hora en caché
+      refetchOnWindowFocus: false,
+      refetchOnMount: false, 
+      refetchOnReconnect: false,
+      refetchInterval: false, // Desactivar refetch automático por intervalo
+      refetchIntervalInBackground: false,
+      notifyOnChangeProps: ['data', 'error', 'isLoading'], // Solo notificar cambios en estas props
+    });
 
-  // Memoizar los datos para evitar re-renders innecesarios si los datos no cambiaron
-  const stablePins = useMemo(() => {
-    if (!queryResult.data) return undefined;
-    
-    // Solo cambiar si realmente los IDs de los pins cambiaron
-    return queryResult.data;
-  }, [queryResult.data?.map(pin => pin.id_reporte).join(',')]);  // Usar join en lugar de JSON.stringify para mejor performance
+    // Memoizar los datos para evitar re-renders innecesarios si los datos no cambiaron
+    const stablePins = useMemo(() => {
+      if (!queryResult.data) return undefined;
+      
+      // Solo cambiar si realmente los IDs de los pins cambiaron
+      return queryResult.data;
+    }, [queryResult.data?.map(pin => pin.id_reporte).join(',')]);  // Usar join en lugar de JSON.stringify para mejor performance
 
-  return {
-    ...queryResult,
-    data: stablePins,
-    // Función para refrescar manualmente si es necesario
-    refreshPins: () => queryResult.refetch(),
-  };
+    return {
+      ...queryResult,
+      data: stablePins,
+      // Función para refrescar manualmente si es necesario
+      refreshPins: () => queryResult.refetch(),
+    };
 } 

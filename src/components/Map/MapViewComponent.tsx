@@ -11,6 +11,8 @@ interface MapViewComponentProps {
   initialRegion: Region;
   pins: ReportePin[];
   onPinPress: (pin: ReportePin) => void;
+  onMapReady?: () => void;
+  onMarkersReady?: () => void;
 }
 
 // Componente para el marker de ubicación del usuario
@@ -40,8 +42,6 @@ const UserLocationMarker = React.memo(
   )
 );
 
-// Estilo personalizado para el mapa en modo oscuro
-
 // Componente memoizado para un marker individual
 const MapMarkerItem = React.memo(
   ({
@@ -69,7 +69,7 @@ const MapMarkerItem = React.memo(
 );
 
 export const MapViewComponent: React.FC<MapViewComponentProps> = React.memo(
-  ({ initialRegion, pins, onPinPress }) => {
+  ({ initialRegion, pins, onPinPress, onMapReady, onMarkersReady }) => {
     const { colorScheme } = useColorScheme();
     const isDark = colorScheme === "dark";
     const { latitude, longitude } = useLocationStore();
@@ -83,11 +83,16 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = React.memo(
         // Esperar un poco para que los markers se rendericen completamente
         const timer = setTimeout(() => {
           setTracksViewChanges(false);
+          // Notificar que los markers están listos
+          onMarkersReady?.();
         }, 1000); // 1 segundo debería ser suficiente
 
         return () => clearTimeout(timer);
+      } else if (pins.length === 0) {
+        // Si no hay pins, los markers están "listos" inmediatamente
+        onMarkersReady?.();
       }
-    }, [pins.length, tracksViewChanges]);
+    }, [pins.length, tracksViewChanges, onMarkersReady]);
 
     // Resetear tracksViewChanges cuando cambien los pins
     useEffect(() => {
@@ -130,11 +135,18 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = React.memo(
       [isDark]
     );
 
+    // Manejar cuando el mapa está listo
+    const handleMapReady = () => {
+      console.log("🗺️ Mapa está listo");
+      onMapReady?.();
+    };
+
     return (
       <MapView
         style={mapStyles}
         provider={PROVIDER_GOOGLE}
         initialRegion={initialRegion}
+        onMapReady={handleMapReady}
         {...mapConfig}
       >
         {/* Marker personalizado para la ubicación del usuario */}
