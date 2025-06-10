@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { Alert } from "react-native";
 import { useLocationStore } from "@/src/stores/useLocationStore";
 import { ReportePin } from "@/src/types/reportePin";
+import { useMapDetails } from "@/src/hooks/useMapDetails";
 
 export const useMapLogic = () => {
   const { latitude, longitude } = useLocationStore();
@@ -19,20 +20,8 @@ export const useMapLogic = () => {
 
   // Memoizar el handler para evitar re-renders de los Markers
   const handlePinPress = useCallback((pin: ReportePin) => {
-    Alert.alert(
-      pin.nombre_categoria,
-      `Reporte #${pin.id_reporte}\nCategoría: ${pin.nombre_categoria}`,
-      [
-        { text: "Cerrar", style: "cancel" },
-        {
-          text: "Ver detalles",
-          onPress: () => {
-            // Aquí podrías navegar a la pantalla de detalles del reporte
-            console.log(`Navegar a reporte ${pin.id_reporte}`);
-          },
-        },
-      ]
-    );
+    const { data, isLoading, error } = useMapDetails(pin.id_reporte);
+    console.log(data);
   }, []);
 
   // Estabilizar los pins para evitar re-renders cuando no han cambiado

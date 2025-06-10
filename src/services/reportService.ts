@@ -96,4 +96,5 @@ export const submitReport = async (reportData: ReportData, session: Session | nu
   // Invalidate queries to reload data
   queryClient.invalidateQueries({ queryKey: ["reports", "locations"] });
   queryClient.invalidateQueries({ queryKey: ["nearbyPosts"] });
-}; 
+};
+
