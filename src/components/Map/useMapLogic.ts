@@ -19,8 +19,6 @@ export const useMapLogic = () => {
 
   // Memoizar el handler para evitar re-renders de los Markers
   const handlePinPress = useCallback((pin: ReportePin) => {
-    console.log('📍 Pin presionado:', pin.id_reporte);
-    // Establecer el ID del reporte seleccionado para el bottom sheet
     setSelectedReportId(pin.id_reporte);
   }, []);
 

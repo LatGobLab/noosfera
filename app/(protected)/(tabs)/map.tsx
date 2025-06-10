@@ -5,7 +5,7 @@ import useMapPins from "@/src/hooks/useMapPins";
 import { useMapLogic } from "@/src/components/Map/useMapLogic";
 import { MapViewComponent } from "@/src/components/Map/MapViewComponent";
 import { MapLoadingState, MapErrorState } from "@/src/components/Map/MapStates";
-import { ReportDetailsSheet } from "@/src/components/Map/ReportDetailsSheet";
+import { ReportDetailsSheet } from "@/src/components/Map/detailsSheet";
 
 export default function MapScreen() {
   const {

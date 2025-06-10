@@ -81,7 +81,7 @@ export const ReportDetailsSheet = forwardRef<
   );
 
   // Configure points for bottom sheet
-  const snapPoints = useMemo(() => ["70%"], []);
+  const snapPoints = useMemo(() => ["70%", "100%"], []);
 
   // Estilo personalizado para el handle (barra superior)
   const handleIndicatorStyle = useMemo(
