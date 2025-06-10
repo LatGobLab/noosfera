@@ -1,13 +1,10 @@
-import { useCallback, useMemo } from "react";
-import { Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { useLocationStore } from "@/src/stores/useLocationStore";
 import { ReportePin } from "@/src/types/reportePin";
-import { useMapDetails } from "@/src/hooks/useMapDetails";
 
 export const useMapLogic = () => {
   const { latitude, longitude } = useLocationStore();
-  const router = useRouter();
+  const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
 
   // Memoizar la región inicial para evitar re-renders innecesarios
   const initialRegion = useMemo(
@@ -23,12 +20,14 @@ export const useMapLogic = () => {
   // Memoizar el handler para evitar re-renders de los Markers
   const handlePinPress = useCallback((pin: ReportePin) => {
     console.log('📍 Pin presionado:', pin.id_reporte);
-    // Navegar a la pantalla de detalles con el ID del reporte
-    router.push({
-      pathname: "/(protected)/(stack)/details",
-      params: { id: pin.id_reporte.toString() }
-    });
-  }, [router]);
+    // Establecer el ID del reporte seleccionado para el bottom sheet
+    setSelectedReportId(pin.id_reporte);
+  }, []);
+
+  // Function to clear selected report (when bottom sheet closes)
+  const clearSelectedReport = useCallback(() => {
+    setSelectedReportId(null);
+  }, []);
 
   // Estabilizar los pins para evitar re-renders cuando no han cambiado
   const getStablePins = useCallback((pins: ReportePin[] | undefined) => {
@@ -39,5 +38,7 @@ export const useMapLogic = () => {
     initialRegion,
     handlePinPress,
     getStablePins,
+    selectedReportId,
+    clearSelectedReport,
   };
 }; 

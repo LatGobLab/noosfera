@@ -25,12 +25,7 @@ export default function useMapPins() {
       return [];
     }
 
-    // Log para trackear solicitudes a la base de datos
-    console.log('🔍 Realizando solicitud a la BD para obtener pins del mapa:', {
-      lat: stableLocation.lat,
-      lng: stableLocation.lng,
-      timestamp: new Date().toISOString()
-    });
+
 
     // Llamada a la función RPC de Supabase usando la ubicación estable
     const { data, error } = await supabase.rpc('get_reporte_pins_nearby', {
@@ -43,11 +38,7 @@ export default function useMapPins() {
       throw new Error(error.message);
     }
 
-    // Log del resultado
-    console.log('✅ Pins obtenidos de la BD:', {
-      count: data?.length || 0,
-      timestamp: new Date().toISOString()
-    });
+
 
     // Mapear y tipar los datos recibidos
     const pins: ReportePin[] = (data as any[] || []).map(item => ({

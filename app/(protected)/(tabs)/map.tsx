@@ -1,9 +1,11 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { View } from "react-native";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import useMapPins from "@/src/hooks/useMapPins";
 import { useMapLogic } from "@/src/components/Map/useMapLogic";
 import { MapViewComponent } from "@/src/components/Map/MapViewComponent";
 import { MapLoadingState, MapErrorState } from "@/src/components/Map/MapStates";
+import { ReportDetailsSheet } from "@/src/components/Map/ReportDetailsSheet";
 
 export default function MapScreen() {
   const {
@@ -12,7 +14,15 @@ export default function MapScreen() {
     error,
     refreshPins,
   } = useMapPins();
-  const { initialRegion, handlePinPress } = useMapLogic();
+  const {
+    initialRegion,
+    handlePinPress,
+    selectedReportId,
+    clearSelectedReport,
+  } = useMapLogic();
+
+  // Ref para el bottom sheet de detalles
+  const reportDetailsSheetRef = useRef<BottomSheetModal>(null);
 
   // Estado local para controlar cuando el mapa está completamente listo
   const [isMapReady, setIsMapReady] = useState(false);
@@ -34,28 +44,22 @@ export default function MapScreen() {
     // Si pins es undefined (aún cargando), no cambiar el estado
   }, [pins?.map((p) => p.id_reporte).join(",")]);
 
+  // Abrir el bottom sheet cuando se selecciona un reporte
+  useEffect(() => {
+    if (selectedReportId && reportDetailsSheetRef.current) {
+      reportDetailsSheetRef.current.present();
+    }
+  }, [selectedReportId]);
+
   // Función para manejar cuando el mapa está listo
   const handleMapReady = () => {
-    console.log("🗺️ Mapa está listo");
     setIsMapReady(true);
   };
 
   // Función para manejar cuando los markers están listos
   const handleMarkersReady = () => {
-    console.log("📍 Markers están listos");
     setAreMarkersReady(true);
   };
-
-  console.log(
-    "pins count:",
-    pins?.length,
-    "isPinsLoading:",
-    isPinsLoading,
-    "isMapReady:",
-    isMapReady,
-    "areMarkersReady:",
-    areMarkersReady
-  );
 
   // Determinar si debemos mostrar loading
   // Mostrar loading mientras:
@@ -88,6 +92,13 @@ export default function MapScreen() {
           <MapLoadingState />
         </View>
       )}
+
+      {/* Bottom Sheet para mostrar detalles del reporte */}
+      <ReportDetailsSheet
+        ref={reportDetailsSheetRef}
+        reportId={selectedReportId}
+        onClose={clearSelectedReport}
+      />
     </View>
   );
 }

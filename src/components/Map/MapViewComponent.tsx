@@ -137,7 +137,6 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = React.memo(
 
     // Manejar cuando el mapa está listo
     const handleMapReady = () => {
-      console.log("🗺️ Mapa está listo");
       onMapReady?.();
     };
 
