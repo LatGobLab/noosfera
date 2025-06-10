@@ -9,7 +9,7 @@ export const MapLoadingState = React.memo(() => {
   return (
     <View className="flex-1 justify-center items-center bg-background dark:bg-background-dark">
       <ActivityIndicator size="large" color={isDark ? "#60a5fa" : "#3b82f6"} />
-      <Text className="mt-4 text-foreground dark:text-foreground-dark">
+      <Text className="mt-4 text-foreground dark:text-white">
         Cargando mapa...
       </Text>
     </View>
@@ -21,7 +21,7 @@ export const MapErrorState = React.memo(({ error }: { error: Error }) => (
     <Text className="text-red-500 dark:text-red-400 text-center font-semibold">
       Error al cargar el mapa
     </Text>
-    <Text className="text-foreground dark:text-foreground-dark text-center mt-2">
+    <Text className="text-foreground dark:text-white text-center mt-2">
       {error.message}
     </Text>
   </View>
