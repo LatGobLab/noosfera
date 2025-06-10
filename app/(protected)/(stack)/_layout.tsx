@@ -56,22 +56,6 @@ export default function StackLayout() {
             headerShown: true,
           }}
         />
-        <Stack.Screen
-          name="comentarios"
-          options={{
-            headerShown: false,
-            presentation: "formSheet",
-            gestureDirection: "vertical",
-            animation: "slide_from_bottom",
-            gestureEnabled: false,
-            sheetGrabberVisible: false,
-            sheetInitialDetentIndex: 0,
-            sheetAllowedDetents: [0.9],
-            sheetCornerRadius: 20,
-            sheetExpandsWhenScrolledToEdge: false,
-            sheetElevation: 24,
-          }}
-        />
       </Stack>
     </View>
   );
