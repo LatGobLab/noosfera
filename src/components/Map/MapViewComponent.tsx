@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import MapView, { PROVIDER_GOOGLE, Region, Marker } from "react-native-maps";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useColorScheme } from "nativewind";
 import { useLocationStore } from "@/src/stores/useLocationStore";
 import { MapPin } from "./MapPin";
