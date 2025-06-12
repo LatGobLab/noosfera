@@ -6,14 +6,7 @@ import React, {
   useEffect,
   useImperativeHandle,
 } from "react";
-import {
-  View,
-  Text,
-  BackHandler,
-  ScrollView,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, BackHandler } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -22,6 +15,9 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useColorScheme } from "nativewind";
 import { useMapDetails } from "@/src/hooks/useMapDetails";
+import { ReportLoadingState } from "@/src/components/Map/bottomsheet/ReportLoadingState";
+import { ReportErrorState } from "@/src/components/Map/bottomsheet/ReportErrorState";
+import { ReportDetailsContent } from "@/src/components/Map/bottomsheet/ReportDetailsContent";
 
 type ReportDetailsSheetProps = {
   reportId: number | null;
@@ -112,113 +108,17 @@ export const ReportDetailsSheet = forwardRef<
   );
 
   // Render loading state
-  const renderLoadingState = () => (
-    <View className="flex-1 items-center justify-center py-8">
-      <ActivityIndicator size="large" color={isDark ? "#60a5fa" : "#3b82f6"} />
-      <Text className="text-gray-600 dark:text-gray-400 mt-4">
-        Cargando detalles del reporte...
-      </Text>
-    </View>
-  );
+  const renderLoadingState = () => <ReportLoadingState />;
 
   // Render error state
   const renderErrorState = () => (
-    <View className="flex-1 items-center justify-center py-8 px-4">
-      <Text className="text-red-600 dark:text-red-400 text-lg font-semibold mb-2">
-        Error al cargar el reporte
-      </Text>
-      <Text className="text-gray-600 dark:text-gray-400 text-center">
-        {error?.message || "No se pudieron cargar los detalles del reporte"}
-      </Text>
-      {reportId && (
-        <Text className="text-gray-500 dark:text-gray-500 text-sm mt-2">
-          ID del reporte: {reportId}
-        </Text>
-      )}
-    </View>
+    <ReportErrorState error={error} reportId={reportId} />
   );
 
   // Render report details content
   const renderReportDetails = () => {
     if (!reporteDetails) return null;
-
-    return (
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Header del reporte */}
-        <View className="mb-6">
-          <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Detalles del Reporte
-          </Text>
-          <Text className="text-sm text-gray-500 dark:text-gray-400">
-            ID: {reporteDetails.id_reporte}
-          </Text>
-        </View>
-
-        {/* Información del usuario */}
-        <View className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 shadow-sm">
-          <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            Información del Usuario
-          </Text>
-
-          <View className="flex-row items-center mb-3">
-            {reporteDetails.profile_avatar_url ? (
-              <Image
-                source={{ uri: reporteDetails.profile_avatar_url }}
-                className="w-12 h-12 rounded-full mr-3"
-                style={{ backgroundColor: isDark ? "#374151" : "#f3f4f6" }}
-              />
-            ) : (
-              <View className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 mr-3" />
-            )}
-
-            <View className="flex-1">
-              <Text className="font-semibold text-gray-900 dark:text-gray-100">
-                {reporteDetails.profile_username || "Usuario Anónimo"}
-              </Text>
-              {reporteDetails.nombre_organizacion && (
-                <Text className="text-sm text-gray-600 dark:text-gray-400">
-                  {reporteDetails.nombre_organizacion}
-                </Text>
-              )}
-            </View>
-          </View>
-        </View>
-
-        {/* Información del reporte */}
-        <View className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 shadow-sm">
-          <Text className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            Detalles del Reporte
-          </Text>
-
-          <View className="space-y-2">
-            <View className="flex-row justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-              <Text className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Tipo de Reporte
-              </Text>
-              <Text className="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                {reporteDetails.tipo_nombre || "No especificado"}
-              </Text>
-            </View>
-
-            <View className="flex-row justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-              <Text className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Usuario ID
-              </Text>
-              <Text className="text-sm text-gray-900 dark:text-gray-100 font-mono ">
-                {reporteDetails.fk_reporte_users}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Espacio adicional */}
-        <View className="mb-8">
-          <Text className="text-gray-500 dark:text-gray-400 text-center text-sm">
-            Más detalles próximamente...
-          </Text>
-        </View>
-      </ScrollView>
-    );
+    return <ReportDetailsContent reporteDetails={reporteDetails} />;
   };
 
   return (
