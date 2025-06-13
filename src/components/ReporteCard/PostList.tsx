@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { PostCard } from "./PostCard";
 import useNearbyPosts from "@/src/hooks/useNearbyPosts";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
@@ -52,14 +52,18 @@ export const PostList = () => {
   const renderFooter = useCallback(() => {
     if (isFetchingNextPage) {
       return (
-        <View style={styles.footerLoading}>
+        <View className="py-4 items-center">
           <ActivityIndicator size="small" color="#3b82f6" />
         </View>
       );
     }
     // Muestra mensaje si no hay más páginas y ya hay datos cargados
     if (!hasNextPage && flatData.length > 0) {
-      return <Text style={styles.footerText}>No hay más reportes</Text>;
+      return (
+        <Text className="text-center text-gray-500 dark:text-gray-400 py-3">
+          No hay más reportes
+        </Text>
+      );
     }
     // No renderiza nada si hay más páginas o si no hay datos iniciales
     return null;
@@ -67,26 +71,32 @@ export const PostList = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.centerContainer}>
+      <View className="flex-1 items-center justify-center p-5 bg-white dark:bg-gray-900">
         <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Buscando reportes cercanos...</Text>
+        <Text className="mt-2.5 text-gray-600 dark:text-gray-300">
+          Buscando reportes cercanos...
+        </Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.errorTitle}>Error al cargar los reportes:</Text>
-        <Text style={styles.errorText}>{error.message}</Text>
+      <View className="flex-1 items-center justify-center p-5 bg-white dark:bg-gray-900">
+        <Text className="mb-2 font-medium text-gray-800 dark:text-gray-100">
+          Error al cargar los reportes:
+        </Text>
+        <Text className="text-red-600 dark:text-red-400 text-center">
+          {error.message}
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.listContainer}>
+    <View className="flex-1 bg-white dark:bg-gray-900">
       <AnimatedFlashList
-        className="pt-12 "
+        className="pt-12"
         data={flatData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id_reporte.toString()}
@@ -99,8 +109,8 @@ export const PostList = () => {
         progressViewOffset={60}
         // --- Manejo de Lista Vacía ---
         ListEmptyComponent={
-          <View style={styles.centerContainer}>
-            <Text style={styles.emptyText}>
+          <View className="flex-1 items-center justify-center p-5 bg-white dark:bg-gray-900">
+            <Text className="text-gray-600 dark:text-gray-300 text-center">
               No se encontraron reportes cercanos.
             </Text>
           </View>
@@ -139,50 +149,3 @@ export const PostList = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  centerContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#0d0f15",
-  },
-  loadingText: {
-    marginTop: 10,
-    // color: '#666666', // Ejemplo claro
-    color: "#aaaaaa", // Ejemplo oscuro
-  },
-  errorTitle: {
-    marginBottom: 8,
-    fontWeight: "500",
-    // color: '#333333', // Ejemplo claro
-    color: "#eeeeee", // Ejemplo oscuro
-  },
-  errorText: {
-    // color: '#dc2626', // red-500
-    color: "#f87171", // red-400 dark
-    textAlign: "center",
-  },
-  emptyText: {
-    // color: '#666666', // Ejemplo claro
-    color: "#aaaaaa", // Ejemplo oscuro
-    textAlign: "center",
-  },
-  listContainer: {
-    flex: 1,
-    // backgroundColor: '#ffffff', // Ejemplo claro
-    backgroundColor: "#0d0f15", // Ejemplo oscuro
-    // marginTop: 8, // Equivalente a mt-2
-  },
-  footerLoading: {
-    paddingVertical: 16,
-    alignItems: "center",
-  },
-  footerText: {
-    textAlign: "center",
-    // color: '#6b7280', // gray-500
-    color: "#9ca3af", // gray-400 dark
-    paddingVertical: 12,
-  },
-});

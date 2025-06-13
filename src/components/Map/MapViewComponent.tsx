@@ -104,16 +104,6 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = React.memo(
     // Memoizar las props de configuración del mapa según el tema
     const mapConfig = useMemo(
       () => ({
-        showsUserLocation: false, // Desactivado para usar nuestro marker personalizado
-        showsUserLocationAccuracyCircle: false, // Asegurar que esté desactivado
-        showsMyLocationButton: true,
-        followsUserLocation: false,
-        showsCompass: false,
-        rotateEnabled: false,
-        pitchEnabled: false,
-        scrollEnabled: true,
-        zoomEnabled: true,
-        loadingEnabled: true,
         loadingIndicatorColor: isDark ? "#60a5fa" : "#3b82f6", // Color diferente según el tema
         loadingBackgroundColor: "transparent",
         moveOnMarkerPress: false, // No mover el mapa cuando se presiona un marker
@@ -146,6 +136,20 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = React.memo(
         provider={PROVIDER_GOOGLE}
         initialRegion={initialRegion}
         onMapReady={handleMapReady}
+        userLocationCalloutEnabled={false}
+        showsCompass={false}
+        followsUserLocation={false}
+        showsMyLocationButton={true}
+        showsUserLocation={true}
+        rotateEnabled={true}
+        pitchEnabled={false}
+        scrollEnabled={true}
+        zoomEnabled={true}
+        loadingEnabled={true}
+        userLocationPriority="high"
+        userLocationUpdateInterval={5000}
+        userLocationFastestInterval={5000}
+        userLocationAnnotationTitle="Mi ubicación"
         {...mapConfig}
       >
         {/* Marker personalizado para la ubicación del usuario */}
