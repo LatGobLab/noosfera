@@ -7,7 +7,7 @@ export const MapLoadingState = React.memo(() => {
   const isDark = colorScheme === "dark";
 
   return (
-    <View className="flex-1 justify-center items-center bg-background dark:bg-background-dark">
+    <View className="flex-1 mt-14 justify-center items-center bg-background dark:bg-background-dark">
       <ActivityIndicator size="large" color={isDark ? "#60a5fa" : "#3b82f6"} />
       <Text className="mt-4 text-foreground dark:text-white">
         Cargando mapa...

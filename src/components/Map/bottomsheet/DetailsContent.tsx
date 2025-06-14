@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { UserInfoSection } from "./UserInfoSection";
-import { ReportInfoSection } from "./ReportInfoSection";
+import { UserInfoSection } from "./UserInfo";
+import { ReportInfoSection } from "./InfoSection";
 import { PostCardGallery } from "../../ReporteCard/Card/PostCardGallery";
 import { ReporteDetails } from "@/src/types/reporteDetails";
 
@@ -15,9 +15,9 @@ export const ReportDetailsContent = ({
 }: ReportDetailsContentProps) => {
   return (
     <BottomSheetScrollView
-      className="flex-1 px-4 pt-4"
+      className="flex-1 "
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 20 }}
+      contentContainerStyle={{ paddingBottom: 50 }}
     >
       <View className="mb-8 ">
         <PostCardGallery

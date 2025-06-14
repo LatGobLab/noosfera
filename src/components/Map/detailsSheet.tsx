@@ -15,9 +15,9 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useColorScheme } from "nativewind";
 import { useMapDetails } from "@/src/hooks/useMapDetails";
-import { ReportLoadingState } from "@/src/components/Map/bottomsheet/ReportLoadingState";
-import { ReportErrorState } from "@/src/components/Map/bottomsheet/ReportErrorState";
-import { ReportDetailsContent } from "@/src/components/Map/bottomsheet/ReportDetailsContent";
+import { ReportLoadingState } from "@/src/components/Map/bottomsheet/LoadingState";
+import { ReportErrorState } from "@/src/components/Map/bottomsheet/ErrorState";
+import { ReportDetailsContent } from "@/src/components/Map/bottomsheet/DetailsContent";
 import { ReporteDetails } from "@/src/types/reporteDetails";
 
 type ReportDetailsSheetProps = {
@@ -77,7 +77,7 @@ export const ReportDetailsSheet = forwardRef<
   );
 
   // Configure points for bottom sheet
-  const snapPoints = useMemo(() => ["50%", "95%"], []);
+  const snapPoints = useMemo(() => ["50%", "90%"], []);
 
   // Estilo personalizado para el handle (barra superior)
   const handleIndicatorStyle = useMemo(
