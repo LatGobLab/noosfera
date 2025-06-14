@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import useMapPins from "@/src/hooks/useMapPins";
@@ -8,12 +8,7 @@ import { MapLoadingState, MapErrorState } from "@/src/components/Map/MapStates";
 import { ReportDetailsSheet } from "@/src/components/Map/detailsSheet";
 
 export default function MapScreen() {
-  const {
-    data: pins,
-    isLoading: isPinsLoading,
-    error,
-    refreshPins,
-  } = useMapPins();
+  const { data: pins, isLoading: isPinsLoading, error } = useMapPins();
   const {
     initialRegion,
     handlePinPress,
@@ -24,25 +19,15 @@ export default function MapScreen() {
   // Ref para el bottom sheet de detalles
   const reportDetailsSheetRef = useRef<BottomSheetModal>(null);
 
-  // Estado local para controlar cuando el mapa está completamente listo
-  const [isMapReady, setIsMapReady] = useState(false);
-  const [areMarkersReady, setAreMarkersReady] = useState(false);
+  // Estado simple para controlar la carga completa
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
 
-  // Memoizar los pins para evitar re-renders cuando no han cambiado
-  const stablePins = useMemo(
-    () => pins || [],
-    [pins?.map((p) => p.id_reporte).join(",")]
-  );
-
-  // Resetear estados cuando cambian los pins
+  // Resetear cuando cambian los pins
   useEffect(() => {
-    if (pins && pins.length > 0) {
-      setAreMarkersReady(false); // Los markers necesitan renderizarse de nuevo
-    } else if (pins && pins.length === 0) {
-      setAreMarkersReady(true); // No hay markers que renderizar
+    if (pins) {
+      setIsFullyLoaded(false);
     }
-    // Si pins es undefined (aún cargando), no cambiar el estado
-  }, [pins?.map((p) => p.id_reporte).join(",")]);
+  }, [pins?.length]);
 
   // Abrir el bottom sheet cuando se selecciona un reporte
   useEffect(() => {
@@ -51,25 +36,13 @@ export default function MapScreen() {
     }
   }, [selectedReportId]);
 
-  // Función para manejar cuando el mapa está listo
-  const handleMapReady = () => {
-    setIsMapReady(true);
+  // Manejar cuando todo está listo
+  const handleFullyLoaded = () => {
+    setIsFullyLoaded(true);
   };
 
-  // Función para manejar cuando los markers están listos
-  const handleMarkersReady = () => {
-    setAreMarkersReady(true);
-  };
-
-  // Determinar si debemos mostrar loading
-  // Mostrar loading mientras:
-  // 1. Los pins están cargando
-  // 2. El mapa no está listo
-  // 3. Tenemos pins pero los markers no están listos
-  const isCompletelyLoading =
-    isPinsLoading ||
-    !isMapReady ||
-    (pins && pins.length > 0 && !areMarkersReady);
+  // Mostrar loading mientras se cargan los pins o el mapa no está completamente listo
+  const showLoading = isPinsLoading || !isFullyLoaded;
 
   if (error) {
     return <MapErrorState error={error} />;
@@ -80,14 +53,14 @@ export default function MapScreen() {
       {/* Renderizar el mapa siempre para que se cargue en el fondo */}
       <MapViewComponent
         initialRegion={initialRegion}
-        pins={stablePins}
+        pins={pins || []}
         onPinPress={handlePinPress}
-        onMapReady={handleMapReady}
-        onMarkersReady={handleMarkersReady}
+        onMapReady={handleFullyLoaded}
+        onMarkersReady={handleFullyLoaded}
       />
 
       {/* Pantalla de carga superpuesta */}
-      {isCompletelyLoading && (
+      {showLoading && (
         <View className="absolute inset-0 z-50">
           <MapLoadingState />
         </View>
