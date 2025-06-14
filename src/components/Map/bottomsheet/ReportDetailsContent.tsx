@@ -1,24 +1,32 @@
 import React from "react";
-import { ScrollView, View, Text } from "react-native";
+import { View, Text } from "react-native";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { UserInfoSection } from "./UserInfoSection";
 import { ReportInfoSection } from "./ReportInfoSection";
+import { PostCardGallery } from "../../ReporteCard/Card/PostCardGallery";
+import { ReporteDetails } from "@/src/types/reporteDetails";
 
 type ReportDetailsContentProps = {
-  reporteDetails: {
-    id_reporte: number;
-    profile_avatar_url?: string | null;
-    profile_username?: string | null;
-    nombre_organizacion?: string | null;
-    tipo_nombre?: string | null;
-    fk_reporte_users?: string | number | null;
-  };
+  reporteDetails: ReporteDetails;
 };
 
 export const ReportDetailsContent = ({
   reporteDetails,
 }: ReportDetailsContentProps) => {
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    <BottomSheetScrollView
+      className="flex-1 px-4 pt-4"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 20 }}
+    >
+      <View className="mb-8 ">
+        <PostCardGallery
+          foto_reporte={reporteDetails.foto_reporte}
+          postId={reporteDetails.id_reporte}
+          isInBottomSheet={true}
+        />
+      </View>
+
       {/* Header del reporte */}
       <View className="mb-6">
         <Text className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -43,11 +51,6 @@ export const ReportDetailsContent = ({
       />
 
       {/* Espacio adicional */}
-      <View className="mb-8">
-        <Text className="text-gray-500 dark:text-gray-400 text-center text-sm">
-          Más detalles próximamente...
-        </Text>
-      </View>
-    </ScrollView>
+    </BottomSheetScrollView>
   );
 };

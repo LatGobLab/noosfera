@@ -1,17 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ScrollView, Image, Dimensions, View } from "react-native";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 
 type PostCardGalleryProps = {
   foto_reporte: any;
   postId: string | number;
+  isInBottomSheet?: boolean;
 };
 
 export const PostCardGallery = ({
   foto_reporte,
   postId,
+  isInBottomSheet = false,
 }: PostCardGalleryProps) => {
   const { width: screenWidth } = Dimensions.get("window");
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollView | any>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>(
     {}
@@ -82,51 +85,64 @@ export const PostCardGallery = ({
     }
   };
 
+  const scrollViewProps = {
+    ref: scrollViewRef,
+    horizontal: true,
+    showsHorizontalScrollIndicator: false,
+    pagingEnabled: true,
+    onScroll: handleScroll,
+    scrollEventThrottle: 16,
+    decelerationRate: "fast" as const,
+    snapToInterval: screenWidth,
+    snapToAlignment: "start" as const,
+    contentContainerStyle: { flexGrow: 0 },
+    nestedScrollEnabled: true,
+    removeClippedSubviews: true,
+  };
+
+  const galleryKey = `gallery-${postId}`;
+
+  const renderImages = () => {
+    return imageUrls.map((url: string, index: number) => {
+      if (!loadedImages[index]) {
+        return (
+          <View
+            key={`placeholder-${index}-${postId}`}
+            style={{
+              width: screenWidth,
+              height: 600,
+              backgroundColor: "#e1e1e1",
+            }}
+          />
+        );
+      }
+
+      return (
+        <Image
+          key={`image-${index}-${postId}`}
+          source={{ uri: url }}
+          style={{
+            width: screenWidth,
+            height: 600,
+          }}
+          resizeMode="cover"
+          fadeDuration={0}
+        />
+      );
+    });
+  };
+
   return (
     <View className="mb-2">
-      <ScrollView
-        ref={scrollViewRef}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        pagingEnabled
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        decelerationRate="fast"
-        snapToInterval={screenWidth}
-        snapToAlignment="start"
-        contentContainerStyle={{ flexGrow: 0 }}
-        key={`gallery-${postId}`}
-        nestedScrollEnabled={true}
-        removeClippedSubviews={true}
-      >
-        {imageUrls.map((url: string, index: number) => {
-          if (!loadedImages[index]) {
-            return (
-              <View
-                key={`placeholder-${index}-${postId}`}
-                style={{
-                  width: screenWidth,
-                  height: 600,
-                  backgroundColor: "#e1e1e1",
-                }}
-              />
-            );
-          }
-
-          return (
-            <Image
-              key={`image-${index}-${postId}`}
-              source={{ uri: url }}
-              style={{
-                width: screenWidth,
-                height: 600,
-              }}
-              resizeMode="cover"
-              fadeDuration={0}
-            />
-          );
-        })}
-      </ScrollView>
+      {isInBottomSheet ? (
+        <BottomSheetScrollView key={galleryKey} {...scrollViewProps}>
+          {renderImages()}
+        </BottomSheetScrollView>
+      ) : (
+        <ScrollView key={galleryKey} {...scrollViewProps}>
+          {renderImages()}
+        </ScrollView>
+      )}
 
       {imageUrls.length > 1 && (
         <View className="flex-row justify-center mt-2">

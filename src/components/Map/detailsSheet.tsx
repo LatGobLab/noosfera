@@ -18,6 +18,7 @@ import { useMapDetails } from "@/src/hooks/useMapDetails";
 import { ReportLoadingState } from "@/src/components/Map/bottomsheet/ReportLoadingState";
 import { ReportErrorState } from "@/src/components/Map/bottomsheet/ReportErrorState";
 import { ReportDetailsContent } from "@/src/components/Map/bottomsheet/ReportDetailsContent";
+import { ReporteDetails } from "@/src/types/reporteDetails";
 
 type ReportDetailsSheetProps = {
   reportId: number | null;
@@ -76,12 +77,12 @@ export const ReportDetailsSheet = forwardRef<
   );
 
   // Configure points for bottom sheet
-  const snapPoints = useMemo(() => ["70%", "100%"], []);
+  const snapPoints = useMemo(() => ["50%", "95%"], []);
 
   // Estilo personalizado para el handle (barra superior)
   const handleIndicatorStyle = useMemo(
     () => ({
-      backgroundColor: isDark ? "#FFFFFF" : "#0d0f15",
+      backgroundColor: isDark ? "#FFFFFF" : "#",
       width: 50,
       height: 5,
     }),
@@ -91,9 +92,10 @@ export const ReportDetailsSheet = forwardRef<
   // Estilo para el header completo
   const handleStyle = useMemo(
     () => ({
-      backgroundColor: isDark ? "#25292c" : "#F3F4F6",
+      backgroundColor: isDark ? "#0d0f15" : "#F3F4F6",
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
+      height: 40,
     }),
     [isDark]
   );
@@ -117,7 +119,9 @@ export const ReportDetailsSheet = forwardRef<
   // Render report details content
   const renderReportDetails = () => {
     if (!reporteDetails) return null;
-    return <ReportDetailsContent reporteDetails={reporteDetails} />;
+    return (
+      <ReportDetailsContent reporteDetails={reporteDetails as ReporteDetails} />
+    );
   };
 
   return (
@@ -129,7 +133,7 @@ export const ReportDetailsSheet = forwardRef<
       handleIndicatorStyle={handleIndicatorStyle}
       handleStyle={handleStyle}
       backdropComponent={renderBackdrop}
-      enableContentPanningGesture={true}
+      enableContentPanningGesture={false}
       enableHandlePanningGesture={true}
       animateOnMount={true}
       overDragResistanceFactor={0}
@@ -142,12 +146,12 @@ export const ReportDetailsSheet = forwardRef<
       backgroundComponent={({ style }) => (
         <View
           style={[style, { borderTopLeftRadius: 30, borderTopRightRadius: 30 }]}
-          className="bg-background dark:bg-[#25292c]"
+          className="bg-background dark:bg-background-dark"
         />
       )}
       onChange={handleSheetChange}
     >
-      <BottomSheetView className="flex-1 px-4 pt-4" style={{ flex: 1 }}>
+      <BottomSheetView className="flex-1" style={{ flex: 1 }}>
         {isLoading && renderLoadingState()}
         {isError && renderErrorState()}
         {!isLoading && !isError && reporteDetails && renderReportDetails()}
