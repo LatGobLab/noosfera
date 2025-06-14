@@ -6,9 +6,11 @@ import {
 } from "@gorhom/bottom-sheet";
 import type { Comment } from "@/src/types/comments";
 import { CommentItem } from "./CommentItem";
+import { CommentsSkeleton } from "./CommentsSkeleton";
 
 type CommentsListProps = {
   comments: Comment[];
+  isInitialLoading: boolean;
   isFetching: boolean;
   isFetchingNextPage: boolean;
   error: Error | null | undefined;
@@ -20,6 +22,7 @@ type CommentsListProps = {
 
 export const CommentsList = ({
   comments,
+  isInitialLoading,
   isFetching,
   isFetchingNextPage,
   error,
@@ -62,12 +65,9 @@ export const CommentsList = ({
     </View>
   );
 
-  if (isFetching) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color={isDark ? "#FFF" : "#000"} />
-      </View>
-    );
+  // Show skeleton loading on initial load
+  if (isInitialLoading) {
+    return <CommentsSkeleton isDark={isDark} itemCount={6} />;
   }
 
   if (error) {

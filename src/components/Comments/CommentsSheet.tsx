@@ -33,19 +33,21 @@ export const CommentsBottomSheet = forwardRef<
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const bottomSheetRef = React.useRef<BottomSheetModal>(null);
   useImperativeHandle(ref, () => bottomSheetRef.current!);
 
-  // Use the infinite comments hook
+  // Use the infinite comments hook with lazy loading
   const {
     data,
     fetchNextPage,
     hasNextPage,
     isFetching,
+    isInitialLoading,
     isFetchingNextPage,
     error,
     refetch,
-  } = useInfiniteComments(id_reporte);
+  } = useInfiniteComments(id_reporte, 20, hasBeenOpened);
 
   // Handle back button press to close sheet instead of app
   useEffect(() => {
@@ -65,10 +67,31 @@ export const CommentsBottomSheet = forwardRef<
     return () => backHandler.remove();
   }, [isSheetOpen]);
 
+  // Force the sheet to stay at correct position when data loads
+  useEffect(() => {
+    if (isSheetOpen && !isInitialLoading && data && bottomSheetRef.current) {
+      // Small delay to ensure the content has rendered
+      const timeoutId = setTimeout(() => {
+        bottomSheetRef.current?.snapToIndex(0);
+      }, 50);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isSheetOpen, isInitialLoading, data]);
+
   // Track sheet open/close state
-  const handleSheetChange = useCallback((index: number) => {
-    setIsSheetOpen(index >= 0);
-  }, []);
+  const handleSheetChange = useCallback(
+    (index: number) => {
+      const isOpening = index >= 0;
+      setIsSheetOpen(isOpening);
+
+      // Enable data fetching when sheet opens for the first time
+      if (isOpening && !hasBeenOpened) {
+        setHasBeenOpened(true);
+      }
+    },
+    [hasBeenOpened]
+  );
 
   // Flatten the comments from all pages with proper type handling
   const comments = useMemo(() => {
@@ -158,6 +181,8 @@ export const CommentsBottomSheet = forwardRef<
         />
       )}
       onChange={handleSheetChange}
+      enableDynamicSizing={false}
+      detached={false}
     >
       <BottomSheetView className="flex-1 px-2 pt-4" style={{ flex: 1 }}>
         <Text className="text-xl font-bold text-center mb-4 text-gray-800 dark:text-gray-200">
@@ -167,6 +192,7 @@ export const CommentsBottomSheet = forwardRef<
         <View className="flex-1">
           <CommentsList
             comments={comments}
+            isInitialLoading={isInitialLoading}
             isFetching={isFetching}
             isFetchingNextPage={isFetchingNextPage}
             error={error ? (error as Error) : null}

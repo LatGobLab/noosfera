@@ -15,9 +15,10 @@ import {
   
   export const useInfiniteComments = (
     reportId: number | string, 
-    pageSize: number = DEFAULT_COMMENTS_PAGE_SIZE_FOR_HOOK
+    pageSize: number = DEFAULT_COMMENTS_PAGE_SIZE_FOR_HOOK,
+    enabled: boolean = true
   ) => {
-    return useInfiniteQuery<
+    const query = useInfiniteQuery<
       PaginatedCommentsResponse,
       Error,                     
       InfiniteData<PaginatedCommentsResponse>, 
@@ -50,8 +51,17 @@ import {
         }
         return undefined; // No hay más páginas
       },
-  
 
+      enabled,
+      staleTime: 2 * 60 * 1000, // 2 minutes
+      gcTime: 5 * 60 * 1000, // 5 minutes
     });
+
+    return {
+      ...query,
+      // Distinguish between initial loading and subsequent fetches
+      isInitialLoading: query.isFetching && !query.data,
+      isFetchingNextPage: query.isFetchingNextPage,
+    };
   };
   
