@@ -54,7 +54,6 @@ export default function useNearbyPosts() {
         fk_resuelto_por: item.fk_resuelto_por || null,
         fecha_creacion: item.fecha_creacion,
         foto_reporte: item.foto_reporte || null,
-        foto_resuelto: item.foto_resuelto || null,
         descripcion: item.descripcion,
         num_eventos: item.num_eventos,
         fk_reporte_tipo: item.fk_reporte_tipo || null,

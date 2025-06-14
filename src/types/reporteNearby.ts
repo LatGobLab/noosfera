@@ -4,7 +4,6 @@ export interface ReporteNearby {
   fk_resuelto_por: string | null; 
   fecha_creacion: string; 
   foto_reporte: any | null; 
-  foto_resuelto: any | null; 
   descripcion: string;
   num_eventos: number;
   fk_reporte_tipo: number | null; 

@@ -41,7 +41,6 @@ export const ReportDetailsSheet = forwardRef<
     error,
     isError,
   } = useMapDetails(reportId || 0);
-
   // Handle back button press to close sheet instead of app
   useEffect(() => {
     const handleBackPress = () => {
